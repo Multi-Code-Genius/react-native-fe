@@ -47,7 +47,7 @@ const AppNavigator = () => {
     <QueryClientProvider client={queryClient}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
-          {isAuthenticated ? (
+          {!isAuthenticated ? (
             <Stack.Screen name="Main" component={PrivateRoutes} />
           ) : (
             <Stack.Screen name="Auth" component={PublicRoutes} />
