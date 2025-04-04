@@ -9,10 +9,9 @@ import {
 } from '../../types/auth';
 
 export const userLogin = async (data: LoginParams): Promise<LoginResponse> => {
-  console.log('data', data);
   try {
     const response = await api(
-      '/auth/login',
+      'api/auth/login',
       {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -42,10 +41,9 @@ export const useUserLogin = (
 export const userSignup = async (
   data: SignupParams,
 ): Promise<SignupResponse> => {
-  console.log('data', data);
   try {
     const response = await api(
-      '/auth/register',
+      'api/auth/signup',
       {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
