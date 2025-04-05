@@ -46,8 +46,7 @@ const LoginScreen: React.FC<Props> = () => {
           }`}
           activeOpacity={0.7}
           onPressIn={() => setIsPressed(true)}
-          onPressOut={() => setIsPressed(false)}
-          onPress={() => console.log('Button Pressed')}>
+          onPressOut={() => setIsPressed(false)}>
           <Text className="text-white text-[18px] font-semibold">Continue</Text>
         </TouchableOpacity>
         <TouchableOpacity
