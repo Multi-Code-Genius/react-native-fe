@@ -29,6 +29,11 @@ const PrivateRoutes = () => (
       tabBarInactiveTintColor: 'gray',
       headerShown: false,
     }}>
+    <Stack.Screen
+      name="Login"
+      component={LoginScreen}
+      options={{headerShown: false}}
+    />
     <Tab.Screen name="Home" component={HomeScreen} />
   </Tab.Navigator>
 );
