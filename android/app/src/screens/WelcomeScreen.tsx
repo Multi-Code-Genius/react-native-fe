@@ -1,0 +1,65 @@
+import React from 'react';
+import { SafeAreaView, StatusBar, StyleSheet, Text, View, TouchableOpacity } from "react-native"
+import LottieView from 'lottie-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { Button } from '@gluestack-ui/themed';
+
+
+const WelcomeScreen = () => {
+    const navigation = useNavigation();
+    return (
+        <SafeAreaView className='flex bg-[#1A2238] h-full justify-center gap-10'>
+            <StatusBar barStyle="light-content" backgroundColor="#1A2238" />
+            <View className='flex justify-center items-center'>
+                <LottieView
+                    source={require('../assets/Animationdata12.json')}
+                    autoPlay
+                    loop
+                    style={styles.animation}
+                />
+            </View>
+            <View className='flex items-center h-[300px] justify-between'>
+                <View className='flex gap-5'>
+                    <Text className='text-3xl font-bold text-white'>MULTI CODE GENIUS</Text>
+                    <Text className='text-lg text-[#e6dbdb] text-center'>Welcome To Multi Code Genius</Text>
+                </View>
+                <TouchableOpacity style={styles.button} onPress={() => (navigation as any).navigate('Login')}>
+                    <Text style={styles.buttonText}>Get Started for Free</Text>
+                </TouchableOpacity>
+                {/* glue stack button only for testing */}
+                <Button size="md" action="primary">
+                    <Text>Test Gluestack</Text>
+                </Button>
+            </View>
+        </SafeAreaView >
+    )
+}
+
+const styles = StyleSheet.create({
+    animation: {
+        width: 300,
+        height: 300
+    },
+    button: {
+        backgroundColor: "white",
+        paddingVertical: 16,
+        paddingHorizontal: 30,
+        borderRadius: 30,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    buttonText: {
+        color: "#1A2238",
+        fontSize: 16,
+        fontWeight: "600",
+        marginRight: 8,
+    },
+})
+
+export default WelcomeScreen
