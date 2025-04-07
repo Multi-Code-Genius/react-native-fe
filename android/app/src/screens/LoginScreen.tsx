@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/MaterialIcons';
 import { StackScreenProps } from '@react-navigation/stack';
-import { useNavigation } from '@react-navigation/native';
 import { useUserLogin } from '../api/auth/auth';
+import { useAuthStore } from '../store/authStore';
 
 
 type Props = StackScreenProps<any, 'Login'>;
@@ -21,6 +21,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [isPressed, setIsPressed] = useState(false);
   const [data, setData] = useState({ email: '', password: '' });
   const { mutate: login } = useUserLogin();
+  const saveToken = useAuthStore(state => state.saveToken);
 
   const handleChange = (field: keyof typeof data, value: string) => {
     setData(prev => ({ ...prev, [field]: value }));
@@ -31,8 +32,20 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       Alert.alert("Error", "Please fill all fields");
       return;
     }
-    login(data);
-  };
+    login(data, {
+      onSuccess: async ({ token }) => {
+        if (!token) {
+          Alert.alert('Error', 'No token received.');
+          return;
+        }
+        await saveToken(token);
+      },
+      onError: () => {
+        Alert.alert('Error', 'Login failed. Please try again.');
+      },
+    });
+  }
+
 
   return (
     <KeyboardAvoidingView

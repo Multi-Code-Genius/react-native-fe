@@ -62,8 +62,6 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({ linking, fallback }) => {
     initialize();
   }, [initializeAuth]);
 
-
-  console.log("isAuthenticated>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", isAuthenticated)
   return (
     <QueryClientProvider client={queryClient}>
       <NavigationContainer linking={linking} fallback={fallback}>

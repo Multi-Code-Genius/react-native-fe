@@ -4,11 +4,13 @@ import { Text, TextInput, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/MaterialIcons';
 import { useUserSignup } from '../api/auth/auth';
 import { useNavigation } from '@react-navigation/native';
+import { useAuthStore } from '../store/authStore';
 
 export function SignUpFormScreen() {
   const navigation = useNavigation();
   const [data, setData] = useState({ name: '', email: '', password: '' });
   const { mutate: signup } = useUserSignup();
+  const saveToken = useAuthStore(state => state.saveToken);
   const handleChange = (field: keyof typeof data, value: string) => {
     setData(prev => ({ ...prev, [field]: value }));
   };
@@ -20,8 +22,20 @@ export function SignUpFormScreen() {
       Alert.alert('Validation', 'All fields are required.');
       return;
     }
-    signup(data);
-  };
+    signup(data, {
+      onSuccess: async ({ token }) => {
+        if (!token) {
+          Alert.alert('Error', 'No token received.');
+          return;
+        }
+        await saveToken(token);
+      },
+      onError: () => {
+        Alert.alert('Error', 'Signup failed. Please try again.');
+      },
+    });
+  }
+
 
   return (
     <View className="flex p-8 justify-center items-center h-full w-full gap-16">

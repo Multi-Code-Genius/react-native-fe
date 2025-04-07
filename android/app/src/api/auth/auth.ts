@@ -24,7 +24,8 @@ export const userLogin = async (data: LoginParams): Promise<LoginResponse> => {
       },
       true,
     );
-    return await response;
+    const resp = await response;
+    return resp;
   } catch (error) {
     console.error('Login Error:', error);
     throw new Error(error instanceof Error ? error.message : 'Login failed');
@@ -56,7 +57,6 @@ export const userSignup = async (
       true,
     );
     const resp = await response;
-    console.log('resp', resp.token);
     return resp;
   } catch (error) {
     console.error('Login Error:', error);
@@ -91,7 +91,8 @@ export const resetPassword = async (
       true,
     );
 
-    return await response;
+    const resp = await response;
+    return resp;
   } catch (error) {
     console.error(' Password Reset Error:', error);
     throw new Error(error instanceof Error ? error.message : 'Login failed');
