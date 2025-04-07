@@ -18,15 +18,7 @@ type Props = StackScreenProps<any, 'Login'>;
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [isPressed, setIsPressed] = useState(false);
   const [data, setData] = useState({ email: '', password: '' });
-  const { mutate: login } = useUserLogin(
-    Response => {
-      Alert.alert('Success', 'Login SuccessFully');
-    },
-    error => {
-      Alert.alert('Login Failed', error?.message || 'Something went wrong');
-      console.error('Login error:', error);
-    },
-  )
+  const { mutate: login } = useUserLogin();
 
   const handleChange = (field: keyof typeof data, value: string) => {
     setData(prev => ({ ...prev, [field]: value }));

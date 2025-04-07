@@ -51,7 +51,7 @@ export const userSignup = async (
       true,
     );
     const resp = await response;
-
+    console.log('resp', resp.token);
     return resp;
   } catch (error) {
     console.error('Login Error:', error);
@@ -65,13 +65,9 @@ export const useUserSignup = (
 ) => {
   return useMutation<SignupResponse, LoginError, SignupParams>({
     mutationFn: userSignup,
-    onMutate: () => {
-      console.log('Mutation started ✅');
-    },
+    onMutate: () => {},
     onSuccess,
     onError,
-    onSettled: () => {
-      console.log('Mutation finished ⏹️');
-    },
+    onSettled: () => {},
   });
 };
