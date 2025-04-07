@@ -1,7 +1,6 @@
 import {View, Text, TextInput, Button, Alert} from 'react-native';
 import React, {useState} from 'react';
 import {useResetPassword} from '../api/auth/auth';
-// import {useNavigation} from '@react-navigation/native';
 
 export default function ResetPasswordScreen({route}: any) {
   const [newPassword, setNewPassword] = useState('');
@@ -9,14 +8,12 @@ export default function ResetPasswordScreen({route}: any) {
 
   const {mutate} = useResetPassword();
   const {token} = route.params;
-  //   const navigation = useNavigation();
 
   const handleResetPassword = () => {
     if (newPassword !== confirmPassword) {
       Alert.alert('Error', 'Passwords do not match');
       return;
     }
-
     mutate({token: token, newPassword: newPassword});
   };
 
@@ -29,19 +26,19 @@ export default function ResetPasswordScreen({route}: any) {
       <TextInput
         placeholder="New Password"
         secureTextEntry
-        className="border border-gray-300 rounded-xl p-4 mb-4 text-base"
+        className="border text-black border-gray-300 rounded-xl p-4 mb-4 text-base"
         onChangeText={setNewPassword}
       />
 
       <TextInput
         placeholder="Confirm Password"
         secureTextEntry
-        className="border border-gray-300 rounded-xl p-4 mb-6 text-base"
+        className="border text-black border-gray-300 rounded-xl p-4 mb-6 text-base"
         onChangeText={setConfirmPassword}
       />
 
       <View className="rounded-xl overflow-hidden">
-        <Button title="Reset Password" onPress={handleResetPassword} />
+        <Button title="Reset Password" onPress={() => handleResetPassword()} />
       </View>
     </View>
   );

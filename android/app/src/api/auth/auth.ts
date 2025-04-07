@@ -80,7 +80,7 @@ export const resetPassword = async (
 ): Promise<ResetPasswordResponse> => {
   try {
     const response = await api(
-      'api/auth/new-password',
+      '/api/auth/new-password',
       {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -105,8 +105,7 @@ export const useResetPassword = (
     useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
   return useMutation<ResetPasswordResponse, unknown, ResetPasswordParams>({
     mutationFn: resetPassword,
-    onSuccess: res => {
-      console.log('res----------->', res);
+    onSuccess: (res: unknown) => {
       // queryClient.invalidateQueries({queryKey: ['todos']});
       navigation.navigate('Login');
     },

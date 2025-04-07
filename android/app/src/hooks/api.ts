@@ -57,7 +57,7 @@ export const api = async (
   }
 
   try {
-    const apiUrl = isLogin ? `${BASE_URL}:5000` : `${BASE_URL}:5000`;
+    const apiUrl = isLogin ? `${BASE_URL}` : `${BASE_URL}`;
 
     const response = await fetch(`${apiUrl}${endpoint}`, requestConfig);
 
