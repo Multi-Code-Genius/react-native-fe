@@ -19,7 +19,6 @@ export const userLogin = async (data: LoginParams): Promise<LoginResponse> => {
       },
       true,
     );
-
     return await response;
   } catch (error) {
     console.error('Login Error:', error);
@@ -51,8 +50,9 @@ export const userSignup = async (
       },
       true,
     );
+    const resp = await response;
 
-    return await response;
+    return resp;
   } catch (error) {
     console.error('Login Error:', error);
     throw new Error(error instanceof Error ? error.message : 'Login failed');
@@ -65,7 +65,13 @@ export const useUserSignup = (
 ) => {
   return useMutation<SignupResponse, LoginError, SignupParams>({
     mutationFn: userSignup,
+    onMutate: () => {
+      console.log('Mutation started ✅');
+    },
     onSuccess,
     onError,
+    onSettled: () => {
+      console.log('Mutation finished ⏹️');
+    },
   });
 };

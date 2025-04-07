@@ -2,8 +2,7 @@ import React from 'react';
 import { SafeAreaView, StatusBar, StyleSheet, Text, View, TouchableOpacity } from "react-native"
 import LottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Button } from '@gluestack-ui/themed';
-
+import Icon from 'react-native-vector-icons/Feather';
 
 const WelcomeScreen = () => {
     const navigation = useNavigation();
@@ -25,12 +24,9 @@ const WelcomeScreen = () => {
                 </View>
                 <TouchableOpacity style={styles.button} onPress={() => (navigation as any).navigate('Login')}>
                     <Text style={styles.buttonText}>Get Started for Free</Text>
+                    <Icon name="chevron-right" size={20} color="#000" style={styles.icon} />
                 </TouchableOpacity>
-                {/* glue stack button only for testing */}
-                <Button size="md" action="primary">
-                    <Text>Test Gluestack</Text>
-                </Button>
-            </View>
+            </View> 
         </SafeAreaView >
     )
 }
@@ -59,6 +55,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "600",
         marginRight: 8,
+    },
+    icon: {
+        marginLeft: 4,
     },
 })
 

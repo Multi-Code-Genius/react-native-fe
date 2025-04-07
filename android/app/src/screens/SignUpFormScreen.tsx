@@ -1,38 +1,25 @@
-import React, {useState} from 'react';
-import {Alert, TouchableOpacity} from 'react-native';
-import {Text, TextInput, View} from 'react-native';
+import React, { useState } from 'react';
+import { Alert, TouchableOpacity } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/MaterialIcons';
-import {useUserSignup} from '../api/auth/auth';
-import {useNavigation} from '@react-navigation/native';
+import { useUserSignup } from '../api/auth/auth';
+import { useNavigation } from '@react-navigation/native';
 
 export function SignUpFormScreen() {
   const navigation = useNavigation();
-  const [data, setData] = useState({name: '', email: '', password: ''});
-  const {mutate: signup} = useUserSignup(
-    response => {
-      Alert.alert('Success', 'Signed up successfully!', [
-        {
-          onPress: () => (navigation as any).navigate('Login'),
-        },
-      ]);
-    },
-    error => {
-      Alert.alert('Signup Failed', error?.message || 'Something went wrong');
-      console.error('Signup error:', error);
-    },
-  );
+  const [data, setData] = useState({ name: '', email: '', password: '' });
+  const { mutate: signup } = useUserSignup();
   const handleChange = (field: keyof typeof data, value: string) => {
-    setData(prev => ({...prev, [field]: value}));
+    setData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSignup = () => {
-    const {name, email, password} = data;
+    const { name, email, password } = data;
 
     if (!name || !email || !password) {
       Alert.alert('Validation', 'All fields are required.');
       return;
     }
-
     signup(data);
   };
 
