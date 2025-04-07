@@ -7,11 +7,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/MaterialIcons';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { useUserLogin } from '../api/auth/auth';
+
 
 type Props = StackScreenProps<any, 'Login'>;
 

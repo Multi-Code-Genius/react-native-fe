@@ -34,3 +34,12 @@ export interface SignupResponse {
 export interface LoginError {
   message: string;
 }
+
+export interface ResetPasswordParams {
+  token: string;
+  newPassword: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}

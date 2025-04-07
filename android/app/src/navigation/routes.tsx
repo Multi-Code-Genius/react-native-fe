@@ -5,10 +5,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { useAuthStore } from '../store/authStore';
 import { QueryClientProvider } from '@tanstack/react-query';
 import queryClient from '../config/queryClient';
-import HomeScreen from '../screens/HomeScreen';
-import LoginScreen from '../screens/LoginScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import { SignUpFormScreen } from '../screens/SignUpFormScreen';
+import { LinkingOptions } from '@react-navigation/native';
+import HomeScreen from '../screens/HomeScreen';
+import LoginScreen from '../screens/LoginScreen';
+import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -30,6 +32,7 @@ const PublicRoutes = () => (
       component={SignUpFormScreen}
       options={{ headerShown: false }}
     />
+    <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
   </Stack.Navigator>
 );
 
@@ -44,7 +47,12 @@ const PrivateRoutes = () => (
   </Tab.Navigator>
 );
 
-const AppNavigator = () => {
+type AppNavigatorProps = {
+  linking?: LinkingOptions<any>;
+  fallback?: React.ReactNode;
+};
+
+const AppNavigator: React.FC<AppNavigatorProps> = ({ linking, fallback }) => {
   const { isAuthenticated, initializeAuth } = useAuthStore();
 
   useEffect(() => {
@@ -52,13 +60,13 @@ const AppNavigator = () => {
       await initializeAuth();
     };
     initialize();
-  }, [isAuthenticated, initializeAuth]);
+  }, [initializeAuth]);
 
 
   console.log("isAuthenticated>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", isAuthenticated)
   return (
     <QueryClientProvider client={queryClient}>
-      <NavigationContainer>
+      <NavigationContainer linking={linking} fallback={fallback}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {isAuthenticated ? (
             <Stack.Screen name="Main" component={PrivateRoutes} />
