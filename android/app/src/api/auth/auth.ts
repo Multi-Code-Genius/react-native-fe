@@ -16,7 +16,7 @@ import {AuthStackParamList} from '../../types/navigation';
 export const userLogin = async (data: LoginParams): Promise<LoginResponse> => {
   try {
     const response = await api(
-      'api/auth/login',
+      '/api/auth/login',
       {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -47,7 +47,7 @@ export const userSignup = async (
 ): Promise<SignupResponse> => {
   try {
     const response = await api(
-      'api/auth/signup',
+      '/api/auth/signup',
       {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},

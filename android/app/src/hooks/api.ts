@@ -57,7 +57,7 @@ export const api = async (
   }
 
   try {
-    const apiUrl = isLogin ? `${BASE_URL}:5000/` : `${BASE_URL}:5000/`;
+    const apiUrl = BASE_URL;
     const response = await fetch(`${apiUrl}${endpoint}`, requestConfig);
     if (response?.status !== 200) {
       if (response?.status === 414) {
