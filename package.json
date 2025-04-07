@@ -14,6 +14,7 @@
     "@gluestack-ui/config": "^1.1.20",
     "@gluestack-ui/themed": "^1.1.72",
     "@react-native-async-storage/async-storage": "^2.1.2",
+    "@react-native-google-signin/google-signin": "^13.2.0",
     "@react-navigation/bottom-tabs": "^7.3.8",
     "@react-navigation/native": "^7.1.4",
     "@react-navigation/stack": "^7.2.8",
@@ -27,6 +28,7 @@
     "react-native-reanimated": "^3.17.2",
     "react-native-safe-area-context": "^5.3.0",
     "react-native-screens": "^4.10.0",
+    "react-native-svg": "^15.11.2",
     "react-native-vector-icons": "^10.2.0",
     "tailwindcss": "^3.4.17",
     "zustand": "^5.0.3"
