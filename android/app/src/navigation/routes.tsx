@@ -1,21 +1,16 @@
 import React, {useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {NavigationContainer, LinkingOptions} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useAuthStore} from '../store/authStore';
 import {QueryClientProvider} from '@tanstack/react-query';
 import queryClient from '../config/queryClient';
-import {LinkingOptions} from '@react-navigation/native';
-
-import HomeScreen from '../screens/HomeScreen';
+import WelcomeScreen from '../screens/WelcomeScreen';
+import {SignUpFormScreen} from '../screens/SignUpFormScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ResetPasswordScreen from '../screens/ResetPasswordScreen';
-import {SignUpFormScreen} from '../screens/SignUpFormScreen';
-import WelcomeScreen from '../screens/WelcomeScreen';
+import {PrivateRoutes} from './PrivateRoutes';
 import ResetPassword1 from '../screens/ResetPassword1';
-import {SettingScreen} from '../screens/SettingScreen';
 
-const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 const PublicRoutes = () => (
@@ -42,18 +37,6 @@ const PublicRoutes = () => (
       options={{headerShown: false}}
     />
   </Stack.Navigator>
-);
-
-const PrivateRoutes = () => (
-  <Tab.Navigator
-    screenOptions={{
-      tabBarActiveTintColor: '#007AFF',
-      tabBarInactiveTintColor: 'gray',
-      headerShown: false,
-    }}>
-    <Tab.Screen name="Home" component={HomeScreen} />
-    <Tab.Screen name="Setting" component={SettingScreen} />
-  </Tab.Navigator>
 );
 
 type AppNavigatorProps = {

@@ -12,7 +12,7 @@ import Ionicons from 'react-native-vector-icons/MaterialIcons';
 import {StackScreenProps} from '@react-navigation/stack';
 import {useUserLogin} from '../api/auth/auth';
 import {useAuthStore} from '../store/authStore';
-import GoogleSignin from '../config/google';
+// import GoogleSignin from '../config/google';
 
 type Props = StackScreenProps<any, 'Login'>;
 
@@ -119,7 +119,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
             onPress={handleSubmit}>
             <Text className="text-white text-[18px] font-semibold">LogIn</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             className={`w-full h-12 rounded-lg flex justify-center mt-5 items-center ${
               isPressed ? 'bg-blue-500' : 'bg-blue-600'
             }`}
@@ -131,7 +131,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
             <Text className="text-white text-[18px] font-semibold">
               Google Login
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
 

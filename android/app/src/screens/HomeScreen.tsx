@@ -1,19 +1,22 @@
 import React from 'react';
-import {Button, Text} from 'react-native';
+import {Text} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useAuthStore} from '../store/authStore';
+import {Button} from 'react-native-paper';
 
 const HomeScreen = () => {
   const logout = useAuthStore(state => state.logout);
 
-  const handleLogout = async () => {
-    await logout();
+  const handleLogout = () => {
+    logout();
   };
 
   return (
     <SafeAreaView className="">
       <Text>Home Screen</Text>
-      <Button title="Logout" onPress={handleLogout} />
+      <Button mode="contained" style={{width: '50%', margin: 'auto'}}>
+        Logout
+      </Button>
     </SafeAreaView>
   );
 };
