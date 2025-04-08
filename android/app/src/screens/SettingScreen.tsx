@@ -6,8 +6,8 @@ import {userInfoData} from '../api/user';
 
 const LabelBox = ({label, value}: {label: string; value?: string}) => (
   <View className="bg-gray-100 p-4 mb-3 rounded-lg">
-    <Text className="text-xs text-gray-500 font-semibold mb-1">{label}</Text>
-    <Text className="text-base text-black">{value || ''}</Text>
+    <Text className="text-lg text-gray-500 font-semibold mb-1">{label}</Text>
+    <Text className="text-lg text-black">{value || ''}</Text>
   </View>
 );
 

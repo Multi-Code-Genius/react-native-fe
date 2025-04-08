@@ -14,7 +14,10 @@ const HomeScreen = () => {
   return (
     <SafeAreaView className="">
       <Text>Home Screen</Text>
-      <Button mode="contained" style={{width: '50%', margin: 'auto'}}>
+      <Button
+        mode="contained"
+        onPress={handleLogout}
+        style={{width: '50%', margin: 'auto'}}>
         Logout
       </Button>
     </SafeAreaView>
