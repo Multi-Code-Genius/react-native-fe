@@ -5,12 +5,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { useAuthStore } from '../store/authStore';
 import { QueryClientProvider } from '@tanstack/react-query';
 import queryClient from '../config/queryClient';
-import WelcomeScreen from '../screens/WelcomeScreen';
-import { SignUpFormScreen } from '../screens/SignUpFormScreen';
 import { LinkingOptions } from '@react-navigation/native';
+
 import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ResetPasswordScreen from '../screens/ResetPasswordScreen';
+import { SignUpFormScreen } from '../screens/SignUpFormScreen';
+import WelcomeScreen from '../screens/WelcomeScreen';
+import ResetPassword1 from '../screens/ResetPassword1';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -33,6 +35,7 @@ const PublicRoutes = () => (
       options={{ headerShown: false }}
     />
     <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
+    <Stack.Screen name="ResetPassword1" component={ResetPassword1} options={{ headerShown: false }} />
   </Stack.Navigator>
 );
 

@@ -4,8 +4,11 @@ import {
   LoginError,
   LoginParams,
   LoginResponse,
+  ResetPasswordLinkParams,
+  ResetPasswordLinkResponse,
   ResetPasswordParams,
   ResetPasswordResponse,
+  RootStackParamList,
   SignupParams,
   SignupResponse,
 } from '../../types/auth';
@@ -113,5 +116,37 @@ export const useResetPassword = (
       navigation.navigate('Login');
     },
     onError,
+  });
+};
+
+export const resetPasswordLink = async (
+  data: ResetPasswordLinkParams,
+): Promise<ResetPasswordLinkResponse> => {
+  try {
+    const response = await api(
+      '/api/auth/reset-password',
+      {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data),
+      },
+      true,
+    );
+    const resp = await response;
+    return resp;
+  } catch (error) {
+    console.error(' Password Reset Error:', error);
+    throw new Error(error instanceof Error ? error.message : 'Login failed');
+  }
+};
+
+export const useResetPasswordLink = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  return useMutation({
+    mutationFn: resetPasswordLink,
+    onSuccess: () => {},
+    onError: error => {},
   });
 };
