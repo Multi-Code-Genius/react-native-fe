@@ -1,4 +1,4 @@
 declare module '@env' {
   export const BASE_URL: string;
-  // Add other environment variables here as needed
+  export const GOOGLE_CLIENT_ID: string;
 }

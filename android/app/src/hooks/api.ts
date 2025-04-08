@@ -57,10 +57,8 @@ export const api = async (
   }
 
   try {
-    const apiUrl = isLogin ? `${BASE_URL}` : `${BASE_URL}`;
-
+    const apiUrl = BASE_URL;
     const response = await fetch(`${apiUrl}${endpoint}`, requestConfig);
-
     if (response?.status !== 200) {
       if (response?.status === 414) {
         console.error('URI Too Long (414) - Logging out user');

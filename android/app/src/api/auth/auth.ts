@@ -16,7 +16,7 @@ import {AuthStackParamList} from '../../types/navigation';
 export const userLogin = async (data: LoginParams): Promise<LoginResponse> => {
   try {
     const response = await api(
-      'api/auth/login',
+      '/api/auth/login',
       {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -24,8 +24,8 @@ export const userLogin = async (data: LoginParams): Promise<LoginResponse> => {
       },
       true,
     );
-
-    return await response;
+    const resp = await response;
+    return resp;
   } catch (error) {
     console.error('Login Error:', error);
     throw new Error(error instanceof Error ? error.message : 'Login failed');
@@ -48,7 +48,7 @@ export const userSignup = async (
 ): Promise<SignupResponse> => {
   try {
     const response = await api(
-      'api/auth/signup',
+      '/api/auth/signup',
       {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -56,8 +56,8 @@ export const userSignup = async (
       },
       true,
     );
-
-    return await response;
+    const resp = await response;
+    return resp;
   } catch (error) {
     console.error('Login Error:', error);
     throw new Error(error instanceof Error ? error.message : 'Login failed');
@@ -70,8 +70,10 @@ export const useUserSignup = (
 ) => {
   return useMutation<SignupResponse, LoginError, SignupParams>({
     mutationFn: userSignup,
+    onMutate: () => {},
     onSuccess,
     onError,
+    onSettled: () => {},
   });
 };
 
@@ -89,7 +91,8 @@ export const resetPassword = async (
       true,
     );
 
-    return await response;
+    const resp = await response;
+    return resp;
   } catch (error) {
     console.error(' Password Reset Error:', error);
     throw new Error(error instanceof Error ? error.message : 'Login failed');
