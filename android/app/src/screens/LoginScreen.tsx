@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -9,21 +9,21 @@ import {
   Alert,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/MaterialIcons';
-import { StackScreenProps } from '@react-navigation/stack';
-import { useUserLogin } from '../api/auth/auth';
-import { useAuthStore } from '../store/authStore';
+import {StackScreenProps} from '@react-navigation/stack';
+import {useUserLogin} from '../api/auth/auth';
+import {useAuthStore} from '../store/authStore';
 import GoogleSignin from '../config/google';
 
 type Props = StackScreenProps<any, 'Login'>;
 
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
+const LoginScreen: React.FC<Props> = ({navigation}) => {
   const [isPressed, setIsPressed] = useState(false);
-  const [data, setData] = useState({ email: '', password: '' });
-  const { mutate: login } = useUserLogin();
+  const [data, setData] = useState({email: '', password: ''});
+  const {mutate: login} = useUserLogin();
   const saveToken = useAuthStore(state => state.saveToken);
 
   const handleChange = (field: keyof typeof data, value: string) => {
-    setData(prev => ({ ...prev, [field]: value }));
+    setData(prev => ({...prev, [field]: value}));
   };
 
   const handleSubmit = async () => {
@@ -32,7 +32,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
     login(data, {
-      onSuccess: async ({ token }) => {
+      onSuccess: async ({token}) => {
         if (!token) {
           Alert.alert('Error', 'No token received.');
           return;
@@ -45,24 +45,23 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     });
   };
 
-
   const handleResetPassword = () => {
     navigation.navigate('ResetPassword1');
   };
 
-  const signInWithGoogle = async () => {
-    try {
-      // await GoogleSignin.hasPlayServices();
-      // const userInfo = await GoogleSignin.signIn();
-      // console.log('userInfo', userInfo);
-      // const {idToken} = userInfo;
+  // const signInWithGoogle = async () => {
+  //   try {
+  //     // await GoogleSignin.hasPlayServices();
+  //     // const userInfo = await GoogleSignin.signIn();
+  //     // console.log('userInfo', userInfo);
+  //     // const {idToken} = userInfo;
 
-      return data;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  };
+  // //     return data;
+  // //   } catch (error) {
+  // //     console.error(error);
+  // //     throw error;
+  // //   }
+  // // };
 
   return (
     <KeyboardAvoidingView
@@ -105,14 +104,15 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           <Text>
             Forget Password?{' '}
             <Text
-              style={{ textDecorationLine: 'underline', color: 'blue' }}
+              style={{textDecorationLine: 'underline', color: 'blue'}}
               onPress={() => handleResetPassword()}>
               Reset password
             </Text>
           </Text>
           <TouchableOpacity
-            className={`w-full h-12 rounded-lg flex justify-center mt-5 items-center ${isPressed ? 'bg-blue-500' : 'bg-blue-600'
-              }`}
+            className={`w-full h-12 rounded-lg flex justify-center mt-5 items-center ${
+              isPressed ? 'bg-blue-500' : 'bg-blue-600'
+            }`}
             activeOpacity={0.7}
             onPressIn={() => setIsPressed(true)}
             onPressOut={() => setIsPressed(false)}
@@ -120,12 +120,14 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             <Text className="text-white text-[18px] font-semibold">LogIn</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className={`w-full h-12 rounded-lg flex justify-center mt-5 items-center ${isPressed ? 'bg-blue-500' : 'bg-blue-600'
-              }`}
+            className={`w-full h-12 rounded-lg flex justify-center mt-5 items-center ${
+              isPressed ? 'bg-blue-500' : 'bg-blue-600'
+            }`}
             activeOpacity={0.7}
             onPressIn={() => setIsPressed(true)}
             onPressOut={() => setIsPressed(false)}
-            onPress={signInWithGoogle}>
+            // onPress={signInWithGoogle}
+          >
             <Text className="text-white text-[18px] font-semibold">
               Google Login
             </Text>
