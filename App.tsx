@@ -21,11 +21,7 @@ export default function App() {
   return (
     <PaperProvider>
       <SafeAreaProvider>
-        <StatusBar
-          barStyle="dark-content"
-          backgroundColor="transparent"
-          translucent
-        />
+        <StatusBar barStyle="default" translucent />
         <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
           <AppNavigator linking={linking} fallback={<Text>Loading...</Text>} />
         </SafeAreaView>
