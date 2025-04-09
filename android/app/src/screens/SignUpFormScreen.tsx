@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   ImageBackground,
@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Text, TextInput, View } from 'react-native';
-import Ionicons from 'react-native-vector-icons/MaterialIcons';
+import { Animated } from 'react-native';
 import { useUserSignup } from '../api/auth/auth';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../store/authStore';
@@ -19,6 +19,18 @@ export function SignUpFormScreen() {
   const [data, setData] = useState({ name: '', email: '', password: '' });
   const { mutate: signup } = useUserSignup();
   const saveToken = useAuthStore(state => state.saveToken);
+  const slideAnim = useRef(new Animated.Value(500)).current;
+
+
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 800,
+      delay: 100,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   const handleChange = (field: keyof typeof data, value: string) => {
     setData(prev => ({ ...prev, [field]: value }));
   };
@@ -57,7 +69,7 @@ export function SignUpFormScreen() {
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.content}>
+          <Animated.View style={[styles.content, { transform: [{ translateY: slideAnim }] }]}>
             <View className="flex justify-center items-center h-fit w-full">
               <View className="flex-row gap-5 items-center">
                 <Text style={styles.loginTitle}>👤 Signup</Text>
@@ -112,7 +124,7 @@ export function SignUpFormScreen() {
               </View>
 
             </View>
-          </View>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </ImageBackground>

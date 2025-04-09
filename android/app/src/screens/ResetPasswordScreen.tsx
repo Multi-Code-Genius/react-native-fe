@@ -1,10 +1,23 @@
 import { View, Text, TextInput, Button, Alert, ImageBackground, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useResetPassword } from '../api/auth/auth';
+import { Animated } from 'react-native';
 
 export default function ResetPasswordScreen({ route }: any) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const slideAnim = useRef(new Animated.Value(500)).current;
+
+
+
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 800,
+      delay: 100,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   const { mutate } = useResetPassword();
   const { token } = route.params;
@@ -27,7 +40,7 @@ export default function ResetPasswordScreen({ route }: any) {
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.content}>
+        <Animated.View style={[styles.content, { transform: [{ translateY: slideAnim }] }]}>
           <Text className="text-2xl  font-bold text-center text-white mb-6">
             Reset Password
           </Text>
@@ -49,7 +62,7 @@ export default function ResetPasswordScreen({ route }: any) {
           <TouchableOpacity style={styles.button}>
             <Text style={styles.loginButtonText} onPress={handleResetPassword}>Send Reset Password Link</Text>
           </TouchableOpacity>
-        </View>
+        </Animated.View>
       </ScrollView>
     </ImageBackground>
   );

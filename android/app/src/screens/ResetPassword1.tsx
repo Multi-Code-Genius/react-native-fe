@@ -1,13 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, TextInput, ImageBackground, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-gesture-handler';
 import { ResetPasswordLinkParams } from '../types/auth';
 import { useResetPasswordLink } from '../api/auth/auth';
-
+import { Animated } from 'react-native';
 
 const ResetPassword1 = () => {
     const [email, setEmail] = useState('');
     const { mutate: sendResetLink } = useResetPasswordLink();
+    const slideAnim = useRef(new Animated.Value(500)).current;
+
+
+    useEffect(() => {
+        Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 800,
+            delay: 100,
+            useNativeDriver: true,
+        }).start();
+    }, []);
 
     const handleSubmit = () => {
         if (!email) return;
@@ -29,7 +40,7 @@ const ResetPassword1 = () => {
                 contentContainerStyle={styles.scrollContainer}
                 keyboardShouldPersistTaps="handled"
             >
-                <View style={styles.content}>
+                <Animated.View style={[styles.content, { transform: [{ translateY: slideAnim }] }]}>
                     <Text className="text-2xl font-bold text-center text-white mb-6">
                         Reset Password
                     </Text>
@@ -50,8 +61,7 @@ const ResetPassword1 = () => {
                             <Text style={styles.loginButtonText} onPress={handleSubmit}>Send Reset Password Link</Text>
                         </TouchableOpacity>
                     </View>
-
-                </View>
+                </Animated.View>
             </ScrollView>
         </ImageBackground>
 

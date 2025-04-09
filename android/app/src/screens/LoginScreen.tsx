@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import {
 import { StackScreenProps } from '@react-navigation/stack';
 import { useUserLogin } from '../api/auth/auth';
 import { useAuthStore } from '../store/authStore';
+import { Animated } from 'react-native';
 
 type Props = StackScreenProps<any, 'Login'>;
 
@@ -21,6 +22,18 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [data, setData] = useState({ email: '', password: '' });
   const { mutate: login } = useUserLogin();
   const saveToken = useAuthStore(state => state.saveToken);
+  const slideAnim = useRef(new Animated.Value(500)).current;
+
+
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 800,
+      delay: 100,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
 
   const handleChange = (field: keyof typeof data, value: string) => {
     setData(prev => ({ ...prev, [field]: value }));
@@ -63,9 +76,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.content}>
+          <Animated.View style={[styles.content, { transform: [{ translateY: slideAnim }] }]}>
             <Text style={styles.loginTitle}>👤 Login</Text>
-
             <Text style={styles.label}>Your email address</Text>
             <TextInput
               placeholder="Enter your email"
@@ -75,7 +87,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
               onChangeText={text => handleChange('email', text)}
               value={data.email}
             />
-
             <Text style={styles.label}>Choose a password</Text>
             <TextInput
               value={data.password}
@@ -85,7 +96,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
               style={styles.input}
               secureTextEntry
             />
-
             <TouchableOpacity>
               <Text style={styles.forgotText}>
                 Forget Password? <Text style={styles.resetLink} onPress={handleResetPassword}>Reset password</Text>
@@ -95,12 +105,11 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             <TouchableOpacity style={styles.loginButton}>
               <Text style={styles.loginButtonText} onPress={handleSubmit}>Log In</Text>
             </TouchableOpacity>
-
             <Text style={styles.signupText}>
-              Don’t have an account?{' '}
+              Don’t have an account?
               <Text style={styles.signupLink} onPress={() => (navigation as any).navigate('SignUp')}>Sign Up</Text>
             </Text>
-          </View>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </ImageBackground>
