@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, StatusBar, StyleSheet, Text, View, TouchableOpacity } from "react-native"
+import { SafeAreaView, StatusBar, StyleSheet, Text, View, TouchableOpacity, ImageBackground } from "react-native"
 import LottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
@@ -7,8 +7,11 @@ import Icon from 'react-native-vector-icons/Feather';
 const WelcomeScreen = () => {
     const navigation = useNavigation();
     return (
-        <SafeAreaView className='flex bg-[#1A2238] h-full justify-center gap-10'>
-            <StatusBar barStyle="light-content" backgroundColor="#1A2238" />
+        <ImageBackground
+            source={require('../assets/image/welcome.png')}
+            style={styles.background}
+            resizeMode="cover"
+        >
             <View className='flex justify-center items-center'>
                 <LottieView
                     source={require('../assets/Animationdata12.json')}
@@ -26,12 +29,16 @@ const WelcomeScreen = () => {
                     <Text style={styles.buttonText}>Get Started for Free</Text>
                     <Icon name="chevron-right" size={20} color="#000" style={styles.icon} />
                 </TouchableOpacity>
-            </View> 
-        </SafeAreaView >
+            </View>
+        </ImageBackground>
     )
 }
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        justifyContent: 'center'
+    },
     animation: {
         width: 300,
         height: 300

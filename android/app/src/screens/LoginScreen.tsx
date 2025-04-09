@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,23 +7,23 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  ImageBackground,
+  ScrollView,
+  StyleSheet,
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/MaterialIcons';
-import {StackScreenProps} from '@react-navigation/stack';
-import {useUserLogin} from '../api/auth/auth';
-import {useAuthStore} from '../store/authStore';
-// import GoogleSignin from '../config/google';
+import { StackScreenProps } from '@react-navigation/stack';
+import { useUserLogin } from '../api/auth/auth';
+import { useAuthStore } from '../store/authStore';
 
 type Props = StackScreenProps<any, 'Login'>;
 
-const LoginScreen: React.FC<Props> = ({navigation}) => {
-  const [isPressed, setIsPressed] = useState(false);
-  const [data, setData] = useState({email: '', password: ''});
-  const {mutate: login} = useUserLogin();
+const LoginScreen: React.FC<Props> = ({ navigation }) => {
+  const [data, setData] = useState({ email: '', password: '' });
+  const { mutate: login } = useUserLogin();
   const saveToken = useAuthStore(state => state.saveToken);
 
   const handleChange = (field: keyof typeof data, value: string) => {
-    setData(prev => ({...prev, [field]: value}));
+    setData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
@@ -32,7 +32,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
       return;
     }
     login(data, {
-      onSuccess: async ({token}) => {
+      onSuccess: async ({ token }) => {
         if (!token) {
           Alert.alert('Error', 'No token received.');
           return;
@@ -49,103 +49,132 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     navigation.navigate('ResetPassword1');
   };
 
-  // const signInWithGoogle = async () => {
-  //   try {
-  //     // await GoogleSignin.hasPlayServices();
-  //     // const userInfo = await GoogleSignin.signIn();
-  //     // console.log('userInfo', userInfo);
-  //     // const {idToken} = userInfo;
-
-  // //     return data;
-  // //   } catch (error) {
-  // //     console.error(error);
-  // //     throw error;
-  // //   }
-  // // };
-
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      className="flex-1 bg-white justify-center px-8">
-      <View className="flex-1 justify-center items-center gap-16">
-        <View className="flex-row gap-3 items-center justify-center w-full">
-          <Ionicons name={'person'} size={35} color={'black'} />
-          <Text className="font-bold text-4xl text-black">Login</Text>
-        </View>
-        <View className="w-full gap-5">
-          <View className="gap-3">
-            <Text className="text-black font-semibold text-[17px]">
-              Your email address
-            </Text>
+    <ImageBackground
+      source={require('../assets/image/backgroundimage.png')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.flex}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.content}>
+            <Text style={styles.loginTitle}>👤 Login</Text>
+
+            <Text style={styles.label}>Your email address</Text>
             <TextInput
-              value={data.email}
-              onChangeText={text => handleChange('email', text)}
-              className="w-full h-12 px-4 border border-gray-300 rounded-lg text-black"
               placeholder="Enter your email"
               placeholderTextColor="#999"
-              autoCapitalize="words"
+              style={styles.input}
+              keyboardType="email-address"
+              onChangeText={text => handleChange('email', text)}
+              value={data.email}
             />
-          </View>
 
-          <View className="gap-3">
-            <Text className="text-black font-semibold text-[17px]">
-              Choose a password
-            </Text>
+            <Text style={styles.label}>Choose a password</Text>
             <TextInput
               value={data.password}
               onChangeText={text => handleChange('password', text)}
-              className="w-full h-12 px-4 border border-gray-300 rounded-lg text-black"
               placeholder="min, 8 characters"
               placeholderTextColor="#999"
-              autoCapitalize="words"
-              secureTextEntry={true}
+              style={styles.input}
+              secureTextEntry
             />
-          </View>
-          <Text>
-            Forget Password?{' '}
-            <Text
-              style={{textDecorationLine: 'underline', color: 'blue'}}
-              onPress={() => handleResetPassword()}>
-              Reset password
-            </Text>
-          </Text>
-          <TouchableOpacity
-            className={`w-full h-12 rounded-lg flex justify-center mt-5 items-center ${
-              isPressed ? 'bg-blue-500' : 'bg-blue-600'
-            }`}
-            activeOpacity={0.7}
-            onPressIn={() => setIsPressed(true)}
-            onPressOut={() => setIsPressed(false)}
-            onPress={handleSubmit}>
-            <Text className="text-white text-[18px] font-semibold">LogIn</Text>
-          </TouchableOpacity>
-          {/* <TouchableOpacity
-            className={`w-full h-12 rounded-lg flex justify-center mt-5 items-center ${
-              isPressed ? 'bg-blue-500' : 'bg-blue-600'
-            }`}
-            activeOpacity={0.7}
-            onPressIn={() => setIsPressed(true)}
-            onPressOut={() => setIsPressed(false)}
-            // onPress={signInWithGoogle}
-          >
-            <Text className="text-white text-[18px] font-semibold">
-              Google Login
-            </Text>
-          </TouchableOpacity> */}
-        </View>
-      </View>
 
-      <View className="absolute bottom-6 left-0 right-0 items-center border-t border-gray-300 pt-4">
-        <TouchableOpacity
-          onPress={() => (navigation as any).navigate('SignUp')}>
-          <Text className="text-slate-600 text-lg">
-            Don't have an account?{' '}
-            <Text className="text-[#007BFF] font-bold">Sign Up</Text>
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+            <TouchableOpacity>
+              <Text style={styles.forgotText}>
+                Forget Password? <Text style={styles.resetLink} onPress={handleResetPassword}>Reset password</Text>
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.loginButton}>
+              <Text style={styles.loginButtonText} onPress={handleSubmit}>Log In</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.signupText}>
+              Don’t have an account?{' '}
+              <Text style={styles.signupLink} onPress={() => (navigation as any).navigate('SignUp')}>Sign Up</Text>
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 };
 
 export default LoginScreen;
+
+const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+  background: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  content: {
+    backgroundColor: 'rgba(29, 28, 28, 0.692)',
+    padding: 30,
+    borderRadius: 16,
+  },
+  loginTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 30,
+  },
+  label: {
+    color: '#fff',
+    fontSize: 14,
+    marginBottom: 6,
+  },
+  input: {
+    backgroundColor: '#000',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 16,
+    fontSize: 16,
+    color: '#fff',
+  },
+  forgotText: {
+    color: '#fff',
+    textAlign: 'left',
+    marginBottom: 24,
+  },
+  resetLink: {
+    textDecorationLine: 'underline',
+    fontWeight: 'bold',
+  },
+  loginButton: {
+    backgroundColor: '#fff',
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  loginButtonText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  signupText: {
+    color: '#918e8e',
+    textAlign: 'center',
+  },
+  signupLink: {
+    color: '#e3e7e9',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  },
+});

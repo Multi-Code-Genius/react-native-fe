@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
-import {BottomNavigation, BottomNavigationProps} from 'react-native-paper';
+import React, { useState } from 'react';
+import { BottomNavigation, BottomNavigationProps } from 'react-native-paper';
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
-import {SettingScreen} from '../screens/SettingScreen';
+import { SettingScreen } from '../screens/SettingScreen';
 
 type RouteKey = 'home' | 'map' | 'setting';
 
@@ -32,6 +32,7 @@ export const PrivateRoutes: React.FC = () => {
       key: 'setting',
       title: 'Setting',
       focusedIcon: 'cog',
+      unfocusedIcon: 'setting-outline',
     },
   ]);
 
@@ -43,7 +44,7 @@ export const PrivateRoutes: React.FC = () => {
 
   return (
     <BottomNavigation
-      navigationState={{index, routes}}
+      navigationState={{ index, routes }}
       onIndexChange={setIndex}
       renderScene={renderScene}
       inactiveColor="gray"
