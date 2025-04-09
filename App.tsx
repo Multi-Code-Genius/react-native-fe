@@ -1,8 +1,8 @@
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import AppNavigator from './android/app/src/navigation/routes';
 import './global.css';
-import { StatusBar, Text } from 'react-native';
-import { PaperProvider } from 'react-native-paper';
+import {StatusBar, Text, StyleSheet} from 'react-native';
+import {PaperProvider} from 'react-native-paper';
 
 const linking = {
   prefixes: ['initialproject://'],
@@ -21,9 +21,21 @@ export default function App() {
   return (
     <PaperProvider>
       <SafeAreaProvider>
-        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-        <AppNavigator linking={linking} fallback={<Text>Loading...</Text>} />
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor="transparent"
+          translucent
+        />
+        <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+          <AppNavigator linking={linking} fallback={<Text>Loading...</Text>} />
+        </SafeAreaView>
       </SafeAreaProvider>
     </PaperProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

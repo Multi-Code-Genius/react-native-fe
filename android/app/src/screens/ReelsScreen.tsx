@@ -118,25 +118,25 @@ const ReelsScreen: React.FC<ReelsScreenProps> = ({isActive}) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        ref={flatListRef}
-        data={videoData}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        pagingEnabled
-        snapToInterval={height}
-        decelerationRate="fast"
-        showsVerticalScrollIndicator={false}
-        onMomentumScrollEnd={handleScrollEnd}
-        viewabilityConfig={viewabilityConfig}
-        onViewableItemsChanged={onViewableItemsChanged}
-        initialNumToRender={1}
-        maxToRenderPerBatch={1}
-        windowSize={3}
-        removeClippedSubviews={true}
-      />
-    </SafeAreaView>
+    // <SafeAreaView style={styles.container}>
+    <FlatList
+      ref={flatListRef}
+      data={videoData}
+      renderItem={renderItem}
+      keyExtractor={item => item.id}
+      pagingEnabled
+      snapToInterval={height}
+      decelerationRate="fast"
+      showsVerticalScrollIndicator={false}
+      onMomentumScrollEnd={handleScrollEnd}
+      viewabilityConfig={viewabilityConfig}
+      onViewableItemsChanged={onViewableItemsChanged}
+      initialNumToRender={1}
+      maxToRenderPerBatch={1}
+      windowSize={3}
+      removeClippedSubviews={true}
+    />
+    // </SafeAreaView>
   );
 };
 
