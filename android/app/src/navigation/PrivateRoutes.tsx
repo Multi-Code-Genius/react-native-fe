@@ -4,13 +4,13 @@ import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
 import {SettingScreen} from '../screens/SettingScreen';
 
-type RouteKey = 'home' | 'map';
+type RouteKey = 'home' | 'map' | 'setting';
 
 type Route = {
   key: RouteKey;
   title: string;
   focusedIcon: string;
-  unfocusedIcon: string;
+  unfocusedIcon?: string;
 };
 
 export const PrivateRoutes: React.FC = () => {
