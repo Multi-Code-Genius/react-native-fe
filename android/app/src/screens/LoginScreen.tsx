@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -11,19 +11,19 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import { StackScreenProps } from '@react-navigation/stack';
-import { useUserLogin } from '../api/auth/auth';
-import { useAuthStore } from '../store/authStore';
+import {StackScreenProps} from '@react-navigation/stack';
+import {useUserLogin} from '../api/auth/auth';
+import {useAuthStore} from '../store/authStore';
 
 type Props = StackScreenProps<any, 'Login'>;
 
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const [data, setData] = useState({ email: '', password: '' });
-  const { mutate: login } = useUserLogin();
+const LoginScreen: React.FC<Props> = ({navigation}) => {
+  const [data, setData] = useState({email: '', password: ''});
+  const {mutate: login} = useUserLogin();
   const saveToken = useAuthStore(state => state.saveToken);
 
   const handleChange = (field: keyof typeof data, value: string) => {
-    setData(prev => ({ ...prev, [field]: value }));
+    setData(prev => ({...prev, [field]: value}));
   };
 
   const handleSubmit = async () => {
@@ -32,7 +32,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
     login(data, {
-      onSuccess: async ({ token }) => {
+      onSuccess: async ({token}) => {
         if (!token) {
           Alert.alert('Error', 'No token received.');
           return;
@@ -53,16 +53,13 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     <ImageBackground
       source={require('../assets/image/backgroundimage.png')}
       style={styles.background}
-      resizeMode="cover"
-    >
+      resizeMode="cover">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.flex}
-      >
+        style={styles.flex}>
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
-        >
+          keyboardShouldPersistTaps="handled">
           <View style={styles.content}>
             <Text style={styles.loginTitle}>👤 Login</Text>
 
@@ -88,17 +85,26 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
             <TouchableOpacity>
               <Text style={styles.forgotText}>
-                Forget Password? <Text style={styles.resetLink} onPress={handleResetPassword}>Reset password</Text>
+                Forget Password?{' '}
+                <Text style={styles.resetLink} onPress={handleResetPassword}>
+                  Reset password
+                </Text>
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.loginButton}>
-              <Text style={styles.loginButtonText} onPress={handleSubmit}>Log In</Text>
+              <Text style={styles.loginButtonText} onPress={handleSubmit}>
+                Log In
+              </Text>
             </TouchableOpacity>
 
             <Text style={styles.signupText}>
               Don’t have an account?{' '}
-              <Text style={styles.signupLink} onPress={() => (navigation as any).navigate('SignUp')}>Sign Up</Text>
+              <Text
+                style={styles.signupLink}
+                onPress={() => (navigation as any).navigate('SignUp')}>
+                Sign Up
+              </Text>
             </Text>
           </View>
         </ScrollView>

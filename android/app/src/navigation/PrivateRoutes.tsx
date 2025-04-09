@@ -1,14 +1,12 @@
 import React, {useState} from 'react';
-
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
-
 import {BottomNavigation} from 'react-native-paper';
-
 import {SettingScreen} from '../screens/SettingScreen';
 import ReelsScreen from '../screens/ReelsScreen';
+import {ProfileScreen} from '../screens/ProfileScreen';
 
-type RouteKey = 'home' | 'map' | 'reels' | 'setting';
+type RouteKey = 'home' | 'map' | 'reels' | 'setting' | 'account';
 
 type Route = {
   key: RouteKey;
@@ -44,6 +42,11 @@ export const PrivateRoutes: React.FC = () => {
       focusedIcon: 'cog',
       unfocusedIcon: 'cog-outline',
     },
+    {
+      key: 'account',
+      title: 'Profile',
+      focusedIcon: 'account',
+    },
   ]);
 
   const renderScene = ({route}: {route: Route}) => {
@@ -56,6 +59,8 @@ export const PrivateRoutes: React.FC = () => {
         return <ReelsScreen isActive={index === 2} />;
       case 'setting':
         return <SettingScreen />;
+      case 'account':
+        return <ProfileScreen />;
       default:
         return null;
     }
