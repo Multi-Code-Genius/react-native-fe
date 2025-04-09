@@ -3,7 +3,7 @@ import {WebView} from 'react-native-webview';
 import {ActivityIndicator, Platform, StyleSheet, View} from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import {getDistance, isPointWithinRadius} from 'geolib';
-import {Button} from 'react-native-paper';
+import {Button, IconButton, MD3Colors} from 'react-native-paper';
 
 const LEAFLET_HTML_SOURCE = Platform.select({
   android: {uri: 'file:///android_asset/map.html'},
@@ -17,9 +17,7 @@ const DEFAULT_PROPS = {
   locations: [],
   layers: [
     {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      baseLayerIsChecked: true,
+      baseLayerIsChecked: false,
       baseLayerName: 'OpenStreetMap Dark',
       url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
     },
@@ -248,7 +246,12 @@ const MapCompo: React.FC<MapCompoProps> = ({
         {...webViewProps}
       />
       {showUpdateButton && (
-        <Button onPress={updateLocation}>{buttonTitle}</Button>
+        <IconButton
+          style={{width: '10%', position: 'absolute', right: 0, margin: 10}}
+          icon="crosshairs-gps"
+          onPress={updateLocation}
+          mode="contained-tonal"
+        />
       )}
     </View>
   );

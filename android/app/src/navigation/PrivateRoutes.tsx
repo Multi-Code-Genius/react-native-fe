@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
-import { BottomNavigation, BottomNavigationProps } from 'react-native-paper';
+import React, {useState} from 'react';
+
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
-import { SettingScreen } from '../screens/SettingScreen';
 
-type RouteKey = 'home' | 'map' | 'setting';
+import {BottomNavigation} from 'react-native-paper';
+
+import {SettingScreen} from '../screens/SettingScreen';
+import ReelsScreen from '../screens/ReelsScreen';
+
+type RouteKey = 'home' | 'map' | 'reels' | 'setting';
 
 type Route = {
   key: RouteKey;
@@ -29,25 +33,41 @@ export const PrivateRoutes: React.FC = () => {
       unfocusedIcon: 'map-outline',
     },
     {
+      key: 'reels',
+      title: 'Reels',
+      focusedIcon: 'play-box-multiple',
+      unfocusedIcon: 'play-box-multiple-outline',
+    },
+    {
       key: 'setting',
       title: 'Setting',
       focusedIcon: 'cog',
-      unfocusedIcon: 'setting-outline',
+      unfocusedIcon: 'cog-outline',
     },
   ]);
 
-  const renderScene = BottomNavigation.SceneMap({
-    home: HomeScreen,
-    map: MapScreen,
-    setting: SettingScreen,
-  });
+  const renderScene = ({route}: {route: Route}) => {
+    switch (route.key) {
+      case 'home':
+        return <HomeScreen />;
+      case 'map':
+        return <MapScreen />;
+      case 'reels':
+        return <ReelsScreen isActive={index === 2} />;
+      case 'setting':
+        return <SettingScreen />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <BottomNavigation
-      navigationState={{ index, routes }}
+      navigationState={{index, routes}}
       onIndexChange={setIndex}
       renderScene={renderScene}
       inactiveColor="gray"
+      shifting
     />
   );
 };
