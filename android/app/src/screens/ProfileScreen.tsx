@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Alert, PermissionsAndroid, Platform, View} from 'react-native';
 import {Button, ActivityIndicator} from 'react-native-paper';
 import {launchImageLibrary} from 'react-native-image-picker';
-import {useUploadVideos} from '../api/user';
+import {useUploadVideos} from '../api/user/user';
 import {Text} from 'react-native';
 
 export function ProfileScreen() {

@@ -59,3 +59,20 @@ export interface ResetPasswordLinkParams {
 export interface ResetPasswordLinkResponse {
   message: string;
 }
+
+export type AuthState = {
+  isAuthenticated: boolean;
+  logout: () => Promise<void>;
+  saveToken: (token: string) => Promise<void>;
+  initializeAuth: () => Promise<void>;
+  removeToken: () => void;
+};
+
+export interface UserType {}
+
+export interface UserState {
+  userData: UserType | null;
+  setUserData: (data: UserType) => void;
+  loadUserData: () => Promise<void>;
+  clearUserData: () => void;
+}

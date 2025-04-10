@@ -1,13 +1,6 @@
 import {create} from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-type AuthState = {
-  isAuthenticated: boolean;
-  logout: () => Promise<void>;
-  saveToken: (token: string) => Promise<void>;
-  initializeAuth: () => Promise<void>;
-  removeToken: () => void;
-};
+import {AuthState} from '../types/auth';
 
 export const useAuthStore = create<AuthState>(set => {
   const loadAuthState = async () => {

@@ -75,15 +75,11 @@ export const resetPassword = async (
   data: ResetPasswordParams,
 ): Promise<ResetPasswordResponse> => {
   try {
-    const response = await api(
-      '/api/auth/new-password',
-      {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data),
-      },
-      true,
-    );
+    const response = await api('/api/auth/new-password', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data),
+    });
 
     const resp = await response;
     return resp;

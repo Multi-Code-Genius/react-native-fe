@@ -1,13 +1,21 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useAuthStore} from '../store/authStore';
 import {Button, Dialog, Portal, Text} from 'react-native-paper';
+import {useUserStore} from '../store/userStore';
+import {useUserInfo} from '../api/user/user';
 
 const HomeScreen = () => {
-  const logout = useAuthStore(state => state.logout);
+  const {logout} = useAuthStore();
   const [visible, setVisible] = React.useState(false);
-
   const showDialog = () => setVisible(true);
+  const {data} = useUserInfo();
+  const {loadUserData, setUserData} = useUserStore();
+
+  useEffect(() => {
+    setUserData(data?.user);
+    loadUserData();
+  }, []);
 
   const hideDialog = () => setVisible(false);
 

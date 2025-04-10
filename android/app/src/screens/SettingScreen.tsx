@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {Text, View, ScrollView, TextInput} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useAuthStore} from '../store/authStore';
-import {userInfoData, useUpdateUserInfo} from '../api/user';
-import {Button, Icon, IconButton} from 'react-native-paper';
+import {userInfoData, useUpdateUserInfo} from '../api/user/user';
+import {Button, IconButton} from 'react-native-paper';
 import isEqual from 'lodash/isEqual';
 import {pickBy} from 'lodash';
 

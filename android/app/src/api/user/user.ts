@@ -1,5 +1,5 @@
-import {useMutation} from '@tanstack/react-query';
-import {api} from '../hooks/api';
+import {useMutation, useQuery} from '@tanstack/react-query';
+import {api} from '../../hooks/api';
 
 export const userInfoData = async () => {
   try {
@@ -13,6 +13,14 @@ export const userInfoData = async () => {
     console.error('User Response:', error);
     throw new Error(error instanceof Error ? error.message : 'Data Not Found');
   }
+};
+
+export const useUserInfo = () => {
+  return useQuery({
+    queryKey: ['profile'],
+    queryFn: userInfoData,
+    retry: 0,
+  });
 };
 
 export const getAllUser = async () => {

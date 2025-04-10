@@ -1,4 +1,4 @@
-import {useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import {api} from '../../hooks/api';
 
 export const fetchVideos = async () => {
@@ -22,5 +22,26 @@ export const useFetchVideos = () => {
     queryKey: ['videos'],
     queryFn: fetchVideos,
     retry: false,
+  });
+};
+
+export const likeVideo = async (videoId: string) => {
+  try {
+    const response = await api(`/api/video/like/${videoId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return await response;
+  } catch (error) {
+    console.error('Get Video Error:', error);
+    throw new Error(error instanceof Error ? error.message : 'Video Failed');
+  }
+};
+
+export const useLikeVideo = () => {
+  return useMutation({
+    mutationFn: likeVideo,
   });
 };

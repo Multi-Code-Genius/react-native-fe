@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAuthStore} from '../store/authStore';
 import {BASE_URL} from '@env';
 
-const getToken = async (key: string): Promise<string | null> => {
+export const getToken = async (key: string): Promise<string | null> => {
   try {
     return await AsyncStorage.getItem(key);
   } catch (error) {

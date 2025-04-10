@@ -9,18 +9,13 @@ import {
   AppState,
   ActivityIndicator,
   Text,
-  TouchableOpacity,
   Dimensions,
-  TouchableWithoutFeedback,
-  Alert,
 } from 'react-native';
-import Video from 'react-native-video';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useFetchVideos} from '../api/video/video';
-import {Avatar} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useFetchVideos, useLikeVideo} from '../api/video/video';
 import {ReelItem, ReelsScreenProps} from '../types/video';
-import {TapGestureHandler} from 'react-native-gesture-handler';
+import ReelCard from '../components/ReelCard';
+import {useUserStore} from '../store/userStore';
 
 const ReelsScreen: React.FC<ReelsScreenProps> = ({isActive}) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -28,6 +23,10 @@ const ReelsScreen: React.FC<ReelsScreenProps> = ({isActive}) => {
   const flatListRef = useRef<FlatList>(null);
   const {data, isLoading, error} = useFetchVideos();
   const insets = useSafeAreaInsets();
+  const {mutate} = useLikeVideo();
+  const {userData} = useUserStore();
+
+  console.log('userData', userData);
 
   const usableHeight =
     Dimensions.get('window').height - insets.top - insets.bottom;
@@ -66,87 +65,16 @@ const ReelsScreen: React.FC<ReelsScreenProps> = ({isActive}) => {
   );
 
   const renderItem: ListRenderItem<ReelItem> = ({item, index}) => {
-    const videoUrl = item?.videoUrl;
-    const likeCount = item.likes?.length || 0;
-    const commentCount = item.comments?.length || 0;
-    const user = item.user;
-
-    const DOUBLE_PRESS_DELAY = 300;
-
-    const handleDoubleTap = () => {
-      const now = Date.now();
-      if (lastTap.current && now - lastTap.current < DOUBLE_PRESS_DELAY) {
-        Alert.alert('Double Tap Detected');
-      } else {
-        lastTap.current = now;
-      }
-    };
-
-    if (!videoUrl) {
-      return null;
-    }
-
     return (
-      <TapGestureHandler
-        numberOfTaps={2}
-        onActivated={() => {
-          console.log('Double tap!');
-        }}>
-        <View style={[styles.videoContainer, {height: usableHeight}]}>
-          <Video
-            source={{uri: videoUrl}}
-            resizeMode="cover"
-            repeat
-            paused={
-              index !== currentIndex || !isActive || appState !== 'active'
-            }
-            muted={false}
-            style={StyleSheet.absoluteFill}
-            playWhenInactive={false}
-            playInBackground={false}
-            ignoreSilentSwitch="obey"
-          />
-
-          <View style={styles.rightActions}>
-            <TouchableOpacity style={styles.iconWrapper}>
-              <Icon name="heart" size={28} color="red" />
-              <Text style={styles.actionText}>
-                {/* {likeCount} */}
-                1.5M
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.actionButton}>
-              <Icon name="comment-outline" size={28} color="white" />
-              <Text style={styles.actionText}>
-                {/* {commentCount} */}
-                55k
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <Icon name="share" size={28} color="white" />
-              <Text style={styles.actionText}>
-                {/* {commentCount} */}
-                9K
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.bottomInfo}>
-            <View style={styles.userRow}>
-              {user?.profile_pic ? (
-                <Avatar.Image size={32} source={{uri: user.profile_pic}} />
-              ) : (
-                <Avatar.Icon size={32} icon="account" />
-              )}
-              <Text style={styles.userName}>{user?.name}</Text>
-            </View>
-            <Text style={styles.description} numberOfLines={2}>
-              {item.description || 'No description'}
-            </Text>
-          </View>
-        </View>
-      </TapGestureHandler>
+      <ReelCard
+        item={item}
+        index={index}
+        currentIndex={currentIndex}
+        isActive={isActive}
+        appState={appState}
+        usableHeight={usableHeight}
+        onDoubleTap={() => mutate(item.id)}
+      />
     );
   };
 
