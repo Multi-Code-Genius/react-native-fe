@@ -113,13 +113,15 @@ export function SignUpFormScreen() {
                   />
                 </View>
 
-                <TouchableOpacity style={styles.loginButton}>
-                  <Text style={styles.loginButtonText} onPress={handleSignup}>SignUp</Text>
+                <TouchableOpacity style={styles.loginButton} onPress={handleSignup}>
+                  <Text style={styles.loginButtonText} >SignUp</Text>
                 </TouchableOpacity>
 
                 <Text style={styles.signupText}>
                   Already have an account?
-                  <Text style={styles.signupLink} onPress={() => (navigation as any).navigate('Login')}> Log In</Text>
+                  <TouchableOpacity>
+                    <Text style={styles.signupLink} onPress={() => (navigation as any).navigate('Login')}> Log In</Text>
+                  </TouchableOpacity>
                 </Text>
               </View>
 

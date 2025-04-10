@@ -96,18 +96,23 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
               style={styles.input}
               secureTextEntry
             />
-            <TouchableOpacity>
-              <Text style={styles.forgotText}>
-                Forget Password? <Text style={styles.resetLink} onPress={handleResetPassword}>Reset password</Text>
-              </Text>
-            </TouchableOpacity>
+            <View className='flex justify-center'>
+              <TouchableOpacity>
+                <Text style={styles.forgotText}>
+                  Forget Password? <TouchableOpacity onPress={handleResetPassword}><Text style={styles.resetLink} >Reset password</Text></TouchableOpacity>
+                </Text>
+              </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity style={styles.loginButton}>
-              <Text style={styles.loginButtonText} onPress={handleSubmit}>Log In</Text>
+
+            <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
+              <Text style={styles.loginButtonText} >Log In</Text>
             </TouchableOpacity>
             <Text style={styles.signupText}>
               Don’t have an account?
-              <Text style={styles.signupLink} onPress={() => (navigation as any).navigate('SignUp')}>Sign Up</Text>
+              <TouchableOpacity>
+                <Text style={styles.signupLink} onPress={() => (navigation as any).navigate('SignUp')}>Sign Up</Text>
+              </TouchableOpacity>
             </Text>
           </Animated.View>
         </ScrollView>
@@ -164,6 +169,7 @@ const styles = StyleSheet.create({
   resetLink: {
     textDecorationLine: 'underline',
     fontWeight: 'bold',
+    color: '#fff'
   },
   loginButton: {
     backgroundColor: '#fff',

@@ -57,8 +57,8 @@ const ResetPassword1 = () => {
                             />
                         </View>
 
-                        <TouchableOpacity style={styles.button}>
-                            <Text style={styles.loginButtonText} onPress={handleSubmit}>Send Reset Password Link</Text>
+                        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                            <Text style={styles.loginButtonText} >Send Reset Password Link</Text>
                         </TouchableOpacity>
                     </View>
                 </Animated.View>
