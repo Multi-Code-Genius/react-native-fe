@@ -1,5 +1,6 @@
 import {useMutation} from '@tanstack/react-query';
 import {api} from '../hooks/api';
+import {Alert} from 'react-native';
 
 export const userInfoData = async () => {
   try {
@@ -47,6 +48,38 @@ export const useUpdateUserInfo = () => {
     },
     onError: error => {
       console.error('Failed to update user:', error);
+    },
+  });
+};
+
+export const uploadVideo = async (data: FormData) => {
+  try {
+    const response = await api(
+      '/api/video/upload-video',
+      {
+        method: 'POST',
+        body: data,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+      true,
+    );
+    return response;
+  } catch (error) {
+    console.error('Cannot upload video', error);
+    throw new Error(error instanceof Error ? error.message : 'Upload failed');
+  }
+};
+
+export const useUploadVideos = () => {
+  return useMutation({
+    mutationFn: uploadVideo,
+    onSuccess: data => {
+      console.log(' Video Uploaded:', data);
+    },
+    onError: error => {
+      console.error(' Failed to upload video:', error);
     },
   });
 };

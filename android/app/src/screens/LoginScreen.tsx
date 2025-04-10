@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -11,19 +11,18 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import { StackScreenProps } from '@react-navigation/stack';
-import { useUserLogin } from '../api/auth/auth';
-import { useAuthStore } from '../store/authStore';
-import { Animated } from 'react-native';
+import {StackScreenProps} from '@react-navigation/stack';
+import {useUserLogin} from '../api/auth/auth';
+import {useAuthStore} from '../store/authStore';
+import {Animated} from 'react-native';
 
 type Props = StackScreenProps<any, 'Login'>;
 
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const [data, setData] = useState({ email: '', password: '' });
-  const { mutate: login } = useUserLogin();
+const LoginScreen: React.FC<Props> = ({navigation}) => {
+  const [data, setData] = useState({email: '', password: ''});
+  const {mutate: login} = useUserLogin();
   const saveToken = useAuthStore(state => state.saveToken);
   const slideAnim = useRef(new Animated.Value(500)).current;
-
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -34,9 +33,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     }).start();
   }, []);
 
-
   const handleChange = (field: keyof typeof data, value: string) => {
-    setData(prev => ({ ...prev, [field]: value }));
+    setData(prev => ({...prev, [field]: value}));
   };
 
   const handleSubmit = async () => {
@@ -45,7 +43,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
     login(data, {
-      onSuccess: async ({ token }) => {
+      onSuccess: async ({token}) => {
         if (!token) {
           Alert.alert('Error', 'No token received.');
           return;
@@ -66,17 +64,15 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     <ImageBackground
       source={require('../assets/image/backgroundimage.png')}
       style={styles.background}
-      resizeMode="cover"
-    >
+      resizeMode="cover">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.flex}
-      >
+        style={styles.flex}>
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Animated.View style={[styles.content, { transform: [{ translateY: slideAnim }] }]}>
+          keyboardShouldPersistTaps="handled">
+          <Animated.View
+            style={[styles.content, {transform: [{translateY: slideAnim}]}]}>
             <Text style={styles.loginTitle}>👤 Login</Text>
             <Text style={styles.label}>Your email address</Text>
             <TextInput
@@ -96,22 +92,28 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
               style={styles.input}
               secureTextEntry
             />
-            <View className='flex justify-center'>
+            <View className="flex justify-center">
               <TouchableOpacity>
                 <Text style={styles.forgotText}>
-                  Forget Password? <TouchableOpacity onPress={handleResetPassword}><Text style={styles.resetLink} >Reset password</Text></TouchableOpacity>
+                  Forget Password?{' '}
+                  <TouchableOpacity onPress={handleResetPassword}>
+                    <Text style={styles.resetLink}>Reset password</Text>
+                  </TouchableOpacity>
                 </Text>
               </TouchableOpacity>
             </View>
 
-
             <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
-              <Text style={styles.loginButtonText} >Log In</Text>
+              <Text style={styles.loginButtonText}>Log In</Text>
             </TouchableOpacity>
             <Text style={styles.signupText}>
               Don’t have an account?
               <TouchableOpacity>
-                <Text style={styles.signupLink} onPress={() => (navigation as any).navigate('SignUp')}>Sign Up</Text>
+                <Text
+                  style={styles.signupLink}
+                  onPress={() => (navigation as any).navigate('SignUp')}>
+                  Sign Up
+                </Text>
               </TouchableOpacity>
             </Text>
           </Animated.View>
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
   resetLink: {
     textDecorationLine: 'underline',
     fontWeight: 'bold',
-    color: '#fff'
+    color: '#fff',
   },
   loginButton: {
     backgroundColor: '#fff',
