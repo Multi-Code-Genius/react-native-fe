@@ -92,29 +92,25 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
               style={styles.input}
               secureTextEntry
             />
-            <View className="flex justify-center">
-              <TouchableOpacity>
-                <Text style={styles.forgotText}>
-                  Forget Password?{' '}
-                  <TouchableOpacity onPress={handleResetPassword}>
-                    <Text style={styles.resetLink}>Reset password</Text>
-                  </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={styles.forgotText}>
+                Forget Password?{' '}
+                <Text style={styles.resetLink} onPress={handleResetPassword}>
+                  Reset password
                 </Text>
-              </TouchableOpacity>
-            </View>
+              </Text>
+            </TouchableOpacity>
 
             <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
               <Text style={styles.loginButtonText}>Log In</Text>
             </TouchableOpacity>
             <Text style={styles.signupText}>
               Don’t have an account?
-              <TouchableOpacity>
-                <Text
-                  style={styles.signupLink}
-                  onPress={() => (navigation as any).navigate('SignUp')}>
-                  Sign Up
-                </Text>
-              </TouchableOpacity>
+              <Text
+                style={styles.signupLink}
+                onPress={() => (navigation as any).navigate('SignUp')}>
+                Sign Up
+              </Text>
             </Text>
           </Animated.View>
         </ScrollView>

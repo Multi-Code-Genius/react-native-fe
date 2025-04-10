@@ -118,7 +118,6 @@ const ReelsScreen: React.FC<ReelsScreenProps> = ({isActive}) => {
   }
 
   return (
-    // <SafeAreaView style={styles.container}>
     <FlatList
       ref={flatListRef}
       data={videoData}
@@ -136,7 +135,6 @@ const ReelsScreen: React.FC<ReelsScreenProps> = ({isActive}) => {
       windowSize={3}
       removeClippedSubviews={true}
     />
-    // </SafeAreaView>
   );
 };
 

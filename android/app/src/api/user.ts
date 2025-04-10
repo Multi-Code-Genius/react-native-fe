@@ -20,6 +20,24 @@ export const userInfoData = async () => {
   }
 };
 
+export const getAllUser = async () => {
+  try {
+    const response = await api(
+      '/api/user/all-user',
+      {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'},
+      },
+      true,
+    );
+    const resp = await response;
+    return resp;
+  } catch (error) {
+    console.error('User Response:', error);
+    throw new Error(error instanceof Error ? error.message : 'Data Not Found');
+  }
+};
+
 export const updateUserInfo = async (data: any) => {
   try {
     const response = await api(
