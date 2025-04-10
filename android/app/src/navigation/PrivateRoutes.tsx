@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
-import {BottomNavigation} from 'react-native-paper';
+import {BottomNavigation, useTheme} from 'react-native-paper';
 import {SettingScreen} from '../screens/SettingScreen';
 import ReelsScreen from '../screens/ReelsScreen';
 import {ProfileScreen} from '../screens/ProfileScreen';
@@ -17,6 +17,7 @@ type Route = {
 
 export const PrivateRoutes: React.FC = () => {
   const [index, setIndex] = useState<number>(0);
+  const theme = useTheme();
   const [routes] = useState<Route[]>([
     {
       key: 'home',
@@ -71,8 +72,15 @@ export const PrivateRoutes: React.FC = () => {
       navigationState={{index, routes}}
       onIndexChange={setIndex}
       renderScene={renderScene}
-      inactiveColor="gray"
-      shifting
+      inactiveColor="#B3B3B3"
+      activeColor="#fff"
+      activeIndicatorStyle={{backgroundColor: 'none'}}
+      theme={theme}
+      barStyle={{
+        backgroundColor: '#121212',
+        borderTopColor: '#282828',
+        borderTopWidth: 1,
+      }}
     />
   );
 };
