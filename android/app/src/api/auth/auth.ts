@@ -8,7 +8,6 @@ import {
   ResetPasswordLinkResponse,
   ResetPasswordParams,
   ResetPasswordResponse,
-  RootStackParamList,
   SignupParams,
   SignupResponse,
 } from '../../types/auth';
@@ -18,15 +17,11 @@ import {AuthStackParamList} from '../../types/navigation';
 
 export const userLogin = async (data: LoginParams): Promise<LoginResponse> => {
   try {
-    const response = await api(
-      '/api/auth/login',
-      {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data),
-      },
-      true,
-    );
+    const response = await api('/api/auth/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data),
+    });
     const resp = await response;
     return resp;
   } catch (error) {
@@ -50,15 +45,11 @@ export const userSignup = async (
   data: SignupParams,
 ): Promise<SignupResponse> => {
   try {
-    const response = await api(
-      '/api/auth/signup',
-      {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data),
-      },
-      true,
-    );
+    const response = await api('/api/auth/signup', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data),
+    });
     const resp = await response;
     return resp;
   } catch (error) {
@@ -123,15 +114,11 @@ export const resetPasswordLink = async (
   data: ResetPasswordLinkParams,
 ): Promise<ResetPasswordLinkResponse> => {
   try {
-    const response = await api(
-      '/api/auth/reset-password',
-      {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data),
-      },
-      true,
-    );
+    const response = await api('/api/auth/reset-password', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data),
+    });
     const resp = await response;
     return resp;
   } catch (error) {
@@ -141,12 +128,8 @@ export const resetPasswordLink = async (
 };
 
 export const useResetPasswordLink = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
   return useMutation({
     mutationFn: resetPasswordLink,
     onSuccess: () => {},
-    onError: error => {},
   });
 };

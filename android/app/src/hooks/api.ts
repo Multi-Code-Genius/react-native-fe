@@ -19,11 +19,7 @@ const removeToken = async (key: string) => {
   }
 };
 
-export const api = async (
-  endpoint: string,
-  config: any = {},
-  isLogin: boolean,
-) => {
+export const api = async (endpoint: string, config: any = {}) => {
   const {body, headers = {}, ...customConfig} = config;
 
   const accessToken = await getToken('accessToken');

@@ -1,17 +1,12 @@
 import {useMutation} from '@tanstack/react-query';
 import {api} from '../hooks/api';
-import {Alert} from 'react-native';
 
 export const userInfoData = async () => {
   try {
-    const response = await api(
-      '/api/user',
-      {
-        method: 'GET',
-        headers: {'Content-Type': 'application/json'},
-      },
-      true,
-    );
+    const response = await api('/api/user', {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'},
+    });
     const resp = await response;
     return resp;
   } catch (error) {
@@ -22,14 +17,10 @@ export const userInfoData = async () => {
 
 export const getAllUser = async () => {
   try {
-    const response = await api(
-      '/api/user/all-user',
-      {
-        method: 'GET',
-        headers: {'Content-Type': 'application/json'},
-      },
-      true,
-    );
+    const response = await api('/api/user/all-user', {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'},
+    });
     const resp = await response;
     return resp;
   } catch (error) {
@@ -40,17 +31,13 @@ export const getAllUser = async () => {
 
 export const updateUserInfo = async (data: any) => {
   try {
-    const response = await api(
-      '/api/user/update',
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+    const response = await api('/api/user/update', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      true,
-    );
+      body: JSON.stringify(data),
+    });
     return await response;
   } catch (error) {
     console.error('Update User Error:', error);
@@ -72,17 +59,13 @@ export const useUpdateUserInfo = () => {
 
 export const uploadVideo = async (data: FormData) => {
   try {
-    const response = await api(
-      '/api/video/upload-video',
-      {
-        method: 'POST',
-        body: data,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+    const response = await api('/api/video/upload-video', {
+      method: 'POST',
+      body: data,
+      headers: {
+        'Content-Type': 'multipart/form-data',
       },
-      true,
-    );
+    });
     return response;
   } catch (error) {
     console.error('Cannot upload video', error);
