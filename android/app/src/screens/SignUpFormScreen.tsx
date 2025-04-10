@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Alert,
   ImageBackground,
@@ -8,30 +8,42 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { Text, TextInput, View } from 'react-native';
-import Ionicons from 'react-native-vector-icons/MaterialIcons';
-import { useUserSignup } from '../api/auth/auth';
-import { useNavigation } from '@react-navigation/native';
-import { useAuthStore } from '../store/authStore';
+import {Text, TextInput, View} from 'react-native';
+import {Animated} from 'react-native';
+import {useUserSignup} from '../api/auth/auth';
+import {useNavigation} from '@react-navigation/native';
+import {useAuthStore} from '../store/authStore';
 
 export function SignUpFormScreen() {
   const navigation = useNavigation();
-  const [data, setData] = useState({ name: '', email: '', password: '' });
-  const { mutate: signup } = useUserSignup();
+  const [data, setData] = useState({name: '', email: '', password: ''});
+  const {mutate: signup} = useUserSignup();
   const saveToken = useAuthStore(state => state.saveToken);
+  const slideAnim = useRef(new Animated.Value(500)).current;
+
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 800,
+      delay: 100,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   const handleChange = (field: keyof typeof data, value: string) => {
-    setData(prev => ({ ...prev, [field]: value }));
+    setData(prev => ({...prev, [field]: value}));
   };
 
   const handleSignup = async () => {
-    const { name, email, password } = data;
+    const {name, email, password} = data;
+    console.log('trigger');
 
     if (!name || !email || !password) {
       Alert.alert('Validation', 'All fields are required.');
       return;
     }
     signup(data, {
-      onSuccess: async ({ token }) => {
+      onSuccess: async ({token}) => {
         if (!token) {
           Alert.alert('Error', 'No token received.');
           return;
@@ -47,17 +59,16 @@ export function SignUpFormScreen() {
   return (
     <ImageBackground
       source={require('../assets/image/backgroundimage1.png')}
-      style={{ flex: 1, backgroundColor: '#4754ccef' }}
-      resizeMode="cover"
-    >
+      style={{flex: 1, backgroundColor: '#4754ccef'}}
+      resizeMode="cover">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className="flex-1  justify-center">
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.content}>
+          keyboardShouldPersistTaps="handled">
+          <Animated.View
+            style={[styles.content, {transform: [{translateY: slideAnim}]}]}>
             <View className="flex justify-center items-center h-fit w-full">
               <View className="flex-row gap-5 items-center">
                 <Text style={styles.loginTitle}>👤 Signup</Text>
@@ -101,24 +112,31 @@ export function SignUpFormScreen() {
                   />
                 </View>
 
-                <TouchableOpacity style={styles.loginButton}>
-                  <Text style={styles.loginButtonText} onPress={handleSignup}>SignUp</Text>
+                <TouchableOpacity
+                  style={styles.loginButton}
+                  onPress={handleSignup}>
+                  <Text style={styles.loginButtonText}>SignUp</Text>
                 </TouchableOpacity>
 
                 <Text style={styles.signupText}>
                   Already have an account?
-                  <Text style={styles.signupLink} onPress={() => (navigation as any).navigate('Login')}> Log In</Text>
+                  <TouchableOpacity>
+                    <Text
+                      style={styles.signupLink}
+                      onPress={() => (navigation as any).navigate('Login')}>
+                      {' '}
+                      Log In
+                    </Text>
+                  </TouchableOpacity>
                 </Text>
               </View>
-
             </View>
-          </View>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </ImageBackground>
   );
 }
-
 
 const styles = StyleSheet.create({
   flex: {
