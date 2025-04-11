@@ -1,4 +1,3 @@
-// components/ReelCard.tsx
 import React, {useRef, useState} from 'react';
 import {
   View,
@@ -6,15 +5,14 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  InteractionManager,
 } from 'react-native';
 import Video from 'react-native-video';
 import {Avatar} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {TapGestureHandler} from 'react-native-gesture-handler';
+import RBSheet from 'react-native-raw-bottom-sheet';
 import {ReelItem} from '../types/video';
-import CommentSheet from '../components/CommentSheet';
-import {BottomSheetMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
+import CommentSheet from './CommentSheet';
 
 interface Props {
   item: ReelItem;
@@ -39,7 +37,7 @@ const ReelCard: React.FC<Props> = ({
   const likeCount = item.likes?.length || 0;
   const commentCount = item.comments?.length || 0;
   const user = item.user;
-  const commentSheetRef = useRef<BottomSheetMethods>(null);
+  const commentSheetRef = useRef<RBSheet>(null);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -48,10 +46,7 @@ const ReelCard: React.FC<Props> = ({
   }
 
   const openCommentSheet = () => {
-    console.log('Opening comment sheet');
-    InteractionManager.runAfterInteractions(() => {
-      commentSheetRef.current?.expand();
-    });
+    commentSheetRef.current?.open();
   };
 
   return (
@@ -109,7 +104,25 @@ const ReelCard: React.FC<Props> = ({
             {item.description || 'No description'}
           </Text>
         </View>
-        <CommentSheet ref={commentSheetRef} />
+
+        <RBSheet
+          ref={commentSheetRef}
+          draggable
+          closeOnPressBack
+          closeOnPressMask
+          height={500}
+          customStyles={{
+            wrapper: {
+              backgroundColor: 'rgba(0,0,0,0.5)',
+            },
+            container: {
+              backgroundColor: '#1a1a1a',
+              borderTopLeftRadius: 16,
+              borderTopRightRadius: 16,
+            },
+          }}>
+          <CommentSheet />
+        </RBSheet>
       </View>
     </TapGestureHandler>
   );
