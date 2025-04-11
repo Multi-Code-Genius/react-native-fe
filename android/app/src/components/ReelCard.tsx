@@ -1,4 +1,4 @@
-import React, {useRef, useState, useMemo, useCallback} from 'react';
+import React, { useRef, useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,18 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Video from 'react-native-video';
-import {Avatar} from 'react-native-paper';
+import { Avatar } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
-import {ReelItem} from '../types/video';
-
-import {useUserStore} from '../store/userStore';
-import {videoStore} from '../store/videoStore';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { ReelItem } from '../types/video';
+import { TapGestureHandler } from 'react-native-gesture-handler';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import { ReelItemProps } from '../types/video';
+import CommentSheet from './CommentSheet';
+import { useUserStore } from '../store/userStore';
+import { videoStore } from '../store/videoStore';
+import { useNavigation } from '@react-navigation/native';
 
 const ReelCard: React.FC<ReelItemProps> = ({
   item,
@@ -29,10 +33,10 @@ const ReelCard: React.FC<ReelItemProps> = ({
   const likeCount = item.likes?.length || 0;
   const commentCount = item.comments?.length || 0;
   const user = item.user;
-
-  const {videoLikeStatus} = videoStore();
-  const {userData} = useUserStore();
-
+  const commentSheetRef = useRef(null);
+  const { videoLikeStatus } = videoStore();
+  const { userData } = useUserStore();
+  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['25%', '50%'], []);
@@ -45,11 +49,15 @@ const ReelCard: React.FC<ReelItemProps> = ({
 
   if (!videoUrl) return null;
 
+  const handleSubmit = (id: string | undefined) => {
+    (navigation as any).navigate('UserProfile', { id });
+  };
+
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
-      <View style={[styles.videoContainer, {height: usableHeight}]}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={[styles.videoContainer, { height: usableHeight }]}>
         <Video
-          source={{uri: videoUrl}}
+          source={{ uri: videoUrl }}
           resizeMode="cover"
           repeat
           paused={index !== currentIndex || !isActive || appState !== 'active'}
@@ -77,16 +85,15 @@ const ReelCard: React.FC<ReelItemProps> = ({
               size={28}
               color={
                 userData?.id &&
-                (videoLikeStatus.includes(item.id) ||
-                  (item.likes.length > 0 &&
-                    item.likes.some(like => like.userId === userData.id)))
+                  (videoLikeStatus.includes(item.id) ||
+                    (item.likes.length > 0 &&
+                      item.likes.some(like => like.userId === userData.id)))
                   ? 'red'
                   : 'white'
               }
             />
             <Text style={styles.actionText}>{likeCount}</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
             style={styles.actionButton}
             onPress={openCommentSheet}>
@@ -103,11 +110,13 @@ const ReelCard: React.FC<ReelItemProps> = ({
         <View style={styles.bottomInfo}>
           <View style={styles.userRow}>
             {user?.profile_pic ? (
-              <Avatar.Image size={32} source={{uri: user.profile_pic}} />
+              <Avatar.Image size={32} source={{ uri: user.profile_pic }} />
             ) : (
               <Avatar.Icon size={32} icon="account" />
             )}
-            <Text style={styles.userName}>{user?.name}</Text>
+            <TouchableOpacity onPress={() => handleSubmit(user?.id)}>
+              <Text style={styles.userName}>{user?.name}</Text>
+            </TouchableOpacity>
           </View>
           <Text style={styles.description} numberOfLines={2}>
             {item.description || 'No description'}

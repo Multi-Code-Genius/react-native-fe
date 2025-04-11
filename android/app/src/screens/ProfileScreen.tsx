@@ -1,15 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import {View, Image, Text, Alert, FlatList} from 'react-native';
-import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
-import {useAuthStore} from '../store/authStore';
-import {IconButton} from 'react-native-paper';
-import {launchImageLibrary} from 'react-native-image-picker';
-import {useUploadImage} from '../api/image/image';
-import {userInfoData} from '../api/user/user';
-import {useUserStore} from '../store/userStore';
-import {TouchableOpacity} from 'react-native';
-import {Dimensions} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import React, { useEffect, useState } from 'react';
+import { View, Image, Text, Alert, FlatList } from 'react-native';
+import { VideoUploaderComponent } from '../components/VideoUploaderComponent';
+import { useAuthStore } from '../store/authStore';
+import { IconButton } from 'react-native-paper';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { useUploadImage } from '../api/image/image';
+import { userInfoData } from '../api/user/user';
+import { TouchableOpacity } from 'react-native';
+import { Dimensions } from 'react-native';
 
 export function ProfileScreen() {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
@@ -49,7 +47,7 @@ export function ProfileScreen() {
   );
 
   const handleMediaPick = () => {
-    launchImageLibrary({mediaType: 'photo'}, response => {
+    launchImageLibrary({ mediaType: 'photo' }, response => {
       if (response.didCancel || !response.assets?.length) return;
 
       const asset = response.assets[0];
@@ -75,20 +73,19 @@ export function ProfileScreen() {
         <View className="relative w-32 h-32">
           <View className="w-full h-full rounded-full border-4 border-gray-100 overflow-hidden">
             <Image
-              source={{uri: userData?.profile_pic}}
+              source={{ uri: userData?.profile_pic }}
               className="w-full h-full"
               resizeMode="cover"
             />
           </View>
-
-          <View className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow-md">
+          <View className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-md">
             <IconButton
               icon="plus"
               size={16}
               onPress={handleMediaPick}
               iconColor="#000"
               containerColor="#fff"
-              style={{margin: 0}}
+              style={{ margin: 0 }}
             />
           </View>
         </View>
@@ -122,13 +119,13 @@ export function ProfileScreen() {
             data={userData?.videos}
             keyExtractor={item => item.id}
             numColumns={3}
-            contentContainerStyle={{paddingBottom: 60}}
+            contentContainerStyle={{ paddingBottom: 60 }}
             showsVerticalScrollIndicator={false}
             columnWrapperStyle={{
               justifyContent: 'space-between',
               marginBottom: 10,
             }}
-            renderItem={({item}) => {
+            renderItem={({ item }) => {
               console.log('item', item);
               const screenWidth = Dimensions.get('window').width;
               const boxSize = (screenWidth - 48) / 3;
@@ -149,8 +146,8 @@ export function ProfileScreen() {
                   }}>
                   {item.thumbnail ? (
                     <Image
-                      source={{uri: item.thumbnail}}
-                      style={{width: '100%', height: '100%', borderRadius: 8}}
+                      source={{ uri: item.thumbnail }}
+                      style={{ width: '100%', height: '100%', borderRadius: 8 }}
                       resizeMode="cover"
                     />
                   ) : (

@@ -95,3 +95,25 @@ export const useUploadVideos = () => {
     },
   });
 };
+
+export const getUserById = async (id: string) => {
+  try {
+    const response = await api(`/api/user/${id}`, {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'},
+      cache: 'no-store',
+    });
+    const resp = await response;
+    return resp;
+  } catch (error) {
+    console.error('User Response:', error);
+    throw new Error(error instanceof Error ? error.message : 'Data Not Found');
+  }
+};
+
+export const useUserByIdMutation = () => {
+  return useMutation({
+    mutationKey: ['userById'],
+    mutationFn: (id: string) => getUserById(id),
+  });
+};
