@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Image, Text, Alert} from 'react-native';
+import {View, Image, Text, Alert, FlatList} from 'react-native';
 import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
 import {useAuthStore} from '../store/authStore';
 import {IconButton} from 'react-native-paper';
@@ -7,6 +7,9 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {useUploadImage} from '../api/image/image';
 import {userInfoData} from '../api/user/user';
 import {useUserStore} from '../store/userStore';
+import {TouchableOpacity} from 'react-native';
+import {Dimensions} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 export function ProfileScreen() {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
@@ -20,6 +23,7 @@ export function ProfileScreen() {
       console.log('Error fetching user data', err);
     }
   };
+  console.log('userData===??', userData);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -103,7 +107,7 @@ export function ProfileScreen() {
       </View>
 
       <View className=" h-[1px] bg-gray-300 w-full" />
-      <View className="flex">
+      <View className="flex-1 overflow-hidden">
         <View className="flex flex-row justify-center items-center">
           <IconButton
             icon="grid"
@@ -113,7 +117,52 @@ export function ProfileScreen() {
           />
           <Text className="text-[17px] font-semibold">Posts</Text>
         </View>
-        <View></View>
+        <View className="mt-4">
+          <FlatList
+            data={userData?.videos}
+            keyExtractor={item => item.id}
+            numColumns={3}
+            contentContainerStyle={{paddingBottom: 60}}
+            showsVerticalScrollIndicator={false}
+            columnWrapperStyle={{
+              justifyContent: 'space-between',
+              marginBottom: 10,
+            }}
+            renderItem={({item}) => {
+              console.log('item', item);
+              const screenWidth = Dimensions.get('window').width;
+              const boxSize = (screenWidth - 48) / 3;
+              const boxSizeHeight = (screenWidth - 48) / 2;
+
+              return (
+                <TouchableOpacity
+                  style={{
+                    width: boxSize,
+                    height: boxSizeHeight,
+                    backgroundColor: '#e5e7eb',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: 8,
+                  }}
+                  onPress={() => {
+                    Alert.alert('Video', item.title);
+                  }}>
+                  {item.thumbnail ? (
+                    <Image
+                      source={{uri: item.thumbnail}}
+                      style={{width: '100%', height: '100%', borderRadius: 8}}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <Text className="text-sm text-gray-600 px-2 text-center">
+                      {item.title}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
       </View>
     </View>
   );
