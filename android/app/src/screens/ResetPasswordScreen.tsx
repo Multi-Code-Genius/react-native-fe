@@ -60,7 +60,7 @@ export default function ResetPasswordScreen({ route }: any) {
           />
 
           <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
-            <Text style={styles.loginButtonText} >Send Reset Password Link</Text>
+            <Text style={styles.loginButtonText} >Reset Password</Text>
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>

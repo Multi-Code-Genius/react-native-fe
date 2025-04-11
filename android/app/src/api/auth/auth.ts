@@ -118,7 +118,7 @@ export const resetPasswordLink = async (
     const resp = await response;
     return resp;
   } catch (error) {
-    console.error(' Password Reset Error:', error);
+    console.error('Password Reset Error:', error);
     throw new Error(error instanceof Error ? error.message : 'Login failed');
   }
 };
@@ -126,6 +126,5 @@ export const resetPasswordLink = async (
 export const useResetPasswordLink = () => {
   return useMutation({
     mutationFn: resetPasswordLink,
-    onSuccess: () => {},
   });
 };

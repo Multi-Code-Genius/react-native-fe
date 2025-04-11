@@ -8,8 +8,8 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import { SignUpFormScreen } from '../screens/SignUpFormScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ResetPasswordScreen from '../screens/ResetPasswordScreen';
-import { PrivateRoutes } from './PrivateRoutes';
 import ResetPassword1 from '../screens/ResetPassword1';
+import { PrivateRoutes } from './PrivateRoutes';
 
 const Stack = createStackNavigator();
 

@@ -7,7 +7,9 @@ import { Animated } from 'react-native';
 
 const ResetPassword1 = () => {
     const [email, setEmail] = useState('');
-    const { mutate: sendResetLink } = useResetPasswordLink();
+    const [message, setMessage] = useState('');
+    const {
+        mutate: sendResetLink } = useResetPasswordLink();
     const slideAnim = useRef(new Animated.Value(500)).current;
 
 
@@ -22,12 +24,18 @@ const ResetPassword1 = () => {
 
     const handleSubmit = () => {
         if (!email) return;
+        const payload: ResetPasswordLinkParams = { email };
 
-        const payload: ResetPasswordLinkParams = {
-            email,
-        };
-
-        sendResetLink(payload);
+        sendResetLink(payload, {
+            onSuccess: (data) => {
+                console.log('Response:', data);
+                setMessage(data?.message || 'Reset password link has been sent to your email.');
+            },
+            onError: (error: any) => {
+                console.error('Error:', error);
+                setMessage('Failed to send reset link. Please try again.');
+            },
+        });
     };
 
     return (
@@ -56,10 +64,16 @@ const ResetPassword1 = () => {
                                 autoCapitalize="none"
                             />
                         </View>
-
-                        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                            <Text style={styles.loginButtonText} >Send Reset Password Link</Text>
-                        </TouchableOpacity>
+                        <View className='flex gap-3 justify-start'>
+                            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                                <Text style={styles.loginButtonText}>Send Reset Password Link</Text>
+                            </TouchableOpacity>
+                            {message !== '' && (
+                                <Text style={{ color: 'green', textAlign: 'center', fontSize: 15 }}>
+                                    {message}
+                                </Text>
+                            )}
+                        </View>
                     </View>
                 </Animated.View>
             </ScrollView>
@@ -92,7 +106,6 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderRadius: 12,
         alignItems: 'center',
-        marginBottom: 20,
     },
     loginButtonText: {
         color: '#000',
