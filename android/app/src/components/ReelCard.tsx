@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useMemo, useCallback} from 'react';
 import {
   View,
   Text,
@@ -9,10 +9,10 @@ import {
 import Video from 'react-native-video';
 import {Avatar} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {TapGestureHandler} from 'react-native-gesture-handler';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import {ReelItemProps} from '../types/video';
-import CommentSheet from './CommentSheet';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import {ReelItem} from '../types/video';
+
 import {useUserStore} from '../store/userStore';
 import {videoStore} from '../store/videoStore';
 
@@ -29,31 +29,24 @@ const ReelCard: React.FC<ReelItemProps> = ({
   const likeCount = item.likes?.length || 0;
   const commentCount = item.comments?.length || 0;
   const user = item.user;
-  const commentSheetRef = useRef(null);
+
   const {videoLikeStatus} = videoStore();
   const {userData} = useUserStore();
 
   const [isLoading, setIsLoading] = useState(true);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['25%', '50%'], []);
 
-  if (!videoUrl) {
-    return null;
-  }
+  const openCommentSheet = useCallback(() => {
+    requestAnimationFrame(() => {
+      bottomSheetRef.current?.expand();
+    });
+  }, []);
 
-  const openCommentSheet = () => {
-    commentSheetRef.current?.open();
-  };
+  if (!videoUrl) return null;
 
   return (
-    <TapGestureHandler
-      numberOfTaps={2}
-      onActivated={() =>
-        userData?.id &&
-        onDoubleTap(
-          videoLikeStatus.includes(item.id) ||
-            (item.likes.length > 0 &&
-              item.likes.some(likes => userData.id === likes.userId)),
-        )
-      }>
+    <GestureHandlerRootView style={{flex: 1}}>
       <View style={[styles.videoContainer, {height: usableHeight}]}>
         <Video
           source={{uri: videoUrl}}
@@ -91,7 +84,6 @@ const ReelCard: React.FC<ReelItemProps> = ({
                   : 'white'
               }
             />
-
             <Text style={styles.actionText}>{likeCount}</Text>
           </TouchableOpacity>
 
@@ -121,27 +113,23 @@ const ReelCard: React.FC<ReelItemProps> = ({
             {item.description || 'No description'}
           </Text>
         </View>
-
-        <RBSheet
-          ref={commentSheetRef}
-          draggable
-          closeOnPressBack
-          closeOnPressMask
-          height={500}
-          customStyles={{
-            wrapper: {
-              backgroundColor: 'rgba(0,0,0,0.5)',
-            },
-            container: {
-              backgroundColor: '#1a1a1a',
-              borderTopLeftRadius: 16,
-              borderTopRightRadius: 16,
-            },
-          }}>
-          <CommentSheet />
-        </RBSheet>
       </View>
-    </TapGestureHandler>
+
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        enablePanDownToClose
+        backgroundStyle={{
+          backgroundColor: '#1a1a1a',
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+        }}>
+        <BottomSheetView>
+          <Text>Awesome 🎉</Text>
+        </BottomSheetView>
+      </BottomSheet>
+    </GestureHandlerRootView>
   );
 };
 

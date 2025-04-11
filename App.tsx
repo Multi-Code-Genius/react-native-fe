@@ -3,6 +3,8 @@ import AppNavigator from './android/app/src/navigation/routes';
 import './global.css';
 import {StatusBar, Text, StyleSheet} from 'react-native';
 import {PaperProvider, DefaultTheme, configureFonts} from 'react-native-paper';
+import 'react-native-gesture-handler';
+import 'react-native-reanimated';
 
 const fontConfig: any = {
   default: {
