@@ -1,111 +1,120 @@
-import React, {useState} from 'react';
-import {Alert, PermissionsAndroid, Platform, View} from 'react-native';
-import {Button, ActivityIndicator} from 'react-native-paper';
+import React, {useEffect, useState} from 'react';
+import {View, Image, Text, Alert} from 'react-native';
+import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
+import {useAuthStore} from '../store/authStore';
+import {IconButton} from 'react-native-paper';
 import {launchImageLibrary} from 'react-native-image-picker';
-import {useUploadVideos} from '../api/user/user';
-import {Text} from 'react-native';
+import {useUploadImage} from '../api/image/image';
+import {userInfoData} from '../api/user/user';
+import {useUserStore} from '../store/userStore';
 
 export function ProfileScreen() {
-  const {mutate: uploadVideoMutation} = useUploadVideos();
-  const [isUploading, setIsUploading] = useState(false);
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const [userData, setUserData] = useState<any>(null);
 
-  const requestPermissions = async () => {
-    if (Platform.OS === 'android') {
-      const apiLevel = Platform.Version;
-      const permissionsToRequest =
-        apiLevel >= 33
-          ? [
-              PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO,
-              PermissionsAndroid.PERMISSIONS.CAMERA,
-            ]
-          : [
-              PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-              PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-              PermissionsAndroid.PERMISSIONS.CAMERA,
-            ];
-
-      try {
-        const granted = await PermissionsAndroid.requestMultiple(
-          permissionsToRequest,
-        );
-        return Object.values(granted).every(
-          value => value === PermissionsAndroid.RESULTS.GRANTED,
-        );
-      } catch (err) {
-        console.warn('Permission error:', err);
-        return false;
-      }
+  const fetchUserData = async () => {
+    try {
+      const data = await userInfoData();
+      setUserData(data.user);
+    } catch (err) {
+      console.log('Error fetching user data', err);
     }
-
-    return true;
   };
 
-  const videoUploader = async () => {
-    const hasPermission = await requestPermissions();
-    if (!hasPermission) {
-      Alert.alert(
-        'Permission denied',
-        'Please grant video upload permissions.',
-      );
-      return;
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUserData();
     }
+  }, [isAuthenticated]);
 
-    launchImageLibrary({mediaType: 'video'}, async response => {
-      if (response.didCancel) {
-        console.log('User cancelled picker');
-      } else if (response.errorCode) {
-        console.error('Picker Error:', response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
-        const video = response.assets[0];
+  const userId = userData?.id;
 
-        Alert.alert(
-          'Upload Video',
-          `Are you sure you want to upload ${video.fileName || 'this video'}?`,
-          [
-            {text: 'Cancel', style: 'cancel'},
-            {
-              text: 'Upload',
-              onPress: () => {
-                const formData = new FormData();
-                formData.append('title', 'Sample Title');
-                formData.append('description', 'Uploaded via image picker');
-                formData.append('video', {
-                  uri: video.uri!,
-                  type: video.type!,
-                  name: video.fileName || 'upload.mp4',
-                });
-
-                setIsUploading(true);
-                uploadVideoMutation(formData, {
-                  onSuccess: data => {
-                    console.log('Uploaded:', data);
-                    Alert.alert('Success', 'Video uploaded successfully!');
-                    setIsUploading(false);
-                  },
-                  onError: error => {
-                    console.error('Upload failed:', error);
-                    Alert.alert('Error', 'Failed to upload video.');
-                    setIsUploading(false);
-                  },
-                });
-              },
-            },
-          ],
-        );
+  const uploadImageMutation = useUploadImage(
+    res => {
+      if (!res?.user) {
+        Alert.alert('Upload failed', 'Invalid response from server');
+        return;
       }
+      setUserData(res.user);
+      Alert.alert('Success', 'Profile image uploaded successfully');
+    },
+    error => {
+      Alert.alert('Error', 'Image upload failed');
+      console.log('Upload error:', error);
+    },
+  );
+
+  const handleMediaPick = () => {
+    launchImageLibrary({mediaType: 'photo'}, response => {
+      if (response.didCancel || !response.assets?.length) return;
+
+      const asset = response.assets[0];
+      if (!asset.uri || !userId) return;
+
+      const formData = new FormData();
+      formData.append('profile_pic', {
+        uri: asset.uri,
+        name: asset.fileName ?? 'image.jpg',
+        type: asset.type ?? 'image/jpeg',
+      });
+
+      uploadImageMutation.mutate({
+        id: userId,
+        payload: formData,
+      });
     });
   };
 
   return (
-    <View style={{padding: 20, marginTop: 50}}>
-      <Button mode="contained" onPress={videoUploader} disabled={isUploading}>
-        <View className="flex-row items-center justify-center gap-4">
-          {isUploading && (
-            <ActivityIndicator animating={true} size="small" color="white" />
-          )}
-          <Text style={{color: 'white'}}>Upload Video</Text>
+    <View className="flex-1 p-6 bg-white">
+      <View className="mt-10 flex-row  gap-10">
+        <View className="relative w-32 h-32">
+          <View className="w-full h-full rounded-full border-4 border-gray-100 overflow-hidden">
+            <Image
+              source={{uri: userData?.profile_pic}}
+              className="w-full h-full"
+              resizeMode="cover"
+            />
+          </View>
+
+          <View className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow-md">
+            <IconButton
+              icon="plus"
+              size={16}
+              onPress={handleMediaPick}
+              iconColor="#000"
+              containerColor="#fff"
+              style={{margin: 0}}
+            />
+          </View>
         </View>
-      </Button>
+        <View className="justify-center">
+          <Text className="text-[20px] font-semibold text-gray-800">
+            {userData?.name || 'Your Name'}
+          </Text>
+          <Text className="text-[20px] font-semibold text-gray-600">
+            {userData?.email || 'your@email.com'}
+          </Text>
+        </View>
+      </View>
+
+      <View className="mt-8 mb-8 w-full">
+        <VideoUploaderComponent />
+      </View>
+
+      <View className=" h-[1px] bg-gray-300 w-full" />
+      <View className="flex">
+        <View className="flex flex-row justify-center items-center">
+          <IconButton
+            icon="grid"
+            size={20}
+            iconColor="#000"
+            containerColor="#fff"
+          />
+          <Text className="text-[17px] font-semibold">Posts</Text>
+        </View>
+        <View></View>
+      </View>
     </View>
   );
 }

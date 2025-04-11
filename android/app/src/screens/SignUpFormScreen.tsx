@@ -36,7 +36,6 @@ export function SignUpFormScreen() {
 
   const handleSignup = async () => {
     const {name, email, password} = data;
-    console.log('trigger');
 
     if (!name || !email || !password) {
       Alert.alert('Validation', 'All fields are required.');
