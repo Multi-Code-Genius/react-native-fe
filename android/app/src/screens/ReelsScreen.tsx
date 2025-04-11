@@ -15,7 +15,7 @@ import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useFetchVideos, useLikeVideo} from '../api/video/video';
 import {ReelItem, ReelsScreenProps} from '../types/video';
 import ReelCard from '../components/ReelCard';
-import {useUserStore} from '../store/userStore';
+import {videoStore} from '../store/videoStore';
 
 const ReelsScreen: React.FC<ReelsScreenProps> = ({isActive}) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -24,9 +24,7 @@ const ReelsScreen: React.FC<ReelsScreenProps> = ({isActive}) => {
   const {data, isLoading, error} = useFetchVideos();
   const insets = useSafeAreaInsets();
   const {mutate} = useLikeVideo();
-  const {userData} = useUserStore();
-
-  console.log('userData', userData);
+  const {updateVideoLikeStatus} = videoStore();
 
   const usableHeight =
     Dimensions.get('window').height - insets.top - insets.bottom;
@@ -73,7 +71,12 @@ const ReelsScreen: React.FC<ReelsScreenProps> = ({isActive}) => {
         isActive={isActive}
         appState={appState}
         usableHeight={usableHeight}
-        onDoubleTap={() => mutate(item.id)}
+        onDoubleTap={(isNotDisabled: boolean) => {
+          if (!isNotDisabled) {
+            updateVideoLikeStatus(item.id);
+            mutate(item.id);
+          }
+        }}
       />
     );
   };

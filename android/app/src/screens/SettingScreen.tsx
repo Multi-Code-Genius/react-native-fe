@@ -56,7 +56,7 @@ export function SettingScreen() {
       fetchUserData();
     }
   }, [isAuthenticated]);
-  console.log('userData', userData);
+
   useEffect(() => {
     if (userData) {
       setEditableUserData(userData);

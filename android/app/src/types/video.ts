@@ -1,10 +1,13 @@
+import {LikeType, VideoType} from './auth';
+
 export type ReelItem = {
   id: string;
   videoUrl: string;
   description?: string;
-  likes?: any[];
+  likes: LikeType[];
   comments?: any[];
   user?: {
+    id: string;
     name: string;
     profile_pic?: string;
   };
@@ -13,3 +16,8 @@ export type ReelItem = {
 export type ReelsScreenProps = {
   isActive: boolean;
 };
+export interface VideoState {
+  videoData: VideoType | null;
+  videoLikeStatus: string[];
+  updateVideoLikeStatus: (id: string) => void;
+}

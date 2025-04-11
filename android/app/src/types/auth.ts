@@ -68,7 +68,46 @@ export type AuthState = {
   removeToken: () => void;
 };
 
-export interface UserType {}
+export interface LikeType {
+  id: string;
+  userId: string;
+  videoId: string;
+  createdAt: string;
+  user: {
+    id: string;
+    name: string;
+    profile_pic: string;
+  };
+}
+
+export interface VideoType {
+  id: string;
+  title: string;
+  description: string;
+  videoUrl: string;
+  thumbnail: string | null;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserType {
+  id: string;
+  email: string;
+  name: string;
+  profile_pic: string;
+  dob: string | null;
+  mobileNumber: string | null;
+  location: string | null;
+  status: 'active' | 'inactive';
+  resetToken: string | null;
+  resetTokenExpiry: string | null;
+  createdAt: string;
+  updatedAt: string;
+  comments: any[];
+  likes: LikeType[];
+  videos: VideoType[];
+}
 
 export interface UserState {
   userData: UserType | null;

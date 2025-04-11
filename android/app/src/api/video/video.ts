@@ -1,4 +1,4 @@
-import {useMutation, useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {api} from '../../hooks/api';
 
 export const fetchVideos = async () => {
@@ -41,7 +41,11 @@ export const likeVideo = async (videoId: string) => {
 };
 
 export const useLikeVideo = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: likeVideo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['videos']});
+    },
   });
 };

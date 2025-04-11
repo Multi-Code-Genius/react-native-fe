@@ -4,7 +4,7 @@ import './global.css';
 import {StatusBar, Text, StyleSheet} from 'react-native';
 import {PaperProvider, DefaultTheme, configureFonts} from 'react-native-paper';
 
-const fontConfig = {
+const fontConfig: any = {
   default: {
     regular: {
       fontFamily: 'System',
@@ -25,7 +25,7 @@ const fontConfig = {
   },
 };
 
-const spotifyTheme = {
+const spotifyTheme: any = {
   ...DefaultTheme,
   dark: true,
   roundness: 4,
@@ -54,7 +54,7 @@ const spotifyTheme = {
       level5: '#2C2C2C',
     },
   },
-  fonts: configureFonts(fontConfig),
+  fonts: configureFonts(fontConfig) as unknown,
 };
 
 const linking = {

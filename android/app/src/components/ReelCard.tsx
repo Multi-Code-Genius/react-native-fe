@@ -13,18 +13,20 @@ import {TapGestureHandler} from 'react-native-gesture-handler';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {ReelItem} from '../types/video';
 import CommentSheet from './CommentSheet';
+import {useUserStore} from '../store/userStore';
+import {videoStore} from '../store/videoStore';
 
-interface Props {
+interface ReelItemProps {
   item: ReelItem;
   index: number;
   currentIndex: number;
   isActive: boolean;
   appState: string;
   usableHeight: number;
-  onDoubleTap: () => void;
+  onDoubleTap: (data: boolean) => void;
 }
 
-const ReelCard: React.FC<Props> = ({
+const ReelCard: React.FC<ReelItemProps> = ({
   item,
   index,
   currentIndex,
@@ -37,7 +39,9 @@ const ReelCard: React.FC<Props> = ({
   const likeCount = item.likes?.length || 0;
   const commentCount = item.comments?.length || 0;
   const user = item.user;
-  const commentSheetRef = useRef<RBSheet>(null);
+  const commentSheetRef = useRef(null);
+  const {videoLikeStatus} = videoStore();
+  const {userData} = useUserStore();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -50,7 +54,16 @@ const ReelCard: React.FC<Props> = ({
   };
 
   return (
-    <TapGestureHandler numberOfTaps={2} onActivated={onDoubleTap}>
+    <TapGestureHandler
+      numberOfTaps={2}
+      onActivated={() =>
+        userData?.id &&
+        onDoubleTap(
+          videoLikeStatus.includes(item.id) ||
+            (item.likes.length > 0 &&
+              item.likes.some(likes => userData.id === likes.userId)),
+        )
+      }>
       <View style={[styles.videoContainer, {height: usableHeight}]}>
         <Video
           source={{uri: videoUrl}}
@@ -73,8 +86,22 @@ const ReelCard: React.FC<Props> = ({
         )}
 
         <View style={styles.rightActions}>
-          <TouchableOpacity onPress={onDoubleTap} style={styles.iconWrapper}>
-            <Icon name="heart" size={28} color="red" />
+          <TouchableOpacity
+            onPress={() => onDoubleTap(false)}
+            style={styles.iconWrapper}>
+            <Icon
+              name="heart"
+              size={28}
+              color={
+                userData?.id &&
+                (videoLikeStatus.includes(item.id) ||
+                  (item.likes.length > 0 &&
+                    item.likes.some(like => like.userId === userData.id)))
+                  ? 'red'
+                  : 'white'
+              }
+            />
+
             <Text style={styles.actionText}>{likeCount}</Text>
           </TouchableOpacity>
 
@@ -82,7 +109,7 @@ const ReelCard: React.FC<Props> = ({
             style={styles.actionButton}
             onPress={openCommentSheet}>
             <Icon name="comment-outline" size={28} color="white" />
-            <Text style={styles.actionText}>{commentCount}</Text>
+            <Text style={styles.actionText}> {commentCount}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.actionButton}>
