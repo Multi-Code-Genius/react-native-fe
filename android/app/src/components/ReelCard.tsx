@@ -11,20 +11,10 @@ import {Avatar} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {TapGestureHandler} from 'react-native-gesture-handler';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {ReelItem} from '../types/video';
+import {ReelItemProps} from '../types/video';
 import CommentSheet from './CommentSheet';
 import {useUserStore} from '../store/userStore';
 import {videoStore} from '../store/videoStore';
-
-interface ReelItemProps {
-  item: ReelItem;
-  index: number;
-  currentIndex: number;
-  isActive: boolean;
-  appState: string;
-  usableHeight: number;
-  onDoubleTap: (data: boolean) => void;
-}
 
 const ReelCard: React.FC<ReelItemProps> = ({
   item,

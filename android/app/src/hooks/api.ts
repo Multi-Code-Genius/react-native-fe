@@ -23,7 +23,8 @@ export const api = async (endpoint: string, config: any = {}) => {
   const {body, headers = {}, ...customConfig} = config;
 
   const accessToken = await getToken('accessToken');
-  const isFormData = body instanceof FormData;
+  const isFormData =
+    body && typeof body === 'object' && typeof body.append === 'function';
 
   const requestConfig: RequestInit = {
     method: config.method ?? 'GET',

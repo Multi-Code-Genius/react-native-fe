@@ -21,3 +21,13 @@ export interface VideoState {
   videoLikeStatus: string[];
   updateVideoLikeStatus: (id: string) => void;
 }
+
+export interface ReelItemProps {
+  item: ReelItem;
+  index: number;
+  currentIndex: number;
+  isActive: boolean;
+  appState: string;
+  usableHeight: number;
+  onDoubleTap: (data: boolean) => void;
+}

@@ -6,6 +6,7 @@ export const userInfoData = async () => {
     const response = await api('/api/user', {
       method: 'GET',
       headers: {'Content-Type': 'application/json'},
+      cache: 'no-store',
     });
     const resp = await response;
     return resp;
