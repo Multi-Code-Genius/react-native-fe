@@ -3,7 +3,6 @@ import { Alert, Dimensions, FlatList, Image, Text, TouchableOpacity, View } from
 import { useRoute } from '@react-navigation/native';
 import { useUserByIdMutation } from '../api/user/user';
 import { IconButton } from 'react-native-paper';
-import { launchImageLibrary } from 'react-native-image-picker';
 
 const UserProfile = () => {
     const route = useRoute();
@@ -23,14 +22,6 @@ const UserProfile = () => {
     if (error) {
         return <Text>Error loading user data</Text>;
     }
-
-    const renderItem = ({ item }: { item: any }) => (
-        <View >
-            <Text>Title: {item.title}</Text>
-            <Text>Description: {item.description}</Text>
-
-        </View>
-    );
 
     return (
         <View className="flex-1 p-6 bg-white">
@@ -77,7 +68,6 @@ const UserProfile = () => {
                         marginBottom: 10,
                     }}
                     renderItem={({ item }) => {
-                        console.log('item', item);
                         const screenWidth = Dimensions.get('window').width;
                         const boxSize = (screenWidth - 48) / 3;
                         const boxSizeHeight = (screenWidth - 48) / 2;

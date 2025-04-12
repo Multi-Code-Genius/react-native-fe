@@ -1,10 +1,9 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
-import {BottomNavigation, useTheme} from 'react-native-paper';
-import {SettingScreen} from '../screens/SettingScreen';
+import { BottomNavigation, useTheme } from 'react-native-paper';
 import ReelsScreen from '../screens/ReelsScreen';
-import {ProfileScreen} from '../screens/ProfileScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
 
 type RouteKey = 'home' | 'map' | 'reels' | 'setting' | 'account';
 
@@ -18,6 +17,7 @@ type Route = {
 export const PrivateRoutes: React.FC = () => {
   const [index, setIndex] = useState<number>(0);
   const theme = useTheme();
+
   const [routes] = useState<Route[]>([
     {
       key: 'home',
@@ -38,19 +38,13 @@ export const PrivateRoutes: React.FC = () => {
       unfocusedIcon: 'play-box-multiple-outline',
     },
     {
-      key: 'setting',
-      title: 'Setting',
-      focusedIcon: 'cog',
-      unfocusedIcon: 'cog-outline',
-    },
-    {
       key: 'account',
       title: 'Profile',
       focusedIcon: 'account',
     },
   ]);
 
-  const renderScene = ({route}: {route: Route}) => {
+  const renderScene = ({ route }: { route: Route }) => {
     switch (route.key) {
       case 'home':
         return <HomeScreen />;
@@ -58,10 +52,8 @@ export const PrivateRoutes: React.FC = () => {
         return <MapScreen />;
       case 'reels':
         return <ReelsScreen isActive={index === 2} />;
-      case 'setting':
-        return <SettingScreen />;
       case 'account':
-        return <ProfileScreen />;
+        return <ProfileScreen setIndex={setIndex} />;
       default:
         return null;
     }
@@ -69,12 +61,12 @@ export const PrivateRoutes: React.FC = () => {
 
   return (
     <BottomNavigation
-      navigationState={{index, routes}}
+      navigationState={{ index, routes }}
       onIndexChange={setIndex}
       renderScene={renderScene}
       inactiveColor="#B3B3B3"
       activeColor="#fff"
-      activeIndicatorStyle={{backgroundColor: 'none'}}
+      activeIndicatorStyle={{ backgroundColor: 'none' }}
       theme={theme}
       barStyle={{
         backgroundColor: '#121212',

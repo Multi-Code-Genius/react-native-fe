@@ -10,6 +10,7 @@ import LoginScreen from '../screens/LoginScreen';
 import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import ResetPassword1 from '../screens/ResetPassword1';
 import { PrivateRoutes } from './PrivateRoutes';
+import { SettingScreen } from '../screens/SettingScreen';
 
 const Stack = createStackNavigator();
 
@@ -59,7 +60,15 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({ linking, fallback }) => {
       <NavigationContainer linking={linking} fallback={fallback}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {isAuthenticated ? (
-            <Stack.Screen name="Main" component={PrivateRoutes} />
+            <>
+              <Stack.Screen name="Main" component={PrivateRoutes} />
+              <Stack.Screen
+                name="Settings"
+                component={SettingScreen}
+                options={{ title: 'Settings' }}
+              />
+            </>
+
           ) : (
             <Stack.Screen name="Auth" component={PublicRoutes} />
           )}
