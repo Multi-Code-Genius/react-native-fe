@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo, useCallback } from 'react';
+import React, {useRef, useMemo, useCallback, useState} from 'react';
 import {
   View,
   Text,
@@ -7,18 +7,19 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Video from 'react-native-video';
-import { Avatar } from 'react-native-paper';
+import {Avatar, useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { ReelItem } from '../types/video';
-import { TapGestureHandler } from 'react-native-gesture-handler';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import { ReelItemProps } from '../types/video';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
+} from '@gorhom/bottom-sheet';
+import {ReelItemProps} from '../types/video';
+import {useUserStore} from '../store/userStore';
+import {videoStore} from '../store/videoStore';
+import {useNavigation} from '@react-navigation/native';
 import CommentSheet from './CommentSheet';
-import { useUserStore } from '../store/userStore';
-import { videoStore } from '../store/videoStore';
-import { useNavigation } from '@react-navigation/native';
 
 const ReelCard: React.FC<ReelItemProps> = ({
   item,
@@ -33,31 +34,95 @@ const ReelCard: React.FC<ReelItemProps> = ({
   const likeCount = item.likes?.length || 0;
   const commentCount = item.comments?.length || 0;
   const user = item.user;
-  const commentSheetRef = useRef(null);
-  const { videoLikeStatus } = videoStore();
-  const { userData } = useUserStore();
+  const {videoLikeStatus} = videoStore();
+  const {userData} = useUserStore();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
+  const theme = useTheme();
+
+  // Bottom Sheet ref
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['25%', '50%'], []);
+  const snapPoints = useMemo(() => ['50%', '90%'], []);
 
   const openCommentSheet = useCallback(() => {
-    requestAnimationFrame(() => {
-      bottomSheetRef.current?.expand();
-    });
+    bottomSheetRef.current?.expand();
+  }, []);
+
+  const closeCommentSheet = useCallback(() => {
+    bottomSheetRef.current?.close();
   }, []);
 
   if (!videoUrl) return null;
 
+  console.log('---->', item?.comments?.[0]);
+
   const handleSubmit = (id: string | undefined) => {
-    (navigation as any).navigate('UserProfile', { id });
+    (navigation as any).navigate('UserProfile', {id});
   };
 
+  const styles = StyleSheet.create({
+    videoContainer: {
+      width: '100%',
+      backgroundColor: 'black',
+    },
+    loaderOverlay: {
+      ...StyleSheet.absoluteFillObject,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#00000060',
+    },
+    rightActions: {
+      position: 'absolute',
+      right: 16,
+      top: '50%',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    actionButton: {
+      marginBottom: 20,
+      alignItems: 'center',
+    },
+    iconWrapper: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      marginBottom: 24,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    actionText: {
+      color: 'white',
+      fontSize: 12,
+      marginTop: 4,
+      textAlign: 'center',
+    },
+    bottomInfo: {
+      position: 'absolute',
+      top: '75%',
+      left: 16,
+      right: 100,
+    },
+    userRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 8,
+    },
+    userName: {
+      color: 'white',
+      marginLeft: 8,
+      fontWeight: '600',
+    },
+    description: {
+      color: 'white',
+      fontSize: 14,
+    },
+  });
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={[styles.videoContainer, { height: usableHeight }]}>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <View style={[styles.videoContainer, {height: usableHeight}]}>
         <Video
-          source={{ uri: videoUrl }}
+          source={{uri: videoUrl}}
           resizeMode="cover"
           repeat
           paused={index !== currentIndex || !isActive || appState !== 'active'}
@@ -85,9 +150,9 @@ const ReelCard: React.FC<ReelItemProps> = ({
               size={28}
               color={
                 userData?.id &&
-                  (videoLikeStatus.includes(item.id) ||
-                    (item.likes.length > 0 &&
-                      item.likes.some(like => like.userId === userData.id)))
+                (videoLikeStatus.includes(item.id) ||
+                  (item.likes.length > 0 &&
+                    item.likes.some(like => like.userId === userData.id)))
                   ? 'red'
                   : 'white'
               }
@@ -110,7 +175,7 @@ const ReelCard: React.FC<ReelItemProps> = ({
         <View style={styles.bottomInfo}>
           <View style={styles.userRow}>
             {user?.profile_pic ? (
-              <Avatar.Image size={32} source={{ uri: user.profile_pic }} />
+              <Avatar.Image size={32} source={{uri: user.profile_pic}} />
             ) : (
               <Avatar.Icon size={32} icon="account" />
             )}
@@ -129,75 +194,15 @@ const ReelCard: React.FC<ReelItemProps> = ({
         index={-1}
         snapPoints={snapPoints}
         enablePanDownToClose
-        backgroundStyle={{
-          backgroundColor: '#1a1a1a',
-          borderTopLeftRadius: 16,
-          borderTopRightRadius: 16,
-        }}>
-        <BottomSheetView>
-          <Text>Awesome 🎉</Text>
-        </BottomSheetView>
+        backgroundStyle={{backgroundColor: theme.colors.background}}
+        handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
+        <BottomSheetScrollView
+          contentContainerStyle={{backgroundColor: theme.colors.background}}>
+          <CommentSheet />
+        </BottomSheetScrollView>
       </BottomSheet>
     </GestureHandlerRootView>
   );
 };
-
-const styles = StyleSheet.create({
-  videoContainer: {
-    width: '100%',
-    backgroundColor: 'black',
-  },
-  loaderOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#00000060',
-  },
-  rightActions: {
-    position: 'absolute',
-    right: 16,
-    top: '50%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionButton: {
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  iconWrapper: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginBottom: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionText: {
-    color: 'white',
-    fontSize: 12,
-    marginTop: 4,
-    textAlign: 'center',
-  },
-  bottomInfo: {
-    position: 'absolute',
-    top: '75%',
-    left: 16,
-    right: 100,
-  },
-  userRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  userName: {
-    color: 'white',
-    marginLeft: 8,
-    fontWeight: '600',
-  },
-  description: {
-    color: 'white',
-    fontSize: 14,
-  },
-});
 
 export default ReelCard;
