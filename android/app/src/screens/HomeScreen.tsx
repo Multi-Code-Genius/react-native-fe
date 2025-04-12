@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuthStore } from '../store/authStore';
 import { Button, Dialog, Portal, Text } from 'react-native-paper';
 import { useUserStore } from '../store/userStore';
 import { useUserInfo } from '../api/user/user';

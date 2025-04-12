@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Image, Text, Alert, FlatList } from 'react-native';
 import { VideoUploaderComponent } from '../components/VideoUploaderComponent';
 import { useAuthStore } from '../store/authStore';
-import { IconButton } from 'react-native-paper';
+import { IconButton, Provider } from 'react-native-paper';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useUploadImage } from '../api/image/image';
 import { userInfoData } from '../api/user/user';
 import { TouchableOpacity } from 'react-native';
 import { Dimensions } from 'react-native';
-import { Menu, Provider, Dialog, Portal, Button } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import Settings from '../components/Settings';
 
 
 
@@ -20,14 +19,6 @@ type ProfileScreenProps = {
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({ setIndex }) => {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const [userData, setUserData] = useState<any>(null);
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [dialogVisible, setDialogVisible] = useState(false);
-  const { logout } = useAuthStore();
-  const navigation = useNavigation();
-  const openMenu = () => setMenuVisible(true);
-  const closeMenu = () => setMenuVisible(false);
-
-
   const fetchUserData = async () => {
     try {
       const data = await userInfoData();
@@ -85,55 +76,9 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ setIndex }) => {
     <Provider>
       <View className="flex-1 p-6 bg-white">
         <View className='flex w-full flex-col'>
-          <View className="flex w-full flex-row justify-end">
-            <Menu
-              visible={menuVisible}
-              onDismiss={closeMenu}
-              anchor={
-                <TouchableOpacity onPress={openMenu}>
-                  <IconButton
-                    icon="cog"
-                    size={20}
-                    iconColor="#000"
-                    style={{ margin: 0 }}
-                  />
-                </TouchableOpacity>
-              }>
-              <Menu.Item
-                onPress={() => {
-                  (navigation as any).navigate('Settings');
-                }}
-                title="Edit Profile"
-              />
-              <Menu.Item
-                onPress={() => {
-                  closeMenu();
-                  setDialogVisible(true);
-                }}
-                title="Log out"
-              />
-            </Menu>
+          <View className="w-full flex-row justify-end">
+            <Settings setIndex={setIndex} />
           </View>
-          <Portal>
-            <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
-              <Dialog.Title>Confirm Logout</Dialog.Title>
-              <Dialog.Content>
-                <Text>Are you sure you want to log out?</Text>
-              </Dialog.Content>
-              <Dialog.Actions>
-                <Button onPress={() => setDialogVisible(false)}>No</Button>
-                <Button
-                  onPress={() => {
-                    logout();
-                    setDialogVisible(false);
-                    setIndex(0);
-                  }}
-                >
-                  Yes
-                </Button>
-              </Dialog.Actions>
-            </Dialog>
-          </Portal>
           <View className="flex-row gap-5 w-full">
             <View className="relative w-32 h-32">
               <View className="w-full h-full rounded-full border-4 border-gray-100 overflow-hidden">
