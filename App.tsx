@@ -34,6 +34,7 @@ const spotifyTheme: any = {
   colors: {
     ...DefaultTheme.colors,
     primary: '#1DB954',
+    secondary: '#535353',
     accent: '#1ED760',
     background: '#121212',
     surface: '#181818',
@@ -43,7 +44,7 @@ const spotifyTheme: any = {
     placeholder: '#B3B3B3',
     backdrop: 'rgba(24, 24, 24, 0.8)',
     notification: '#1DB954',
-    error: '#CF6679', // Dark theme friendly error color
+    error: '#CF6679',
     outline: '#333333',
     surfaceVariant: '#1E1E1E',
     inversePrimary: '#0F0F0F',
