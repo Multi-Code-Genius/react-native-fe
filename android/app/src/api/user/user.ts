@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {api} from '../../hooks/api';
+import {useAuthStore} from '../../store/authStore';
 
 export const userInfoData = async () => {
   try {
@@ -20,7 +21,11 @@ export const useUserInfo = () => {
   return useQuery({
     queryKey: ['profile'],
     queryFn: userInfoData,
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
     retry: 0,
+    enabled: useAuthStore.getState().isAuthenticated,
   });
 };
 

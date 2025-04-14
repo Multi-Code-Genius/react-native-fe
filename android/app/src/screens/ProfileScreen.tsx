@@ -1,14 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {View, Image, Text, Alert, FlatList} from 'react-native';
+import React, {useCallback, useState} from 'react';
+import {View, Image, Text, Alert, FlatList, StyleSheet} from 'react-native';
 import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
-import {useAuthStore} from '../store/authStore';
-import {IconButton, Provider} from 'react-native-paper';
+import {ActivityIndicator, IconButton, Provider} from 'react-native-paper';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useUploadImage} from '../api/image/image';
-import {userInfoData} from '../api/user/user';
+import {useUserInfo} from '../api/user/user';
 import {TouchableOpacity} from 'react-native';
 import {Dimensions} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 
 type ProfileScreenProps = {
   setIndex: (index: number) => void;
@@ -19,24 +19,26 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   setShowSettings,
 }) => {
   const navigation = useNavigation();
-  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
-  const [userData, setUserData] = useState<any>(null);
-  const fetchUserData = async () => {
+  const {data, isLoading, error, refetch} = useUserInfo();
+  const userId = data?.user?.id;
+  const [refreshing, setRefreshing] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
+
+  const onRefresh = useCallback(async () => {
     try {
-      const data = await userInfoData();
-      setUserData(data.user);
+      setRefreshing(true);
+      await refetch();
     } catch (err) {
-      console.log('Error fetching user data', err);
+      Alert.alert('Error', 'Failed to refresh data');
+    } finally {
+      setRefreshing(false);
     }
-  };
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchUserData();
-    }
-  }, [isAuthenticated]);
-
-  const userId = userData?.id;
+  }, [refetch]);
 
   const uploadImageMutation = useUploadImage(
     res => {
@@ -44,7 +46,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         Alert.alert('Upload failed', 'Invalid response from server');
         return;
       }
-      setUserData(res.user);
       Alert.alert('Success', 'Profile image uploaded successfully');
     },
     error => {
@@ -74,6 +75,22 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
     });
   };
 
+  if (isLoading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.loaderContainer}>
+        <Text style={{color: 'white'}}>Failed to load videos</Text>
+      </View>
+    );
+  }
+
   return (
     <Provider>
       <View className="flex-1 p-6 bg-white">
@@ -91,7 +108,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             <View className="relative w-32 h-32">
               <View className="w-full h-full rounded-full border-4 border-gray-100 overflow-hidden">
                 <Image
-                  source={{uri: userData?.profile_pic}}
+                  source={{uri: data?.user?.profile_pic}}
                   className="w-full h-full"
                   resizeMode="cover"
                 />
@@ -109,10 +126,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             </View>
             <View className="justify-center w-full">
               <Text className="text-[20px] font-semibold text-gray-800">
-                {userData?.name || 'Your Name'}
+                {data?.user?.name || 'Your Name'}
               </Text>
               <Text className="text-[20px] font-semibold text-gray-600">
-                {userData?.email || 'your@email.com'}
+                {data?.user?.email || 'your@email.com'}
               </Text>
             </View>
           </View>
@@ -135,9 +152,11 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </View>
           <View className="mt-4">
             <FlatList
-              data={userData?.videos}
+              data={data?.user?.videos}
               keyExtractor={item => item.id}
               numColumns={3}
+              refreshing={refreshing}
+              onRefresh={onRefresh}
               contentContainerStyle={{paddingBottom: 60}}
               showsVerticalScrollIndicator={false}
               columnWrapperStyle={{
@@ -187,3 +206,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
     </Provider>
   );
 };
+
+const styles = StyleSheet.create({
+  loaderContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

@@ -10,19 +10,12 @@ import Video from 'react-native-video';
 import {Avatar, useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import BottomSheet, {
-  BottomSheetView,
-  BottomSheetBackdrop,
-  BottomSheetScrollView,
-} from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {ReelItemProps} from '../types/video';
 import {useUserStore} from '../store/userStore';
 import {videoStore} from '../store/videoStore';
 import {useNavigation} from '@react-navigation/native';
 import CommentSheet from './CommentSheet';
-import {ReelItem} from '../types/video';
-import {TapGestureHandler} from 'react-native-gesture-handler';
-import RBSheet from 'react-native-raw-bottom-sheet';
 
 const ReelCard: React.FC<ReelItemProps> = ({
   item,
@@ -42,7 +35,7 @@ const ReelCard: React.FC<ReelItemProps> = ({
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const theme = useTheme();
-  // Bottom Sheet ref
+
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['50%', '90%'], []);
 
@@ -50,13 +43,7 @@ const ReelCard: React.FC<ReelItemProps> = ({
     bottomSheetRef.current?.expand();
   }, []);
 
-  const closeCommentSheet = useCallback(() => {
-    bottomSheetRef.current?.close();
-  }, []);
-
   if (!videoUrl) return null;
-
-  console.log('---->', item?.comments?.[0]);
 
   const handleSubmit = (id: string | undefined) => {
     (navigation as any).navigate('UserProfile', {id});
