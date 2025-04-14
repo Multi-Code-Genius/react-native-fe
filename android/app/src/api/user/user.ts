@@ -103,7 +103,7 @@ export const useUploadVideos = () => {
 
 export const getUserById = async (id: string) => {
   try {
-    const response = await api(`/api/user/${id}`, {
+    const response = await api(`/api/user/user-data/${id}`, {
       method: 'GET',
       headers: {'Content-Type': 'application/json'},
       cache: 'no-store',
