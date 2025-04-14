@@ -6,6 +6,7 @@ import {PaperProvider, DefaultTheme, configureFonts} from 'react-native-paper';
 import 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import {MD3Theme} from 'react-native-paper/lib/typescript/types';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const fontConfig = {
   android: {
@@ -75,14 +76,21 @@ const linking = {
 
 export default function App() {
   return (
-    <PaperProvider theme={spotifyTheme}>
-      <SafeAreaProvider>
-        <StatusBar barStyle="default" translucent />
-        <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-          <AppNavigator linking={linking} fallback={<Text>Loading...</Text>} />
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </PaperProvider>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <PaperProvider theme={spotifyTheme}>
+        <SafeAreaProvider>
+          <StatusBar barStyle="default" translucent />
+          <SafeAreaView
+            style={styles.container}
+            edges={['top', 'left', 'right']}>
+            <AppNavigator
+              linking={linking}
+              fallback={<Text>Loading...</Text>}
+            />
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </PaperProvider>
+    </GestureHandlerRootView>
   );
 }
 
