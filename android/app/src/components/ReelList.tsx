@@ -12,7 +12,7 @@ import {
   Dimensions,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useFetchVideos, useLikeVideo} from '../api/video/video';
+import {useInfiniteVideos, useLikeVideo} from '../api/video/video';
 import {ReelItem, ReelsScreenProps} from '../types/video';
 import ReelCard from '../components/ReelCard';
 import {videoStore} from '../store/videoStore';
@@ -21,10 +21,20 @@ const ReelList: React.FC<ReelsScreenProps> = ({isActive}) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [appState, setAppState] = useState(AppState.currentState);
   const flatListRef = useRef<FlatList>(null);
-  const {data, isLoading, error} = useFetchVideos();
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    refetch,
+    error,
+  } = useInfiniteVideos();
   const insets = useSafeAreaInsets();
   const {mutate} = useLikeVideo();
   const {updateVideoLikeStatus} = videoStore();
+
+  const videos = data?.pages.flatMap(page => page.videos) ?? [];
 
   const usableHeight =
     Dimensions.get('window').height - insets.top - insets.bottom;
@@ -74,7 +84,7 @@ const ReelList: React.FC<ReelsScreenProps> = ({isActive}) => {
         onDoubleTap={(isNotDisabled: boolean) => {
           if (!isNotDisabled) {
             updateVideoLikeStatus(item.id);
-            mutate(item.id);
+            mutate({videoId: item.id});
           }
         }}
       />
@@ -100,8 +110,18 @@ const ReelList: React.FC<ReelsScreenProps> = ({isActive}) => {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
+        data={videos}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        }}
+        onEndReachedThreshold={0.5}
+        refreshing={isLoading}
+        onRefresh={() => refetch()}
+        ListFooterComponent={isFetchingNextPage ? <ActivityIndicator /> : null}
         ref={flatListRef}
-        data={data?.videos}
+        // data={data?.videos}
         keyExtractor={item => item.id}
         pagingEnabled
         horizontal={false}

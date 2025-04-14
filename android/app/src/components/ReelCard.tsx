@@ -9,7 +9,10 @@ import {
 import Video from 'react-native-video';
 import {Avatar, useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {ReelItemProps} from '../types/video';
 import {useUserStore} from '../store/userStore';
@@ -108,89 +111,102 @@ const ReelCard: React.FC<ReelItemProps> = ({
   });
 
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
-      <View style={[styles.videoContainer, {height: usableHeight}]}>
-        <Video
-          source={{uri: videoUrl}}
-          resizeMode="cover"
-          repeat
-          paused={index !== currentIndex || !isActive || appState !== 'active'}
-          muted={false}
-          style={StyleSheet.absoluteFill}
-          onLoadStart={() => setIsLoading(true)}
-          onLoad={() => setIsLoading(false)}
-          playWhenInactive={false}
-          playInBackground={false}
-          ignoreSilentSwitch="obey"
-        />
+    <TapGestureHandler
+      numberOfTaps={2}
+      onActivated={() =>
+        userData?.id &&
+        onDoubleTap(
+          videoLikeStatus.includes(item.id) ||
+            (item.likes.length > 0 &&
+              item.likes.some(like => userData.id === like.userId)),
+        )
+      }>
+      <GestureHandlerRootView style={{flex: 1}}>
+        <View style={[styles.videoContainer, {height: usableHeight}]}>
+          <Video
+            source={{uri: videoUrl}}
+            resizeMode="cover"
+            repeat
+            paused={
+              index !== currentIndex || !isActive || appState !== 'active'
+            }
+            muted={false}
+            style={StyleSheet.absoluteFill}
+            onLoadStart={() => setIsLoading(true)}
+            onLoad={() => setIsLoading(false)}
+            playWhenInactive={false}
+            playInBackground={false}
+            ignoreSilentSwitch="obey"
+          />
 
-        {isLoading && (
-          <View style={styles.loaderOverlay}>
-            <ActivityIndicator size="large" color="white" />
-          </View>
-        )}
+          {isLoading && (
+            <View style={styles.loaderOverlay}>
+              <ActivityIndicator size="large" color="white" />
+            </View>
+          )}
 
-        <View style={styles.rightActions}>
-          <TouchableOpacity
-            onPress={() => onDoubleTap(false)}
-            style={styles.iconWrapper}>
-            <Icon
-              name="heart"
-              size={28}
-              color={
-                userData?.id &&
-                (videoLikeStatus.includes(item.id) ||
-                  (item.likes.length > 0 &&
-                    item.likes.some(like => like.userId === userData.id)))
-                  ? 'red'
-                  : 'white'
-              }
-            />
-            <Text style={styles.actionText}>{likeCount}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={openCommentSheet}>
-            <Icon name="comment-outline" size={28} color="white" />
-            <Text style={styles.actionText}> {commentCount}</Text>
-          </TouchableOpacity>
+          <View style={styles.rightActions}>
+            <TouchableOpacity
+              onPress={() => onDoubleTap(false)}
+              style={styles.iconWrapper}>
+              <Icon
+                name="heart"
+                size={28}
+                color={
+                  userData?.id &&
+                  (videoLikeStatus.includes(item.id) ||
+                    (item.likes.length > 0 &&
+                      item.likes.some(like => like.userId === userData.id)))
+                    ? 'red'
+                    : 'white'
+                }
+              />
+              <Text style={styles.actionText}>{likeCount}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={openCommentSheet}>
+              <Icon name="comment-outline" size={28} color="white" />
+              <Text style={styles.actionText}> {commentCount}</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionButton}>
-            <Icon name="share" size={28} color="white" />
-            <Text style={styles.actionText}>Share</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.bottomInfo}>
-          <View style={styles.userRow}>
-            {user?.profile_pic ? (
-              <Avatar.Image size={32} source={{uri: user.profile_pic}} />
-            ) : (
-              <Avatar.Icon size={32} icon="account" />
-            )}
-            <TouchableOpacity onPress={() => handleSubmit(user?.id)}>
-              <Text style={styles.userName}>{user?.name}</Text>
+            <TouchableOpacity style={styles.actionButton}>
+              <Icon name="share" size={28} color="white" />
+              <Text style={styles.actionText}>Share</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.description} numberOfLines={2}>
-            {item.description || 'No description'}
-          </Text>
-        </View>
-      </View>
 
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        snapPoints={snapPoints}
-        enablePanDownToClose
-        backgroundStyle={{backgroundColor: theme.colors.background}}
-        handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
-        <BottomSheetScrollView
-          contentContainerStyle={{backgroundColor: theme.colors.background}}>
-          <CommentSheet />
-        </BottomSheetScrollView>
-      </BottomSheet>
-    </GestureHandlerRootView>
+          <View style={styles.bottomInfo}>
+            <View style={styles.userRow}>
+              {user?.profile_pic ? (
+                <Avatar.Image size={32} source={{uri: user.profile_pic}} />
+              ) : (
+                <Avatar.Icon size={32} icon="account" />
+              )}
+              <TouchableOpacity onPress={() => handleSubmit(user?.id)}>
+                <Text style={styles.userName}>{user?.name}</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.description} numberOfLines={2}>
+              {item.description || 'No description'}
+            </Text>
+          </View>
+        </View>
+
+        <BottomSheet
+          ref={bottomSheetRef}
+          index={-1}
+          snapPoints={snapPoints}
+          enablePanDownToClose
+          backgroundStyle={{backgroundColor: theme.colors.background}}
+          handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
+          <BottomSheetScrollView
+            contentContainerStyle={{backgroundColor: theme.colors.background}}>
+            <CommentSheet />
+          </BottomSheetScrollView>
+        </BottomSheet>
+      </GestureHandlerRootView>
+    </TapGestureHandler>
   );
 };
 
