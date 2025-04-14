@@ -55,7 +55,9 @@ export const api = async (endpoint: string, config: any = {}) => {
 
   try {
     const apiUrl = BASE_URL;
+
     const response = await fetch(`${apiUrl}${endpoint}`, requestConfig);
+    console.log('response', `${endpoint}`);
     if (response?.status !== 200) {
       if (response?.status === 414) {
         console.error('URI Too Long (414) - Logging out user');

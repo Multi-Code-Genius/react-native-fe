@@ -20,6 +20,9 @@ import {useUserStore} from '../store/userStore';
 import {videoStore} from '../store/videoStore';
 import {useNavigation} from '@react-navigation/native';
 import CommentSheet from './CommentSheet';
+import {ReelItem} from '../types/video';
+import {TapGestureHandler} from 'react-native-gesture-handler';
+import RBSheet from 'react-native-raw-bottom-sheet';
 
 const ReelCard: React.FC<ReelItemProps> = ({
   item,
@@ -39,7 +42,6 @@ const ReelCard: React.FC<ReelItemProps> = ({
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const theme = useTheme();
-
   // Bottom Sheet ref
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['50%', '90%'], []);

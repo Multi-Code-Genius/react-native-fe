@@ -8,6 +8,7 @@ import {useUploadImage} from '../api/image/image';
 import {userInfoData} from '../api/user/user';
 import {TouchableOpacity} from 'react-native';
 import {Dimensions} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
 type ProfileScreenProps = {
   setIndex: (index: number) => void;
@@ -17,6 +18,7 @@ type ProfileScreenProps = {
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   setShowSettings,
 }) => {
+  const navigation = useNavigation();
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const [userData, setUserData] = useState<any>(null);
   const fetchUserData = async () => {
@@ -139,11 +141,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               contentContainerStyle={{paddingBottom: 60}}
               showsVerticalScrollIndicator={false}
               columnWrapperStyle={{
-                justifyContent: 'space-between',
+                // justifyContent: 'space-between',
+                justifyContent: 'flex-start',
+                gap: 3,
                 marginBottom: 10,
               }}
               renderItem={({item}) => {
-                console.log('item', item);
                 const screenWidth = Dimensions.get('window').width;
                 const boxSize = (screenWidth - 48) / 3;
                 const boxSizeHeight = (screenWidth - 48) / 2;
@@ -159,7 +162,9 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                       borderRadius: 8,
                     }}
                     onPress={() => {
-                      Alert.alert('Video', item.title);
+                      (navigation as any).navigate('ProfileList', {
+                        videoId: item.id,
+                      });
                     }}>
                     {item.thumbnail ? (
                       <Image

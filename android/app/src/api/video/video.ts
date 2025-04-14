@@ -49,3 +49,25 @@ export const useLikeVideo = () => {
     },
   });
 };
+
+export const videoById = async (id: string) => {
+  try {
+    const response = await api(`/api/video/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return await response;
+  } catch (error) {
+    console.log('Get Video Error', error);
+    throw new Error(error instanceof Error ? error.message : 'Video Failed');
+  }
+};
+
+export const useVideoById = (id: string) => {
+  return useQuery({
+    queryKey: ['video', id],
+    queryFn: () => videoById(id),
+  });
+};
