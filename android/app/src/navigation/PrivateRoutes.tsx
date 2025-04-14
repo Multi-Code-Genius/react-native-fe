@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
-import { BottomNavigation, useTheme } from 'react-native-paper';
+import {BottomNavigation, useTheme} from 'react-native-paper';
 import ReelsScreen from '../screens/ReelsScreen';
-import { ProfileScreen } from '../screens/ProfileScreen';
+import {ProfileScreen} from '../screens/ProfileScreen';
+import {SettingScreen} from '../screens/SettingScreen';
 
-type RouteKey = 'home' | 'map' | 'reels' | 'setting' | 'account';
+type RouteKey = 'home' | 'map' | 'reels' | 'account';
 
 type Route = {
   key: RouteKey;
@@ -16,6 +17,7 @@ type Route = {
 
 export const PrivateRoutes: React.FC = () => {
   const [index, setIndex] = useState<number>(0);
+  const [showSettings, setShowSettings] = useState<boolean>(false); // <-- NEW
   const theme = useTheme();
 
   const [routes] = useState<Route[]>([
@@ -44,7 +46,7 @@ export const PrivateRoutes: React.FC = () => {
     },
   ]);
 
-  const renderScene = ({ route }: { route: Route }) => {
+  const renderScene = ({route}: {route: Route}) => {
     switch (route.key) {
       case 'home':
         return <HomeScreen />;
@@ -53,7 +55,17 @@ export const PrivateRoutes: React.FC = () => {
       case 'reels':
         return <ReelsScreen isActive={index === 2} />;
       case 'account':
-        return <ProfileScreen setIndex={setIndex} />;
+        return showSettings ? (
+          <SettingScreen
+            setIndex={setIndex}
+            setShowSettings={setShowSettings}
+          />
+        ) : (
+          <ProfileScreen
+            setIndex={setIndex}
+            setShowSettings={setShowSettings}
+          />
+        );
       default:
         return null;
     }
@@ -61,12 +73,15 @@ export const PrivateRoutes: React.FC = () => {
 
   return (
     <BottomNavigation
-      navigationState={{ index, routes }}
-      onIndexChange={setIndex}
+      navigationState={{index, routes}}
+      onIndexChange={i => {
+        setIndex(i);
+        setShowSettings(false);
+      }}
       renderScene={renderScene}
       inactiveColor="#B3B3B3"
       activeColor="#fff"
-      activeIndicatorStyle={{ backgroundColor: 'none' }}
+      activeIndicatorStyle={{backgroundColor: 'none'}}
       theme={theme}
       barStyle={{
         backgroundColor: '#121212',

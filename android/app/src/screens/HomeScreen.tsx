@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Dialog, Portal, Text } from 'react-native-paper';
-import { useUserStore } from '../store/userStore';
-import { useUserInfo } from '../api/user/user';
+import React, {useEffect} from 'react';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {Button, Dialog, Portal, Text, useTheme} from 'react-native-paper';
+import {useUserStore} from '../store/userStore';
+import {useUserInfo} from '../api/user/user';
 
 const HomeScreen = () => {
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
-  const { data } = useUserInfo();
-  const { loadUserData, setUserData } = useUserStore();
+  const {data} = useUserInfo();
+  const {loadUserData, setUserData} = useUserStore();
 
   useEffect(() => {
     setUserData(data?.user);
@@ -16,6 +16,8 @@ const HomeScreen = () => {
   }, []);
 
   const hideDialog = () => setVisible(false);
+  const theme = useTheme();
+  console.log('------>', theme.fonts.bodyLarge);
 
   return (
     <SafeAreaView className="">
@@ -31,7 +33,7 @@ const HomeScreen = () => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-      <Text>Home Screen</Text>
+      <Text variant="displayLarge">Home Screen with custom fonts applied!</Text>
     </SafeAreaView>
   );
 };

@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { View, Image, Text, Alert, FlatList } from 'react-native';
-import { VideoUploaderComponent } from '../components/VideoUploaderComponent';
-import { useAuthStore } from '../store/authStore';
-import { IconButton, Provider } from 'react-native-paper';
-import { launchImageLibrary } from 'react-native-image-picker';
-import { useUploadImage } from '../api/image/image';
-import { userInfoData } from '../api/user/user';
-import { TouchableOpacity } from 'react-native';
-import { Dimensions } from 'react-native';
-import Settings from '../components/Settings';
-
-
+import React, {useEffect, useState} from 'react';
+import {View, Image, Text, Alert, FlatList} from 'react-native';
+import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
+import {useAuthStore} from '../store/authStore';
+import {IconButton, Provider} from 'react-native-paper';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {useUploadImage} from '../api/image/image';
+import {userInfoData} from '../api/user/user';
+import {TouchableOpacity} from 'react-native';
+import {Dimensions} from 'react-native';
 
 type ProfileScreenProps = {
   setIndex: (index: number) => void;
+  setShowSettings: (show: boolean) => void;
 };
 
-export const ProfileScreen: React.FC<ProfileScreenProps> = ({ setIndex }) => {
+export const ProfileScreen: React.FC<ProfileScreenProps> = ({
+  setShowSettings,
+}) => {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const [userData, setUserData] = useState<any>(null);
   const fetchUserData = async () => {
@@ -52,7 +52,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ setIndex }) => {
   );
 
   const handleMediaPick = () => {
-    launchImageLibrary({ mediaType: 'photo' }, response => {
+    launchImageLibrary({mediaType: 'photo'}, response => {
       if (response.didCancel || !response.assets?.length) return;
 
       const asset = response.assets[0];
@@ -75,15 +75,21 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ setIndex }) => {
   return (
     <Provider>
       <View className="flex-1 p-6 bg-white">
-        <View className='flex w-full flex-col'>
+        <View className="flex w-full flex-col">
           <View className="w-full flex-row justify-end">
-            <Settings setIndex={setIndex} />
+            <IconButton
+              icon="cog"
+              size={24}
+              onPress={() => setShowSettings(true)}
+              iconColor="#000"
+              containerColor="#fff"
+            />
           </View>
           <View className="flex-row gap-5 w-full">
             <View className="relative w-32 h-32">
               <View className="w-full h-full rounded-full border-4 border-gray-100 overflow-hidden">
                 <Image
-                  source={{ uri: userData?.profile_pic }}
+                  source={{uri: userData?.profile_pic}}
                   className="w-full h-full"
                   resizeMode="cover"
                 />
@@ -95,7 +101,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ setIndex }) => {
                   onPress={handleMediaPick}
                   iconColor="#000"
                   containerColor="#fff"
-                  style={{ margin: 0 }}
+                  style={{margin: 0}}
                 />
               </View>
             </View>
@@ -109,7 +115,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ setIndex }) => {
             </View>
           </View>
         </View>
-
 
         <View className="mt-8 mb-8 w-full">
           <VideoUploaderComponent />
@@ -131,13 +136,13 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ setIndex }) => {
               data={userData?.videos}
               keyExtractor={item => item.id}
               numColumns={3}
-              contentContainerStyle={{ paddingBottom: 60 }}
+              contentContainerStyle={{paddingBottom: 60}}
               showsVerticalScrollIndicator={false}
               columnWrapperStyle={{
                 justifyContent: 'space-between',
                 marginBottom: 10,
               }}
-              renderItem={({ item }) => {
+              renderItem={({item}) => {
                 console.log('item', item);
                 const screenWidth = Dimensions.get('window').width;
                 const boxSize = (screenWidth - 48) / 3;
@@ -158,8 +163,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ setIndex }) => {
                     }}>
                     {item.thumbnail ? (
                       <Image
-                        source={{ uri: item.thumbnail }}
-                        style={{ width: '100%', height: '100%', borderRadius: 8 }}
+                        source={{uri: item.thumbnail}}
+                        style={{width: '100%', height: '100%', borderRadius: 8}}
                         resizeMode="cover"
                       />
                     ) : (
@@ -175,6 +180,5 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ setIndex }) => {
         </View>
       </View>
     </Provider>
-
   );
-}
+};

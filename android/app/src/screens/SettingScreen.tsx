@@ -4,12 +4,9 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {userInfoData, useUpdateUserInfo} from '../api/user/user';
 import {
   Button,
-  IconButton,
   TextInput,
   Card,
-  Title,
   Text,
-  Divider,
   useTheme,
   Appbar,
 } from 'react-native-paper';
@@ -59,7 +56,12 @@ const LabelBox = ({
   );
 };
 
-export function SettingScreen({navigation}: {navigation: any}) {
+type SettingScreenProps = {
+  setIndex: (index: number) => void;
+  setShowSettings: (show: boolean) => void;
+};
+
+export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
   const theme = useTheme();
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const [userData, setUserData] = useState<any>();
@@ -115,7 +117,8 @@ export function SettingScreen({navigation}: {navigation: any}) {
   return (
     <>
       <Appbar.Header style={{backgroundColor: theme.colors.background}}>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.BackAction onPress={() => setShowSettings(false)} />
+
         <Appbar.Content title="Settings" />
         {!isEditing ? (
           <Appbar.Action

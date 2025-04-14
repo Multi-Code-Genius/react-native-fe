@@ -5,29 +5,29 @@ import {StatusBar, Text, StyleSheet} from 'react-native';
 import {PaperProvider, DefaultTheme, configureFonts} from 'react-native-paper';
 import 'react-native-gesture-handler';
 import 'react-native-reanimated';
+import {MD3Theme} from 'react-native-paper/lib/typescript/types';
 
-const fontConfig: any = {
-  default: {
-    regular: {
-      fontFamily: 'System',
-      fontWeight: '400',
-    },
-    medium: {
-      fontFamily: 'System',
-      fontWeight: '500',
-    },
-    light: {
-      fontFamily: 'System',
-      fontWeight: '300',
-    },
-    thin: {
-      fontFamily: 'System',
-      fontWeight: '200',
-    },
+const fontConfig = {
+  android: {
+    displayLarge: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
+    displayMedium: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
+    displaySmall: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
+    headlineLarge: {fontFamily: 'Gilroy-Medium', fontWeight: '500'},
+    headlineMedium: {fontFamily: 'Gilroy-Medium', fontWeight: '500'},
+    headlineSmall: {fontFamily: 'Gilroy-Medium', fontWeight: '500'},
+    titleLarge: {fontFamily: 'Gilroy-Medium', fontWeight: '500'},
+    titleMedium: {fontFamily: 'Gilroy-Medium', fontWeight: '500'},
+    titleSmall: {fontFamily: 'Gilroy-Medium', fontWeight: '500'},
+    labelLarge: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
+    labelMedium: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
+    labelSmall: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
+    bodyLarge: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
+    bodyMedium: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
+    bodySmall: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
   },
 };
 
-const spotifyTheme: any = {
+const spotifyTheme: MD3Theme = {
   ...DefaultTheme,
   dark: true,
   roundness: 4,
@@ -57,7 +57,7 @@ const spotifyTheme: any = {
       level5: '#2C2C2C',
     },
   },
-  fonts: configureFonts(fontConfig) as unknown,
+  fonts: configureFonts({config: fontConfig, isV3: false}),
 };
 
 const linking = {
