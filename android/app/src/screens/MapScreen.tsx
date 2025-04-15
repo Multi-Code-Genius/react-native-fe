@@ -5,6 +5,7 @@ import {
   PointAnnotation,
   Callout,
   Camera,
+  UserLocation,
 } from '@maplibre/maplibre-react-native';
 import {Card, Text, ActivityIndicator} from 'react-native-paper';
 import {requestLocation} from '../hooks/requestLocation';
@@ -57,8 +58,14 @@ const MapScreen: React.FC = () => {
           animationDuration={2000}
         />
       )}
-
-      {userLocation && (
+      <UserLocation
+        visible
+        animated
+        androidRenderMode="gps"
+        showsUserHeadingIndicator
+        renderMode="native"
+      />
+      {/* {userLocation && (
         <PointAnnotation
           id="user-location"
           coordinate={[userLocation.lng, userLocation.lat]}>
@@ -84,7 +91,7 @@ const MapScreen: React.FC = () => {
             </Card>
           </Callout>
         </PointAnnotation>
-      )}
+      )} */}
     </MapView>
   );
 };
