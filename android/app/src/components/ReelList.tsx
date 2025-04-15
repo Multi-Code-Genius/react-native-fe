@@ -12,7 +12,11 @@ import {
   Dimensions,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useInfiniteVideos, useLikeVideo} from '../api/video/video';
+import {
+  useCommentVideo,
+  useInfiniteVideos,
+  useLikeVideo,
+} from '../api/video/video';
 import {ReelItem, ReelsScreenProps} from '../types/video';
 import ReelCard from '../components/ReelCard';
 import {videoStore} from '../store/videoStore';
@@ -32,6 +36,7 @@ const ReelList: React.FC<ReelsScreenProps> = ({isActive}) => {
   } = useInfiniteVideos();
   const insets = useSafeAreaInsets();
   const {mutate} = useLikeVideo();
+  const {mutate: commentMutate} = useCommentVideo();
   const {updateVideoLikeStatus} = videoStore();
 
   const videos = data?.pages.flatMap(page => page.videos) ?? [];
@@ -86,6 +91,9 @@ const ReelList: React.FC<ReelsScreenProps> = ({isActive}) => {
             updateVideoLikeStatus(item.id);
             mutate({videoId: item.id});
           }
+        }}
+        onComments={() => {
+          commentMutate({videoId: item.id});
         }}
       />
     );

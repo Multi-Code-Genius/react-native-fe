@@ -5,7 +5,7 @@ export type ReelItem = {
   videoUrl: string;
   description?: string;
   likes: LikeType[];
-  comments?: any[];
+  comments?: CommentsTypes[];
   user?: {
     id: string;
     name: string;
@@ -31,4 +31,19 @@ export interface ReelItemProps {
   appState: string;
   usableHeight: number;
   onDoubleTap: (data: boolean) => void;
+  onComments: () => void;
+}
+
+export interface CommentsTypes {
+  id: string;
+  text: string;
+  userId: string;
+  videoId: string;
+  postId: null | string;
+  createdAt: string;
+  user: {
+    id: string;
+    name: string;
+    profile_pic: string;
+  };
 }

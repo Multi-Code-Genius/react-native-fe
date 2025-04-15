@@ -65,6 +65,120 @@ export const likeVideo = async (videoId: string) => {
   }
 };
 
+export const commentVideo = async (videoId: string) => {
+  try {
+    const response = await api(`/api/video/comments/${videoId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({comment: 'Hello, this is My Test Comment!'}),
+    });
+    return await response;
+  } catch (error) {
+    console.error('comments Video Error:', error);
+    throw new Error(error instanceof Error ? error.message : 'comments failed');
+  }
+};
+
+export const useCommentVideo = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({videoId}: {videoId: string}) => commentVideo(videoId),
+    onMutate: async ({videoId}) => {
+      await queryClient.cancelQueries({queryKey: ['videos']});
+
+      const previousList = queryClient.getQueryData(['videos']);
+      await Promise.all([
+        queryClient.cancelQueries({queryKey: ['video', videoId]}),
+        queryClient.cancelQueries({queryKey: ['videos']}),
+      ]);
+
+      const previousSingle = queryClient.getQueryData(['video', videoId]);
+
+      queryClient.setQueryData(['video', videoId], (oldData: any) => {
+        if (!oldData) {
+          return oldData;
+        }
+
+        const hasComments = oldData.comments?.some(
+          (comments: any) => comments.userId === oldData.currentUserId,
+        );
+
+        const updatedComments = hasComments
+          ? oldData.comments.filter(
+              (comments: any) => comments.userId !== oldData.currentUserId,
+            )
+          : [
+              ...oldData.comments,
+              {
+                id: 'temp-like-id',
+                userId: oldData.currentUserId,
+                user: oldData.currentUser,
+              },
+            ];
+
+        return {...oldData, comments: updatedComments};
+      });
+
+      queryClient.setQueryData(['videos'], (oldData: any) => {
+        if (!oldData) {
+          return oldData;
+        }
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            videos: page.videos.map((video: any) => {
+              if (video.id !== videoId) {
+                return video;
+              }
+
+              const hasComments = video.comments?.some(
+                (comments: any) => comments.userId === video.currentUserId,
+              );
+
+              const updatedComments = hasComments
+                ? video.comments.filter(
+                    (comments: any) => comments.userId !== video.currentUserId,
+                  )
+                : [
+                    ...video.likes,
+                    {
+                      id: 'temp-like-id',
+                      userId: video.currentUserId,
+                      user: video.currentUser,
+                    },
+                  ];
+
+              return {...video, comments: updatedComments};
+            }),
+          })),
+        };
+      });
+
+      return {previousSingle, previousList};
+    },
+
+    onError: (err, {videoId}, context: any) => {
+      if (context?.previousSingle) {
+        queryClient.setQueryData(['video', videoId], context.previousSingle);
+      }
+      if (context?.previousList) {
+        queryClient.setQueryData(['videos'], context.previousList);
+      }
+      return console.error('Like Video Error:', err);
+    },
+
+    onSuccess: (_data, {videoId}) => {
+      queryClient.invalidateQueries({queryKey: ['video', videoId]});
+      queryClient.invalidateQueries({queryKey: ['videos']});
+    },
+  });
+};
+
 export const useLikeVideo = () => {
   const queryClient = useQueryClient();
 
@@ -83,7 +197,9 @@ export const useLikeVideo = () => {
       const previousSingle = queryClient.getQueryData(['video', videoId]);
 
       queryClient.setQueryData(['video', videoId], (oldData: any) => {
-        if (!oldData) return oldData;
+        if (!oldData) {
+          return oldData;
+        }
 
         const hasLiked = oldData.likes?.some(
           (like: any) => like.userId === oldData.currentUserId,
@@ -106,14 +222,18 @@ export const useLikeVideo = () => {
       });
 
       queryClient.setQueryData(['videos'], (oldData: any) => {
-        if (!oldData) return oldData;
+        if (!oldData) {
+          return oldData;
+        }
 
         return {
           ...oldData,
           pages: oldData.pages.map((page: any) => ({
             ...page,
             videos: page.videos.map((video: any) => {
-              if (video.id !== videoId) return video;
+              if (video.id !== videoId) {
+                return video;
+              }
 
               const hasLiked = video.likes?.some(
                 (like: any) => like.userId === video.currentUserId,
@@ -148,6 +268,7 @@ export const useLikeVideo = () => {
       if (context?.previousList) {
         queryClient.setQueryData(['videos'], context.previousList);
       }
+      return console.error('Like Video Error:', err);
     },
 
     onSuccess: (_data, {videoId}) => {

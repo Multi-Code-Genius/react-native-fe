@@ -52,6 +52,7 @@ export function ProfileReelList() {
             appState="active"
             usableHeight={usableHeight}
             onDoubleTap={() => {}}
+            onComments={() => {}}
           />
         )}
         getItemLayout={(_, index) => ({

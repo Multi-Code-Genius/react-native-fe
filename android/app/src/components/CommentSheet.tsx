@@ -1,8 +1,9 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Avatar, Divider, Text} from 'react-native-paper';
+import {CommentsTypes} from '../types/video';
 
-const CommentSheet = ({comments}) => {
+const CommentSheet = ({comments}: {comments: CommentsTypes[] | []}) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
