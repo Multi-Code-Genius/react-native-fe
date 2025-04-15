@@ -9,6 +9,8 @@ import {TouchableOpacity} from 'react-native';
 import {Dimensions} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useFocusEffect} from '@react-navigation/native';
+import {PhotoPostUploader} from '../components/PhotoPostUploader';
+import {SceneMap, TabView} from 'react-native-tab-view';
 
 type ProfileScreenProps = {
   setIndex: (index: number) => void;
@@ -22,6 +24,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   const {data, isLoading, error, refetch} = useUserInfo();
   const userId = data?.user?.id;
   const [refreshing, setRefreshing] = useState(false);
+
+  const [tabIndex, setTabIndex] = useState(0);
+  const [routes] = useState([
+    {key: 'posts', title: 'Posts'},
+    {key: 'reels', title: 'Reels'},
+  ]);
 
   useFocusEffect(
     useCallback(() => {
@@ -74,6 +82,79 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
       });
     });
   };
+
+  const renderItem = (item: any, type: any) => {
+    const screenWidth = Dimensions.get('window').width;
+    const boxSize = (screenWidth - 48) / 3;
+    const boxSizeHeight = (screenWidth - 48) / 2;
+
+    const imageUrl = type === 'post' ? item.post : item.thumbnail;
+
+    return (
+      <TouchableOpacity
+        style={{
+          width: boxSize,
+          height: boxSizeHeight,
+          backgroundColor: '#e5e7eb',
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderRadius: 8,
+        }}
+        onPress={() => {
+          if (type === 'reel') {
+            (navigation as any).navigate('ProfileList', {videoId: item.id});
+          }
+        }}>
+        {imageUrl ? (
+          <Image
+            source={{uri: imageUrl}}
+            style={{width: '100%', height: '100%', borderRadius: 8}}
+            resizeMode="cover"
+          />
+        ) : (
+          <Text className="text-sm text-gray-600 px-2 text-center">
+            {item.title}
+          </Text>
+        )}
+      </TouchableOpacity>
+    );
+  };
+
+  const PostsRoute = () => (
+    <FlatList
+      data={data?.user?.posts}
+      keyExtractor={item => item.id}
+      numColumns={3}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      contentContainerStyle={{paddingBottom: 60}}
+      showsVerticalScrollIndicator={false}
+      columnWrapperStyle={{
+        justifyContent: 'flex-start',
+        gap: 3,
+        marginBottom: 10,
+      }}
+      renderItem={({item}) => renderItem(item, 'post')}
+    />
+  );
+
+  const ReelsRoute = () => (
+    <FlatList
+      data={data?.user?.videos}
+      keyExtractor={item => item.id}
+      numColumns={3}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      contentContainerStyle={{paddingBottom: 60}}
+      showsVerticalScrollIndicator={false}
+      columnWrapperStyle={{
+        justifyContent: 'flex-start',
+        gap: 3,
+        marginBottom: 10,
+      }}
+      renderItem={({item}) => renderItem(item, 'reel')}
+    />
+  );
 
   if (isLoading) {
     return (
@@ -135,73 +216,40 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </View>
         </View>
 
-        <View className="mt-8 mb-8 w-full">
+        <View className="flex flex-row justify-between mt-8 mb-8 w-full">
+          <PhotoPostUploader />
           <VideoUploaderComponent />
         </View>
 
         <View className=" h-[1px] bg-gray-300 w-full" />
-        <View className="flex-1 overflow-hidden">
-          <View className="flex flex-row justify-center items-center">
-            <IconButton
-              icon="grid"
-              size={20}
-              iconColor="#000"
-              containerColor="#fff"
-            />
-            <Text className="text-[17px] font-semibold">Posts</Text>
-          </View>
-          <View className="mt-4">
-            <FlatList
-              data={data?.user?.videos}
-              keyExtractor={item => item.id}
-              numColumns={3}
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              contentContainerStyle={{paddingBottom: 60}}
-              showsVerticalScrollIndicator={false}
-              columnWrapperStyle={{
-                // justifyContent: 'space-between',
-                justifyContent: 'flex-start',
-                gap: 3,
-                marginBottom: 10,
-              }}
-              renderItem={({item}) => {
-                const screenWidth = Dimensions.get('window').width;
-                const boxSize = (screenWidth - 48) / 3;
-                const boxSizeHeight = (screenWidth - 48) / 2;
-
-                return (
-                  <TouchableOpacity
-                    style={{
-                      width: boxSize,
-                      height: boxSizeHeight,
-                      backgroundColor: '#e5e7eb',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderRadius: 8,
-                    }}
-                    onPress={() => {
-                      (navigation as any).navigate('ProfileList', {
-                        videoId: item.id,
-                      });
-                    }}>
-                    {item.thumbnail ? (
-                      <Image
-                        source={{uri: item.thumbnail}}
-                        style={{width: '100%', height: '100%', borderRadius: 8}}
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <Text className="text-sm text-gray-600 px-2 text-center">
-                        {item.title}
-                      </Text>
-                    )}
-                  </TouchableOpacity>
-                );
-              }}
-            />
-          </View>
+        <View className="flex-row justify-around m-4">
+          {routes.map((route, i) => (
+            <TouchableOpacity
+              key={route.key}
+              onPress={() => setTabIndex(i)}
+              className="flex-1 items-center pb-2">
+              <Text
+                className={`text-base font-semibold ${
+                  tabIndex === i ? 'text-black' : 'text-gray-400'
+                }`}>
+                {route.title}
+              </Text>
+              {tabIndex === i && (
+                <View className="h-[1px] w-[100px] bg-slate-500 mt-1 rounded-full" />
+              )}
+            </TouchableOpacity>
+          ))}
         </View>
+
+        <TabView
+          navigationState={{index: tabIndex, routes}}
+          renderScene={SceneMap({
+            posts: PostsRoute,
+            reels: ReelsRoute,
+          })}
+          onIndexChange={setTabIndex}
+          renderTabBar={() => null}
+        />
       </View>
     </Provider>
   );
