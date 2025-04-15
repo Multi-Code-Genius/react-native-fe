@@ -1,15 +1,15 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {useEffect, useState, useRef} from 'react';
+import {StyleSheet, View, TouchableOpacity, Alert} from 'react-native';
 import {
   MapView,
   PointAnnotation,
   Callout,
   Camera,
-  UserLocation,
 } from '@maplibre/maplibre-react-native';
-import {Card, Text, ActivityIndicator} from 'react-native-paper';
+import {Card, Text, ActivityIndicator, IconButton} from 'react-native-paper';
 import {requestLocation} from '../hooks/requestLocation';
-import LottieView from 'lottie-react-native';
+
+const LOCATION_TIMEOUT = 10000; // 10 seconds timeout
 
 const MapScreen: React.FC = () => {
   const [userLocation, setUserLocation] = useState<{
@@ -17,23 +17,82 @@ const MapScreen: React.FC = () => {
     lng: number;
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const mapRef = useRef<MapView>(null);
+
+  const getLocationWithTimeout = async () => {
+    let timeoutId: NodeJS.Timeout;
+
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(new Error('Location request timed out'));
+      }, LOCATION_TIMEOUT);
+    });
+
+    try {
+      const location = await Promise.race([requestLocation(), timeoutPromise]);
+      clearTimeout(timeoutId);
+      return location;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
+  };
+
+  const fetchCurrentLocation = async () => {
+    setLoading(true);
+    setLocationError(null);
+
+    try {
+      const location = await getLocationWithTimeout();
+      if (location) {
+        setUserLocation(location);
+      }
+    } catch (error: any) {
+      console.error('Failed to get location:', error);
+      setLocationError(error.message || 'Failed to get location');
+      Alert.alert(
+        'Location Error',
+        error.message || 'Could not determine your location',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchCurrentLocation = async () => {
-      try {
-        const location = await requestLocation();
-        if (location) {
-          setUserLocation(location);
-        }
-      } catch (error) {
-        console.error('Failed to get location:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCurrentLocation();
   }, []);
+
+  const flyToUserLocation = async () => {
+    setLoading(true);
+    try {
+      const location = await getLocationWithTimeout();
+      if (location) {
+        setUserLocation(location);
+
+        // Add 3-second delay before flying to location
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        mapRef.current?.flyTo(
+          [location.lng, location.lat],
+          14, // Higher zoom level when manually requested
+          2000, // Animation duration
+        );
+      }
+    } catch (error: any) {
+      console.error('Failed to get location:', error);
+      setLocationError(error.message || 'Failed to get location');
+      Alert.alert(
+        'Location Error',
+        error.message || 'Could not determine your location',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -44,77 +103,115 @@ const MapScreen: React.FC = () => {
     );
   }
 
+  if (locationError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{locationError}</Text>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={fetchCurrentLocation}>
+          <Text style={styles.retryButtonText}>Try Again</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
-    <MapView
-      style={StyleSheet.absoluteFillObject}
-      mapStyle="https://api.maptiler.com/maps/streets-v2/style.json?key=6R1qeXkgDjyItDGLuc5M"
-      scrollEnabled
-      zoomEnabled>
-      {userLocation && (
-        <Camera
-          centerCoordinate={[userLocation.lng, userLocation.lat]}
-          zoomLevel={11}
-          animationMode="flyTo"
-          animationDuration={2000}
+    <View style={StyleSheet.absoluteFillObject}>
+      <MapView
+        ref={mapRef}
+        style={StyleSheet.absoluteFillObject}
+        mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+        scrollEnabled
+        zoomEnabled>
+        {userLocation && (
+          <Camera
+            centerCoordinate={[userLocation.lng, userLocation.lat]}
+            zoomLevel={11}
+            animationMode={'fly'}
+            animationDuration={2000}
+          />
+        )}
+
+        {userLocation && (
+          <PointAnnotation
+            id="user-location"
+            coordinate={[userLocation.lng, userLocation.lat]}>
+            <View style={styles.markerContainer}>
+              <Text className="text-4xl">🧍🏻‍♂️</Text>
+            </View>
+            <Callout style={styles.callout}>
+              <Card style={styles.card}>
+                <Card.Content>
+                  <Text variant="titleMedium" style={styles.cardTitle}>
+                    Your Location
+                  </Text>
+                  <Text variant="bodyMedium" style={styles.cardDescription}>
+                    {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
+                  </Text>
+                </Card.Content>
+              </Card>
+            </Callout>
+          </PointAnnotation>
+        )}
+      </MapView>
+
+      <TouchableOpacity
+        style={styles.locationButton}
+        onPress={flyToUserLocation}>
+        <IconButton
+          icon="crosshairs-gps"
+          iconColor="#000"
+          size={24}
+          style={styles.locationButtonIcon}
         />
+      </TouchableOpacity>
+
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" />
+        </View>
       )}
-      <UserLocation
-        visible
-        animated
-        androidRenderMode="gps"
-        showsUserHeadingIndicator
-        renderMode="native"
-      />
-      {/* {userLocation && (
-        <PointAnnotation
-          id="user-location"
-          coordinate={[userLocation.lng, userLocation.lat]}>
-          <View style={styles.markerContainer}>
-            <LottieView
-              source={require('../assets/MapMarker.json')}
-              autoPlay
-              loop
-              style={styles.lottieView}
-              resizeMode="cover"
-            />
-          </View>
-          <Callout style={styles.callout}>
-            <Card style={styles.card}>
-              <Card.Content>
-                <Text variant="titleMedium" style={styles.cardTitle}>
-                  Your Location
-                </Text>
-                <Text variant="bodyMedium" style={styles.cardDescription}>
-                  {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
-                </Text>
-              </Card.Content>
-            </Card>
-          </Callout>
-        </PointAnnotation>
-      )} */}
-    </MapView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  lottieView: {
-    width: 50,
-    height: 50,
-  },
-  markerContainer: {
-    width: 50,
-    height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
   },
   loadingText: {
     marginTop: 10,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  retryButton: {
+    backgroundColor: '#6200ee',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  markerContainer: {
+    height: 48,
+    width: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   callout: {
     borderRadius: 8,
@@ -130,6 +227,31 @@ const styles = StyleSheet.create({
   },
   cardDescription: {
     color: '#666',
+  },
+  locationButton: {
+    position: 'absolute',
+    bottom: 24,
+    right: 16,
+    backgroundColor: 'white',
+    borderRadius: 24,
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  locationButtonIcon: {
+    margin: 0,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
 });
 
