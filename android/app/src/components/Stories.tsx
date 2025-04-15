@@ -4,7 +4,7 @@ import React from 'react';
 const Stories = () => {
   return (
     <View>
-      <Text>Stories</Text>
+      <Text className="text-white">Stories</Text>
     </View>
   );
 };

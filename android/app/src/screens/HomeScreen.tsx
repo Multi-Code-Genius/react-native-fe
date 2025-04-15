@@ -6,8 +6,8 @@ import {useUserInfo} from '../api/user/user';
 import Stories from '../components/Stories';
 
 const HomeScreen = () => {
-  const [visible, setVisible] = React.useState(false);
-  const showDialog = () => setVisible(true);
+  // const [visible, setVisible] = React.useState(false);
+  // const showDialog = () => setVisible(true);
   const {data} = useUserInfo();
   const {loadUserData, setUserData} = useUserStore();
 
@@ -16,9 +16,8 @@ const HomeScreen = () => {
     loadUserData();
   }, []);
 
-  const hideDialog = () => setVisible(false);
-  const theme = useTheme();
-  console.log('------>', theme.fonts.bodyLarge);
+  // const hideDialog = () => setVisible(false);
+  // const theme = useTheme();
 
   return <Stories />;
 };

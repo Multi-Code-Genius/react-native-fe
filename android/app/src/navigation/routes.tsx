@@ -10,7 +10,6 @@ import LoginScreen from '../screens/LoginScreen';
 import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import ResetPassword1 from '../screens/ResetPassword1';
 import {PrivateRoutes} from './PrivateRoutes';
-import {SettingScreen} from '../screens/SettingScreen';
 import {ProfileReelList} from '../components/ProfileReelList';
 
 const Stack = createStackNavigator();
