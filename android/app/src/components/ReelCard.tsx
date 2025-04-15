@@ -33,8 +33,16 @@ const ReelCard: React.FC<ReelItemProps> = ({
   const likeCount = item.likes?.length || 0;
   const commentCount = item.comments?.length || 0;
   const user = item.user;
-  const {videoLikeStatus} = videoStore();
+  const {videoLikeStatus, addLikesReels} = videoStore();
+
   const {userData} = useUserStore();
+
+  item.likes.forEach(i => {
+    if (userData?.id === i.userId) {
+      addLikesReels(i.id);
+    }
+  });
+
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const [postComment, setPostComment] = useState('');
@@ -42,8 +50,6 @@ const ReelCard: React.FC<ReelItemProps> = ({
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['50%', '70%'], []);
-
-  console.log('------>', item);
 
   const openCommentSheet = useCallback(() => {
     bottomSheetRef.current?.expand();

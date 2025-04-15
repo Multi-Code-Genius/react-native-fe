@@ -20,6 +20,7 @@ export interface VideoState {
   videoData: VideoType | null;
   videoLikeStatus: string[];
   updateVideoLikeStatus: (id: string) => void;
+  addLikesReels: (id: string) => void;
 }
 
 export interface ReelItemProps {

@@ -12,4 +12,9 @@ export const videoStore = create<VideoState>((set, get) => ({
       set({videoLikeStatus: currentLikes.filter(item => item !== id)});
     }
   },
+
+  addLikesReels: (id: string) =>
+    set(state => ({
+      videoLikeStatus: [...state.videoLikeStatus, id],
+    })),
 }));
