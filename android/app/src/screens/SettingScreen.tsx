@@ -9,6 +9,8 @@ import {
   Text,
   useTheme,
   Appbar,
+  Portal,
+  Dialog,
 } from 'react-native-paper';
 import isEqual from 'lodash/isEqual';
 import {pickBy} from 'lodash';
@@ -67,6 +69,8 @@ export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
   const [userData, setUserData] = useState<any>();
   const [isEditing, setIsEditing] = useState(false);
   const [editableUserData, setEditableUserData] = useState<any>({});
+  const {logout} = useAuthStore();
+  const [dialogVisible, setDialogVisible] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -133,6 +137,14 @@ export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
             color={theme.colors.error}
           />
         )}
+
+        <Appbar.Action
+          icon="logout"
+          onPress={() => {
+            setDialogVisible(true);
+          }}
+          color={theme.colors.error}
+        />
       </Appbar.Header>
 
       <ScrollView
@@ -203,6 +215,26 @@ export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
           </Card.Content>
         </Card>
       </ScrollView>
+      <Portal>
+        <Dialog
+          visible={dialogVisible}
+          onDismiss={() => setDialogVisible(false)}>
+          <Dialog.Title>Confirm Logout</Dialog.Title>
+          <Dialog.Content>
+            <Text>Are you sure you want to log out?</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setDialogVisible(false)}>No</Button>
+            <Button
+              onPress={() => {
+                logout();
+                setDialogVisible(false);
+              }}>
+              Yes
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </>
   );
 }

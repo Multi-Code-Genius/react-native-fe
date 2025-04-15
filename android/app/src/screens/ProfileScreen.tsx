@@ -173,7 +173,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   }
 
   return (
-    <Provider>
+    <>
       <View className="flex-1 p-6 bg-white">
         <View className="flex w-full flex-col">
           <View className="w-full flex-row justify-end">
@@ -251,7 +251,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           renderTabBar={() => null}
         />
       </View>
-    </Provider>
+    </>
   );
 };
 

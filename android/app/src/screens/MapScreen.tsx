@@ -1,112 +1,129 @@
 import React, {useEffect, useState} from 'react';
-import MapCompo from '../components/MapCompo';
+import {StyleSheet, View} from 'react-native';
+import {
+  MapView,
+  PointAnnotation,
+  Callout,
+  Camera,
+} from '@maplibre/maplibre-react-native';
+import {Card, Text, ActivityIndicator} from 'react-native-paper';
 import {requestLocation} from '../hooks/requestLocation';
-import {useGetAllUser} from '../hooks/useGetAllUser';
-import {useUserStore} from '../store/userStore';
-import {Text} from 'react-native-paper';
-
-type LocationMarker = {
-  lat: number;
-  lng: number;
-  title: string;
-  icon: string;
-};
-
-type UserLocation = {
-  lat: number;
-  lng: number;
-};
+import LottieView from 'lottie-react-native';
 
 const MapScreen: React.FC = () => {
-  const [locations, setLocations] = useState<LocationMarker[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const {users} = useGetAllUser();
-  const {userData} = useUserStore();
-
-  const currentUserId = userData?.id;
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initializeLocations = async () => {
+    const fetchCurrentLocation = async () => {
       try {
-        setIsLoading(true);
-        setError(null);
-
-        const currentLocation = await requestLocation();
-        const markers: LocationMarker[] = [];
-
-        if (currentLocation?.lat && currentLocation?.lng) {
-          markers.push({
-            lat: currentLocation.lat,
-            lng: currentLocation.lng,
-            title: 'You',
-            icon: '📍',
-          });
+        const location = await requestLocation();
+        if (location) {
+          setUserLocation(location);
         }
-
-        if (users?.users) {
-          const filteredUsers = users.users.filter(
-            user =>
-              user.id !== currentUserId &&
-              user?.location?.lat != null &&
-              user?.location?.lng != null,
-          );
-
-          filteredUsers.forEach(user => {
-            markers.push({
-              lat: user.location.lat,
-              lng: user.location.lng,
-              title: user.name || 'Unknown',
-              icon: '🕺',
-            });
-          });
-        }
-
-        setLocations(markers);
       } catch (error) {
-        console.error('Error fetching locations:', error);
-        setError('Failed to load locations');
+        console.error('Failed to get location:', error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
-    initializeLocations();
-  }, [users, currentUserId]);
+    fetchCurrentLocation();
+  }, []);
 
-  if (isLoading) {
-    return <Text>Loading map...</Text>;
-  }
-
-  if (error) {
-    return <Text>{error}</Text>;
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+        <Text style={styles.loadingText}>Getting your location...</Text>
+      </View>
+    );
   }
 
   return (
-    <MapCompo
-      locations={locations}
-      defaultZoom={16}
-      radius={3000}
-      circleColor="#ff0000"
-      circleFillOpacity={0.1}
-      showRadiusCircle
-      requestLocationPermission={requestLocation}
-      onLocationUpdate={(
-        location: UserLocation,
-        nearbyMarkers: LocationMarker[],
-      ) => {
-        console.log('User location:', location);
-        console.log('Nearby markers:', nearbyMarkers);
-      }}
-      onMapReady={() => console.log('Map is ready')}
-      showUpdateButton={true}
-      buttonTitle="Refresh Location"
-      webViewProps={{
-        style: {backgroundColor: 'transparent'},
-      }}
-    />
+    <MapView
+      style={StyleSheet.absoluteFillObject}
+      mapStyle="https://api.maptiler.com/maps/streets-v2/style.json?key=6R1qeXkgDjyItDGLuc5M"
+      scrollEnabled
+      zoomEnabled>
+      {userLocation && (
+        <Camera
+          centerCoordinate={[userLocation.lng, userLocation.lat]}
+          zoomLevel={11}
+          animationMode="flyTo"
+          animationDuration={2000}
+        />
+      )}
+
+      {userLocation && (
+        <PointAnnotation
+          id="user-location"
+          coordinate={[userLocation.lng, userLocation.lat]}>
+          <View style={styles.markerContainer}>
+            <LottieView
+              source={require('../assets/MapMarker.json')}
+              autoPlay
+              loop
+              style={styles.lottieView}
+              resizeMode="cover"
+            />
+          </View>
+          <Callout style={styles.callout}>
+            <Card style={styles.card}>
+              <Card.Content>
+                <Text variant="titleMedium" style={styles.cardTitle}>
+                  Your Location
+                </Text>
+                <Text variant="bodyMedium" style={styles.cardDescription}>
+                  {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
+                </Text>
+              </Card.Content>
+            </Card>
+          </Callout>
+        </PointAnnotation>
+      )}
+    </MapView>
   );
 };
+
+const styles = StyleSheet.create({
+  lottieView: {
+    width: 50,
+    height: 50,
+  },
+  markerContainer: {
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  loadingText: {
+    marginTop: 10,
+  },
+  callout: {
+    borderRadius: 8,
+    padding: 3,
+    width: 220,
+  },
+  card: {
+    borderRadius: 8,
+    elevation: 4,
+  },
+  cardTitle: {
+    marginBottom: 4,
+  },
+  cardDescription: {
+    color: '#666',
+  },
+});
 
 export default MapScreen;
