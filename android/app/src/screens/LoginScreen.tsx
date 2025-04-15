@@ -15,12 +15,13 @@ import {StackScreenProps} from '@react-navigation/stack';
 import {useUserLogin} from '../api/auth/auth';
 import {useAuthStore} from '../store/authStore';
 import {Animated} from 'react-native';
+import {ActivityIndicator} from 'react-native-paper';
 
 type Props = StackScreenProps<any, 'Login'>;
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
   const [data, setData] = useState({email: '', password: ''});
-  const {mutate: login} = useUserLogin();
+  const {mutate: login, isPending, isSuccess} = useUserLogin();
   const saveToken = useAuthStore(state => state.saveToken);
   const slideAnim = useRef(new Animated.Value(500)).current;
 
@@ -101,8 +102,17 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
-              <Text style={styles.loginButtonText}>Log In</Text>
+            <TouchableOpacity
+              style={styles.loginButton}
+              disabled={isPending}
+              onPress={handleSubmit}>
+              <Text style={styles.loginButtonText}>
+                {isPending || isSuccess ? (
+                  <ActivityIndicator size="small" color="#000" />
+                ) : (
+                  'Log In'
+                )}
+              </Text>
             </TouchableOpacity>
             <Text style={styles.signupText}>
               Don’t have an account?
@@ -122,6 +132,12 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
 export default LoginScreen;
 
 const styles = StyleSheet.create({
+  loaderContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   flex: {
     flex: 1,
   },

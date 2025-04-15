@@ -1,7 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import {View, Image, Text, Alert, FlatList, StyleSheet} from 'react-native';
 import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
-import {ActivityIndicator, IconButton, Provider} from 'react-native-paper';
+import {ActivityIndicator, IconButton} from 'react-native-paper';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useUploadImage} from '../api/image/image';
 import {useUserInfo} from '../api/user/user';

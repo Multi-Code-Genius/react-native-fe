@@ -99,11 +99,11 @@ const ReelCard: React.FC<ReelItemProps> = ({
             ignoreSilentSwitch="obey"
           />
 
-          {isLoading && (
+          {/* {isLoading && (
             <View style={styles.loaderOverlay}>
               <ActivityIndicator size="large" color="white" />
             </View>
-          )}
+          )} */}
 
           <View style={styles.rightActions}>
             <TouchableOpacity

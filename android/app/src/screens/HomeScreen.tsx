@@ -1,14 +1,13 @@
 import React, {useEffect} from 'react';
+import {Text, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {Button, Dialog, Portal, Text, useTheme} from 'react-native-paper';
+import {useRequestRoom, useUserInfo} from '../api/user/user';
 import {useUserStore} from '../store/userStore';
-import {useUserInfo} from '../api/user/user';
-import Stories from '../components/Stories';
+import {ActivityIndicator} from 'react-native-paper';
 
 const HomeScreen = () => {
-  // const [visible, setVisible] = React.useState(false);
-  // const showDialog = () => setVisible(true);
   const {data} = useUserInfo();
+  const {mutate, isPending} = useRequestRoom();
   const {loadUserData, setUserData} = useUserStore();
 
   useEffect(() => {
@@ -16,10 +15,30 @@ const HomeScreen = () => {
     loadUserData();
   }, []);
 
-  // const hideDialog = () => setVisible(false);
-  // const theme = useTheme();
+  const handlerPress = () => {
+    let payload = {
+      latitude: 19.076,
+      longitude: 72.8777,
+      platform: 'platform Name',
+    };
+    mutate(payload);
+  };
 
-  return <Stories />;
+  return (
+    <SafeAreaView className=" flex-1 bg-white">
+      <View className="flex justify-center items-center h-full w-full">
+        <TouchableOpacity onPress={handlerPress} className="text-red-700 ">
+          {isPending ? (
+            <ActivityIndicator size="large" color="#52aafc" />
+          ) : (
+            <Text className="bg-blue-500 w-full p-4 rounded-md text-white">
+              Request For Room
+            </Text>
+          )}
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
 };
 
 export default HomeScreen;

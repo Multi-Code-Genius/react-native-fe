@@ -99,13 +99,13 @@ const ReelList: React.FC<ReelsScreenProps> = ({isActive}) => {
     );
   };
 
-  if (isLoading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#fff" />
-      </View>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View style={styles.loaderContainer}>
+  //       <ActivityIndicator size="large" color="#fff" />
+  //     </View>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -129,7 +129,6 @@ const ReelList: React.FC<ReelsScreenProps> = ({isActive}) => {
         onRefresh={() => refetch()}
         ListFooterComponent={isFetchingNextPage ? <ActivityIndicator /> : null}
         ref={flatListRef}
-        // data={data?.videos}
         keyExtractor={item => item.id}
         pagingEnabled
         horizontal={false}
