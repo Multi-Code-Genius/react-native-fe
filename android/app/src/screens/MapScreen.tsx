@@ -128,7 +128,7 @@ const MapScreen: React.FC = () => {
           <Camera
             centerCoordinate={[userLocation.lng, userLocation.lat]}
             zoomLevel={11}
-            animationMode={'fly'}
+            animationMode="flyTo"
             animationDuration={2000}
           />
         )}
