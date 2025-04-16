@@ -16,19 +16,15 @@ export function ProfileSinglePost() {
   const {photoLikeStatus, addLikesPhoto, updatePhotoLikeStatus} = photoStore();
   const likePhotoMutation = useLikePhoto();
 
-  const hasLiked =
-    photoLikeStatus.includes(postId) ||
-    data?.video?.likes?.some((like: any) => like.userId === userData?.id);
-
-  console.log('photoLikeStatus', photoLikeStatus);
+  // const hasLiked =
+  //   photoLikeStatus.includes(postId) ||
+  //   data?.video?.likes?.some((like: any) => like.userId === userData?.id);
 
   useEffect(() => {
     if (data?.video?.likes?.some((like: any) => like.userId === userData?.id)) {
       addLikesPhoto(postId);
     }
   }, [data?.video?.likes, userData?.id, postId]);
-
-  console.log('data', data);
 
   if (error) {
     return (
@@ -78,10 +74,22 @@ export function ProfileSinglePost() {
         <TouchableOpacity
           className="flex-row items-center gap-2"
           onPress={handleLikeToggle}>
-          <Icon name="heart" size={28} color={hasLiked ? 'red' : 'gray'} />
-          <Text className="text-black text-base">
-            {hasLiked ? likeCount + 1 : likeCount} likes
-          </Text>
+          <Icon
+            name="heart"
+            size={28}
+            color={
+              userData?.id &&
+              (photoLikeStatus.includes(postId) ||
+                (data?.video?.likes?.length > 0 &&
+                  data?.video?.likes.some(
+                    (like: any) => like.userId === userData.id,
+                  )))
+                ? 'red'
+                : 'grey'
+            }
+          />
+          {/* <Icon name="heart" size={28} color={hasLiked ? 'red' : 'gray'} /> */}
+          <Text className="text-black text-base font-bold">{likeCount}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

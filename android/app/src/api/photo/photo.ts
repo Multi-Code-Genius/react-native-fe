@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {api} from '../../hooks/api';
+import {useUserStore} from '../../store/userStore';
 
 export const getAllPosts = async () => {
   try {
@@ -34,7 +35,6 @@ export const uploadPhoto = async (data: FormData) => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    console.log('response=============>', response);
     return await response;
   } catch (error) {
     console.error('Cannot upload video', error);
@@ -64,7 +64,6 @@ export const fetchSinglePhoto = async (postId: string) => {
 };
 
 export const useSinglePhoto = (postId: string) => {
-  console.log('postId', postId);
   return useQuery({
     queryKey: ['photo', postId],
     queryFn: () => fetchSinglePhoto(postId),
@@ -72,15 +71,14 @@ export const useSinglePhoto = (postId: string) => {
   });
 };
 
-export const likePhoto = async (photoId: string) => {
+export const likePhoto = async (postId: string) => {
   try {
-    const response = await api(`/api/post/like/${photoId}`, {
+    const response = await api(`/api/post/like/${postId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    console.log('response===>>', response);
     return await response;
   } catch (error) {
     console.error('Like Photo Error:', error);
@@ -90,99 +88,56 @@ export const likePhoto = async (photoId: string) => {
 
 export const useLikePhoto = () => {
   const queryClient = useQueryClient();
+  const {userData} = useUserStore();
 
   return useMutation({
     mutationFn: ({photoId}: {photoId: string}) => likePhoto(photoId),
 
     onMutate: async ({photoId}) => {
       await queryClient.cancelQueries({queryKey: ['photo']});
-
-      const previousList = queryClient.getQueryData(['photo']);
       const previousSingle = queryClient.getQueryData(['photo', photoId]);
 
-      await Promise.all([
-        queryClient.cancelQueries({queryKey: ['photo', photoId]}),
-        queryClient.cancelQueries({queryKey: ['photo']}),
-      ]);
-
       queryClient.setQueryData(['photo', photoId], (oldData: any) => {
-        if (!oldData) return oldData;
+        if (!oldData?.video?.likes || !userData?.id) return oldData;
 
-        const hasLiked = oldData.likes?.some(
-          (like: any) => like.userId === oldData.currentUserId,
+        const hasLiked = oldData.video.likes.some(
+          (like: any) => like.userId === userData.id,
         );
 
         const updatedLikes = hasLiked
-          ? oldData.likes.filter(
-              (like: any) => like.userId !== oldData.currentUserId,
+          ? oldData.video.likes.filter(
+              (like: any) => like.userId !== userData.id,
             )
           : [
-              ...oldData.likes,
+              ...oldData.video.likes,
               {
-                id: 'temp-like-id',
-                userId: oldData.currentUserId,
-                user: oldData.currentUser,
+                id: 'temp-id',
+                userId: userData.id,
+                user: userData,
               },
             ];
 
         return {
           ...oldData,
-          likes: updatedLikes,
+          video: {
+            ...oldData.video,
+            likes: updatedLikes,
+          },
         };
       });
 
-      queryClient.setQueryData(['photo'], (oldData: any) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page: any) => ({
-            ...page,
-            photos: page.photos.map((photo: any) => {
-              if (photo.id !== photoId) return photo;
-
-              const hasLiked = photo.likes?.some(
-                (like: any) => like.userId === photo.currentUserId,
-              );
-
-              const updatedLikes = hasLiked
-                ? photo.likes.filter(
-                    (like: any) => like.userId !== photo.currentUserId,
-                  )
-                : [
-                    ...photo.likes,
-                    {
-                      id: 'temp-like-id',
-                      userId: photo.currentUserId,
-                      user: photo.currentUser,
-                    },
-                  ];
-
-              return {
-                ...photo,
-                likes: updatedLikes,
-              };
-            }),
-          })),
-        };
-      });
-
-      return {previousSingle, previousList};
+      return {previousSingle};
     },
 
-    onError: (err, {photoId}, context: any) => {
+    onError: (err, {photoId}, context) => {
       if (context?.previousSingle) {
         queryClient.setQueryData(['photo', photoId], context.previousSingle);
-      }
-      if (context?.previousList) {
-        queryClient.setQueryData(['photo'], context.previousList);
       }
       console.error('Like Photo Error:', err);
     },
 
     onSuccess: (_data, {photoId}) => {
       queryClient.invalidateQueries({queryKey: ['photo', photoId]});
-      queryClient.invalidateQueries({queryKey: ['photo']});
     },
   });
 };
