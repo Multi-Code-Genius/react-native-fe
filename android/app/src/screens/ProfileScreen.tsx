@@ -103,6 +103,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         onPress={() => {
           if (type === 'reel') {
             (navigation as any).navigate('ProfileList', {videoId: item.id});
+          } else {
+            (navigation as any).navigate('SinglePostPhoto', {postId: item.id});
           }
         }}>
         {imageUrl ? (

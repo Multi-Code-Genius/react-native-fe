@@ -13,7 +13,7 @@ import {Button} from 'react-native-paper';
 import {useUploadPhoto} from '../api/photo/photo';
 
 export function PhotoPostUploader() {
-  const {mutate: uploadPhotoMutation} = useUploadPhoto();
+  const {mutate: uploadPhotoMutation, isPending} = useUploadPhoto();
 
   const [image, setImage] = useState<any>(null);
   const [description, setDescription] = useState('');
@@ -59,7 +59,7 @@ export function PhotoPostUploader() {
 
   return (
     <View>
-      <Button mode="outlined" onPress={handlePickImage}>
+      <Button mode="outlined" onPress={handlePickImage} disabled={isPending}>
         Upload Post
       </Button>
 
@@ -106,10 +106,15 @@ export function PhotoPostUploader() {
             />
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Button onPress={reset} mode="outlined">
+              <Button onPress={reset} mode="outlined" disabled={isPending}>
                 Cancel
               </Button>
-              <Button onPress={handleUpload}>Upload</Button>
+              <Button
+                onPress={handleUpload}
+                disabled={isPending}
+                loading={isPending}>
+                Upload
+              </Button>
             </View>
           </View>
         </View>

@@ -11,6 +11,7 @@ import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import ResetPassword1 from '../screens/ResetPassword1';
 import {PrivateRoutes} from './PrivateRoutes';
 import {ProfileReelList} from '../components/ProfileReelList';
+import {ProfileSinglePost} from '../components/ProfilePosts/ProfileSinglePost';
 
 const Stack = createStackNavigator();
 
@@ -72,6 +73,10 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
                 options={{title: 'Settings'}}
               /> */}
               <Stack.Screen name="ProfileList" component={ProfileReelList} />
+              <Stack.Screen
+                name="SinglePostPhoto"
+                component={ProfileSinglePost}
+              />
             </>
           ) : (
             <>
