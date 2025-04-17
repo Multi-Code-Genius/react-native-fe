@@ -10,21 +10,49 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const fontConfig = {
   android: {
-    displayLarge: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
-    displayMedium: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
-    displaySmall: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
-    headlineLarge: {fontFamily: 'Gilroy-Medium', fontWeight: '500'},
-    headlineMedium: {fontFamily: 'Gilroy-Medium', fontWeight: '500'},
-    headlineSmall: {fontFamily: 'Gilroy-Medium', fontWeight: '500'},
-    titleLarge: {fontFamily: 'Gilroy-Medium', fontWeight: '500'},
-    titleMedium: {fontFamily: 'Gilroy-Medium', fontWeight: '500'},
-    titleSmall: {fontFamily: 'Gilroy-Medium', fontWeight: '500'},
-    labelLarge: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
-    labelMedium: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
-    labelSmall: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
-    bodyLarge: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
-    bodyMedium: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
-    bodySmall: {fontFamily: 'Gilroy-Regular', fontWeight: '400'},
+    displayLarge: {
+      fontFamily: 'Gilroy-Regular',
+      fontWeight: '400',
+      fontSize: 34,
+    },
+    displayMedium: {
+      fontFamily: 'Gilroy-Regular',
+      fontWeight: '400',
+      fontSize: 28,
+    },
+    displaySmall: {
+      fontFamily: 'Gilroy-Regular',
+      fontWeight: '400',
+      fontSize: 22,
+    },
+    headlineLarge: {
+      fontFamily: 'Gilroy-Medium',
+      fontWeight: '500',
+      fontSize: 24,
+    },
+    headlineMedium: {
+      fontFamily: 'Gilroy-Medium',
+      fontWeight: '500',
+      fontSize: 20,
+    },
+    headlineSmall: {
+      fontFamily: 'Gilroy-Medium',
+      fontWeight: '500',
+      fontSize: 18,
+    },
+    titleLarge: {fontFamily: 'Gilroy-Medium', fontWeight: '500', fontSize: 22},
+    titleMedium: {fontFamily: 'Gilroy-Medium', fontWeight: '500', fontSize: 18},
+    titleSmall: {fontFamily: 'Gilroy-Medium', fontWeight: '500', fontSize: 16},
+    labelLarge: {fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 14},
+    labelMedium: {
+      fontFamily: 'Gilroy-Regular',
+      fontWeight: '400',
+      fontSize: 12,
+    },
+    labelSmall: {fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 10},
+    bodyLarge: {fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 16},
+    bodyMedium: {fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 14},
+    bodySmall: {fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 12},
   },
 };
 

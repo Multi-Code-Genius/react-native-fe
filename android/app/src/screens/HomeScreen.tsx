@@ -175,15 +175,24 @@ const UserListScreen = () => {
 
             <Surface style={styles.info} elevation={0}>
               <Text
-                variant="titleSmall"
-                style={styles.name}
+                variant="titleMedium"
+                style={{color: theme.colors.onPrimary}}
                 onPress={() => handleSubmit(item?.id)}>
                 {item.name}
               </Text>
-
-              <Text variant="bodySmall" style={styles.lastSeen}>
-                {formatLastSeen(item.lastSeen)}
+              <Text
+                variant="bodyMedium"
+                style={{color: theme.colors.secondary}}>
+                {item.email}
               </Text>
+
+              {!item.isOnline && (
+                <Text
+                  variant="bodySmall"
+                  style={{color: theme.colors.secondary}}>
+                  {formatLastSeen(item.lastSeen)}
+                </Text>
+              )}
             </Surface>
 
             <RequestButton
