@@ -1,1 +1,29 @@
-{"installed":{"client_id":"496647100802-a0b52bhr1kb59mabo1suj6rmn8eboafm.apps.googleusercontent.com","project_id":"jay-r-456104","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs"}}
+{
+    "project_info": {
+      "project_number": "925463666612",
+      "project_id": "jay-24601",
+      "storage_bucket": "jay-24601.firebasestorage.app"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:925463666612:android:a712842ac694be84f35ce1",
+          "android_client_info": {
+            "package_name": "com.initialproject"
+          }
+        },
+        "oauth_client": [],
+        "api_key": [
+          {
+            "current_key": "AIzaSyDgmv3sJIy9zLpAMRpe5aA6NFDUdBeEyHI"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": []
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }

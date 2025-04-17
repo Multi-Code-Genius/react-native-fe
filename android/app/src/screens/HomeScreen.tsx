@@ -17,12 +17,17 @@ import {
   IconButton,
   Tooltip,
 } from 'react-native-paper';
-import {useGetAllUser, useSendRequest, useUserInfo} from '../api/user/user';
+import {useGetAllUser, useUserInfo} from '../api/user/user';
 import {useUserStore} from '../store/userStore';
 import {useAuthStore} from '../store/authStore';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import {connectSocket} from '../config/socket';
 import moment from 'moment';
+import {useSendRequest} from '../api/request/request';
+import {requestUserPermission} from '../utils/fcm';
+import messaging from '@react-native-firebase/messaging';
+import notifee, {AndroidImportance} from '@notifee/react-native';
+import {useSendTokenToBackend} from '../api/notification/notification';
 
 type User = {
   id: string;
@@ -85,9 +90,9 @@ const UserListScreen = () => {
   const {token} = useAuthStore();
   const {data: userData, isLoading, refetch} = useGetAllUser();
   const {mutate} = useSendRequest();
-  const navigation = useNavigation();
   const users = userData?.users || [];
   const theme = useTheme();
+  const {mutate: sendTokenMutation} = useSendTokenToBackend();
 
   useFocusEffect(
     useCallback(() => {
@@ -110,6 +115,34 @@ const UserListScreen = () => {
     setUserData(data?.user);
     loadUserData();
     connectSocket(token ?? '');
+
+    requestUserPermission(sendTokenMutation);
+
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      await notifee.displayNotification({
+        title: remoteMessage.notification?.title || 'New Notification',
+        body: remoteMessage.notification?.body || '',
+        android: {
+          channelId: 'default',
+          smallIcon: 'ic_launcher',
+          importance: AndroidImportance.HIGH,
+        },
+      });
+    });
+
+    async function setup() {
+      await notifee.requestPermission();
+
+      await notifee.createChannel({
+        id: 'default',
+        name: 'Default Channel',
+        importance: AndroidImportance.HIGH,
+      });
+    }
+
+    setup();
+
+    return unsubscribe;
   }, []);
 
   const handlerRequest = (id: string) => {
@@ -124,10 +157,6 @@ const UserListScreen = () => {
     if (item?.id === data?.user?.id) {
       return null;
     }
-
-    const handleSubmit = (id: string | undefined) => {
-      (navigation as any).navigate('UserProfile', {id});
-    };
 
     const avatarSource = item.profile_pic ? {uri: item.profile_pic} : undefined;
 
@@ -176,8 +205,7 @@ const UserListScreen = () => {
             <Surface style={styles.info} elevation={0}>
               <Text
                 variant="titleMedium"
-                style={{color: theme.colors.onPrimary}}
-                onPress={() => handleSubmit(item?.id)}>
+                style={{color: theme.colors.onPrimary}}>
                 {item.name}
               </Text>
               <Text

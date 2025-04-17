@@ -67,6 +67,8 @@ export type AuthState = {
   saveToken: (token: string) => Promise<void>;
   initializeAuth: () => Promise<void>;
   removeToken: () => void;
+  fctToken: string;
+  setFctToken: (token: string) => void;
 };
 
 export interface LikeType {

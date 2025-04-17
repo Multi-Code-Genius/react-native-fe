@@ -7,6 +7,8 @@ export const useAuthStore = create<AuthState>(set => {
     try {
       const storedAuth = await AsyncStorage.getItem('isAuthenticated');
       const token = await AsyncStorage.getItem('accessToken');
+      const deviceToken = await AsyncStorage.getItem('FCTtoken');
+      set({fctToken: deviceToken ?? ''});
       set({isAuthenticated: storedAuth === 'true'});
       set({token: token});
     } catch (error) {
@@ -17,6 +19,7 @@ export const useAuthStore = create<AuthState>(set => {
   loadAuthState();
   return {
     isAuthenticated: false,
+    fctToken: null,
     token: null,
     logout: async () => {
       await AsyncStorage.removeItem('isAuthenticated');
@@ -34,6 +37,11 @@ export const useAuthStore = create<AuthState>(set => {
         console.error('Error saving token:', error);
         await AsyncStorage.removeItem('accessToken');
       }
+    },
+
+    setFctToken: async token => {
+      set({fctToken: token});
+      await AsyncStorage.setItem('FCTtoken', token);
     },
 
     removeToken: () => {
