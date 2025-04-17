@@ -121,6 +121,10 @@ const UserListScreen = () => {
   };
 
   const renderItem = ({item}: {item: User}) => {
+    if (item?.id === data?.user?.id) {
+      return null;
+    }
+
     const handleSubmit = (id: string | undefined) => {
       (navigation as any).navigate('UserProfile', {id});
     };

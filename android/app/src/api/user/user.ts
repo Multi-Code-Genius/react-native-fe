@@ -181,3 +181,72 @@ export const useSendRequest = () => {
     onSuccess: () => {},
   });
 };
+
+export const getRequest = async (data: any) => {
+  try {
+    const response = await api('/api/request/friend-request', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      cache: 'no-store',
+      body: JSON.stringify(data),
+    });
+    const resp = await response;
+    return resp;
+  } catch (error) {
+    console.error('Request Response:', error);
+    throw new Error(error instanceof Error ? error.message : 'Data Not Found');
+  }
+};
+
+export const useGetRequest = () => {
+  return useMutation({
+    mutationFn: (data: any) => getRequest(data),
+    onSuccess: () => {},
+  });
+};
+
+export const acceptRequest = async (data: any) => {
+  try {
+    const response = await api('/api/request/friend-request', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      cache: 'no-store',
+      body: JSON.stringify(data),
+    });
+    const resp = await response;
+    return resp;
+  } catch (error) {
+    console.error('Request Response:', error);
+    throw new Error(error instanceof Error ? error.message : 'Data Not Found');
+  }
+};
+
+export const useAcceptRequest = () => {
+  return useMutation({
+    mutationFn: (data: any) => acceptRequest(data),
+    onSuccess: () => {},
+  });
+};
+
+export const declineRequest = async (data: any) => {
+  try {
+    const response = await api('/api/request/friend-request', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      cache: 'no-store',
+      body: JSON.stringify(data),
+    });
+    const resp = await response;
+    return resp;
+  } catch (error) {
+    console.error('Request Response:', error);
+    throw new Error(error instanceof Error ? error.message : 'Data Not Found');
+  }
+};
+
+export const useDeclineRequest = () => {
+  return useMutation({
+    mutationFn: (data: any) => declineRequest(data),
+    onSuccess: () => {},
+  });
+};
