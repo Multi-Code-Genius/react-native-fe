@@ -156,16 +156,13 @@ const MapScreen: React.FC = () => {
         )}
       </MapView>
 
-      <TouchableOpacity
+      <IconButton
+        icon="crosshairs-gps"
+        iconColor="#000"
+        size={24}
         style={styles.locationButton}
-        onPress={flyToUserLocation}>
-        <IconButton
-          icon="crosshairs-gps"
-          iconColor="#000"
-          size={24}
-          style={styles.locationButtonIcon}
-        />
-      </TouchableOpacity>
+        onPress={flyToUserLocation}
+      />
 
       {loading && (
         <View style={styles.loadingOverlay}>
@@ -230,7 +227,7 @@ const styles = StyleSheet.create({
   },
   locationButton: {
     position: 'absolute',
-    bottom: 24,
+    top: 24,
     right: 16,
     backgroundColor: 'white',
     borderRadius: 24,

@@ -1,25 +1,28 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import {FlatList, StyleSheet, Alert, RefreshControl, View} from 'react-native';
 import Animated, {
   FadeInUp,
   useSharedValue,
   withSpring,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import {ActivityIndicator, Surface} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Surface,
+  Avatar,
+  Text,
+  Card,
+  Badge,
+  useTheme,
+  IconButton,
+  Tooltip,
+} from 'react-native-paper';
 import {useGetAllUser, useSendRequest, useUserInfo} from '../api/user/user';
 import {useUserStore} from '../store/userStore';
 import {useAuthStore} from '../store/authStore';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {connectSocket} from '../config/socket';
+import moment from 'moment';
 
 type User = {
   id: string;
@@ -34,8 +37,7 @@ const formatLastSeen = (lastSeen: string | null) => {
   if (!lastSeen) {
     return 'Last seen: Unknown';
   }
-  const date = new Date(lastSeen);
-  return `Last seen: ${date.toLocaleString()}`;
+  return `Last seen: ${moment(lastSeen).fromNow()}`;
 };
 
 const RequestButton = ({
@@ -47,25 +49,31 @@ const RequestButton = ({
   id: string;
   isAlreadySent: boolean;
 }) => {
+  const theme = useTheme();
   const scale = useSharedValue(1);
-
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{scale: scale.value}],
   }));
 
   return (
-    <Animated.View style={[styles.buttonWrapper, animatedStyle]}>
-      <TouchableOpacity
-        onPress={() => onRequest(id)}
-        disabled={isAlreadySent}
-        onPressIn={() => (scale.value = withSpring(0.95))}
-        onPressOut={() => (scale.value = withSpring(1))}
-        style={styles.requestButton}>
-        <Text style={styles.requestText}>
-          {' '}
-          {isAlreadySent ? 'Requested' : 'Request'}
-        </Text>
-      </TouchableOpacity>
+    <Animated.View style={[animatedStyle, {marginLeft: 8}]}>
+      <Tooltip
+        title={isAlreadySent ? 'Request Sent!' : 'Send Request'}
+        leaveTouchDelay={500}>
+        <IconButton
+          icon={isAlreadySent ? 'account-check' : 'account-plus'}
+          size={24}
+          onPress={() => onRequest(id)}
+          onPressIn={() => (scale.value = withSpring(0.9))}
+          onPressOut={() => (scale.value = withSpring(1))}
+          iconColor={
+            isAlreadySent ? theme.colors.secondary : theme.colors.primary
+          }
+          style={{
+            backgroundColor: theme.colors.surface,
+          }}
+        />
+      </Tooltip>
     </Animated.View>
   );
 };
@@ -78,8 +86,8 @@ const UserListScreen = () => {
   const {data: userData, isLoading, refetch} = useGetAllUser();
   const {mutate} = useSendRequest();
   const navigation = useNavigation();
-
   const users = userData?.users || [];
+  const theme = useTheme();
 
   useFocusEffect(
     useCallback(() => {
@@ -105,7 +113,6 @@ const UserListScreen = () => {
   }, []);
 
   const handlerRequest = (id: string) => {
-    console.log('id', id);
     const payload = {
       senderId: data.user.id,
       receiverId: id,
@@ -114,73 +121,101 @@ const UserListScreen = () => {
   };
 
   const renderItem = ({item}: {item: User}) => {
-    // if (item?.id === data?.user?.id) {
-    //   return null;
-    // }
-
     const handleSubmit = (id: string | undefined) => {
       (navigation as any).navigate('UserProfile', {id});
     };
 
+    const avatarSource = item.profile_pic ? {uri: item.profile_pic} : undefined;
+
     return (
       <Animated.View
         entering={FadeInUp.duration(300)}
-        style={{marginVertical: 10}}>
-        <Surface style={styles.card} elevation={4}>
-          <View style={styles.row}>
-            <Image
-              source={{
-                uri: item.profile_pic
-                  ? item.profile_pic
-                  : 'https://ui-avatars.com/api/?name=' + item.name,
-              }}
-              style={styles.avatar}
-            />
-            <View style={styles.info}>
-              <TouchableOpacity onPress={() => handleSubmit(item?.id)}>
-                <Text style={styles.name}>{item.name}</Text>
-              </TouchableOpacity>
-              <Text style={styles.email}>{item.email}</Text>
-              <Text style={styles.status}>
-                {item.isOnline ? '🟢 Online' : '⚫ Offline'}
+        style={{marginVertical: 8}}>
+        <Card mode="elevated" style={styles.card}>
+          <Card.Content style={styles.row}>
+            {avatarSource ? (
+              <View style={{position: 'relative'}}>
+                <Avatar.Image size={48} source={avatarSource} />
+                <Badge
+                  size={16}
+                  style={{
+                    backgroundColor: item.isOnline
+                      ? theme.colors.primary
+                      : theme.colors.error,
+                    position: 'absolute',
+                    bottom: 0,
+                    right: -4,
+                  }}
+                />
+              </View>
+            ) : (
+              <View style={{position: 'relative'}}>
+                <Avatar.Text
+                  style={{backgroundColor: theme.colors.secondary}}
+                  size={48}
+                  label={item.name.slice(0, 2).toUpperCase()}
+                />
+                <Badge
+                  size={16}
+                  style={{
+                    backgroundColor: item.isOnline
+                      ? theme.colors.primary
+                      : theme.colors.error,
+                    position: 'absolute',
+                    bottom: 0,
+                    right: -4,
+                  }}
+                />
+              </View>
+            )}
+
+            <Surface style={styles.info} elevation={0}>
+              <Text
+                variant="titleSmall"
+                style={styles.name}
+                onPress={() => handleSubmit(item?.id)}>
+                {item.name}
               </Text>
-              <Text style={styles.lastSeen}>
+
+              <Text variant="bodySmall" style={styles.lastSeen}>
                 {formatLastSeen(item.lastSeen)}
               </Text>
-            </View>
+            </Surface>
+
             <RequestButton
-              isAlreadySent={data?.user?.sentRequests.some(
+              isAlreadySent={data?.user?.sentRequests?.some(
                 (e: any) => e?.receiverId === item.id,
               )}
               onRequest={handlerRequest}
               id={item.id}
             />
-          </View>
-        </Surface>
+          </Card.Content>
+        </Card>
       </Animated.View>
     );
   };
 
   if (isLoading) {
     return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#fff" />
-      </View>
+      <Surface style={styles.loaderContainer}>
+        <ActivityIndicator size="large" />
+      </Surface>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <Surface style={styles.container}>
       <FlatList
         data={users}
-        onRefresh={onRefresh}
-        refreshing={refreshing}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         keyExtractor={item => item.id}
         renderItem={renderItem}
         contentContainerStyle={{paddingVertical: 20}}
         showsVerticalScrollIndicator={false}
       />
-    </View>
+    </Surface>
   );
 };
 
@@ -202,54 +237,29 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#1a1a1a',
     borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    marginRight: 10,
+    gap: 10,
   },
   info: {
     flex: 1,
+    justifyContent: 'center',
   },
   name: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
   },
   email: {
     color: '#aaa',
-    fontSize: 12,
-    marginTop: 1,
   },
   status: {
     color: '#888',
-    fontSize: 11,
     marginTop: 2,
   },
   lastSeen: {
     color: '#666',
-    fontSize: 11,
-    marginTop: 1,
-  },
-  buttonWrapper: {
-    marginLeft: 8,
-  },
-  requestButton: {
-    backgroundColor: '#292929',
-    paddingVertical: 5,
-    paddingHorizontal: 12,
-    borderRadius: 999,
-  },
-  requestText: {
-    color: '#fff',
-    fontWeight: '500',
-    fontSize: 12,
+    marginTop: 2,
   },
 });

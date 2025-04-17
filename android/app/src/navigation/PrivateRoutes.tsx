@@ -1,12 +1,22 @@
 import React, {useState} from 'react';
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
-import {BottomNavigation, useTheme} from 'react-native-paper';
+import {
+  BottomNavigation,
+  Button,
+  Icon,
+  IconButton,
+  MD3Colors,
+  useTheme,
+} from 'react-native-paper';
 import ReelsScreen from '../screens/ReelsScreen';
 import {ProfileScreen} from '../screens/ProfileScreen';
 import {SettingScreen} from '../screens/SettingScreen';
+import TestScreen from '../screens/TestScreen';
+import {StyleSheet, View} from 'react-native';
+import {BlurView} from '@react-native-community/blur';
 
-type RouteKey = 'home' | 'map' | 'reels' | 'account';
+type RouteKey = 'home' | 'map' | 'test' | 'reels' | 'account';
 
 type Route = {
   key: RouteKey;
@@ -34,6 +44,13 @@ export const PrivateRoutes: React.FC = () => {
       unfocusedIcon: 'map-outline',
     },
     {
+      key: 'test',
+      title: '',
+      focusedIcon: 'plus-circle',
+      unfocusedIcon: 'plus-circle-outline',
+    },
+
+    {
       key: 'reels',
       title: 'Reels',
       focusedIcon: 'play-box-multiple',
@@ -52,6 +69,8 @@ export const PrivateRoutes: React.FC = () => {
         return <HomeScreen />;
       case 'map':
         return <MapScreen />;
+      case 'test':
+        return <TestScreen />;
       case 'reels':
         return <ReelsScreen isActive={index === 2} />;
       case 'account':
@@ -79,14 +98,38 @@ export const PrivateRoutes: React.FC = () => {
         setShowSettings(false);
       }}
       renderScene={renderScene}
-      inactiveColor="#B3B3B3"
-      activeColor="#fff"
+      inactiveColor={theme.colors.secondary}
+      activeColor={theme.colors.primary}
+      labeled={false}
       activeIndicatorStyle={{backgroundColor: 'none'}}
       theme={theme}
+      compact
+      keyboardHidesNavigationBar
+      sceneAnimationType="shifting"
+      sceneAnimationEnabled
       barStyle={{
-        backgroundColor: '#121212',
-        borderTopColor: '#282828',
+        backgroundColor: theme.colors.background,
         borderTopWidth: 1,
+        borderColor: theme.colors.outline,
+      }}
+      renderIcon={({route, color}) => {
+        if (route.key === 'test') {
+          return (
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <IconButton
+                icon={
+                  index === 2
+                    ? route.focusedIcon
+                    : route.unfocusedIcon || route.focusedIcon
+                }
+                iconColor={color}
+                size={50}
+              />
+            </View>
+          );
+        }
+        return <Icon source={route.focusedIcon} color={color} size={30} />;
       }}
     />
   );
