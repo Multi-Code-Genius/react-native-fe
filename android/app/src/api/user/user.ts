@@ -43,6 +43,18 @@ export const getAllUser = async () => {
   }
 };
 
+export const useGetAllUser = () => {
+  return useQuery({
+    queryKey: ['all-user'],
+    queryFn: getAllUser,
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    retry: 0,
+    enabled: useAuthStore.getState().isAuthenticated,
+  });
+};
+
 export const updateUserInfo = async (data: any) => {
   try {
     const response = await api('/api/user/update', {
@@ -143,6 +155,29 @@ export const useRequestRoom = () => {
   return useMutation({
     mutationKey: ['room'],
     mutationFn: (data: any) => requestRoom(data),
+    onSuccess: () => {},
+  });
+};
+
+export const sendRequest = async (data: any) => {
+  try {
+    const response = await api('/api/request/friend-request', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      cache: 'no-store',
+      body: JSON.stringify(data),
+    });
+    const resp = await response;
+    return resp;
+  } catch (error) {
+    console.error('Request Response:', error);
+    throw new Error(error instanceof Error ? error.message : 'Data Not Found');
+  }
+};
+
+export const useSendRequest = () => {
+  return useMutation({
+    mutationFn: (data: any) => sendRequest(data),
     onSuccess: () => {},
   });
 };
