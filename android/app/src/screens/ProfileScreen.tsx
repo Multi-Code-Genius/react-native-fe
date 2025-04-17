@@ -174,6 +174,11 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
     );
   }
 
+  const postCount =
+    (data?.user?.posts?.length || 0) + (data?.user?.videos?.length || 0);
+
+  const friendsCount = data?.user?.acceptedRequests?.length || 0;
+
   return (
     <>
       <View className="flex-1 p-6 bg-white">
@@ -207,13 +212,28 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                 />
               </View>
             </View>
-            <View className="justify-center w-full">
-              <Text className="text-[20px] font-semibold text-gray-800">
+            <View className="justify-center w-full gap-3">
+              <Text className="text-[17px] font-semibold text-gray-800">
                 {data?.user?.name || 'Your Name'}
               </Text>
-              <Text className="text-[20px] font-semibold text-gray-600">
+              <View className="flex-row gap-8">
+                <View>
+                  <Text>{postCount}</Text>
+                  <Text className="font-medium">Post</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    (navigation as any).navigate('FriendsList');
+                  }}>
+                  <View>
+                    <Text>{friendsCount}</Text>
+                    <Text className="font-medium">Friends</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+              {/* <Text className="text-[20px] font-semibold text-gray-600">
                 {data?.user?.email || 'your@email.com'}
-              </Text>
+              </Text> */}
             </View>
           </View>
         </View>

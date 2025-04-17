@@ -9,9 +9,10 @@ import {SignUpFormScreen} from '../screens/SignUpFormScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import ResetPassword1 from '../screens/ResetPassword1';
-import {PrivateRoutes} from './PrivateRoutes';
 import {ProfileReelList} from '../components/ProfileReelList';
 import {ProfileSinglePost} from '../components/ProfilePosts/ProfileSinglePost';
+import {PrivateRoutes} from './PrivateRoutes';
+import {FreindsListScreen} from '../screens/FreindsListScreen';
 
 const Stack = createStackNavigator();
 
@@ -67,12 +68,9 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
           {isAuthenticated ? (
             <>
               <Stack.Screen name="Main" component={PrivateRoutes} />
-              {/* <Stack.Screen
-                name="Settings"
-                component={SettingScreen}
-                options={{title: 'Settings'}}
-              /> */}
+
               <Stack.Screen name="ProfileList" component={ProfileReelList} />
+              <Stack.Screen name="FriendsList" component={FreindsListScreen} />
               <Stack.Screen
                 name="SinglePostPhoto"
                 component={ProfileSinglePost}
