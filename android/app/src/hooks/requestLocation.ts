@@ -1,4 +1,4 @@
-import {PermissionsAndroid, Platform} from 'react-native';
+import {PermissionsAndroid} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 
 type Location = {

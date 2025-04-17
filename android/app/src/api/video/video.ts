@@ -65,6 +65,105 @@ export const likeVideo = async (videoId: string) => {
   }
 };
 
+export const useLikeVideo = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({videoId}: {videoId: string}) => likeVideo(videoId),
+
+    onMutate: async ({videoId}) => {
+      await queryClient.cancelQueries({queryKey: ['videos']});
+
+      const previousList = queryClient.getQueryData(['videos']);
+      await Promise.all([
+        queryClient.cancelQueries({queryKey: ['video', videoId]}),
+        queryClient.cancelQueries({queryKey: ['videos']}),
+      ]);
+
+      const previousSingle = queryClient.getQueryData(['video', videoId]);
+
+      queryClient.setQueryData(['video', videoId], (oldData: any) => {
+        if (!oldData) {
+          return oldData;
+        }
+
+        const hasLiked = oldData.likes?.some(
+          (like: any) => like.userId === oldData.currentUserId,
+        );
+
+        const updatedLikes = hasLiked
+          ? oldData.likes.filter(
+              (like: any) => like.userId !== oldData.currentUserId,
+            )
+          : [
+              ...oldData.likes,
+              {
+                id: 'temp-like-id',
+                userId: oldData.currentUserId,
+                user: oldData.currentUser,
+              },
+            ];
+
+        return {...oldData, likes: updatedLikes};
+      });
+
+      queryClient.setQueryData(['videos'], (oldData: any) => {
+        if (!oldData) {
+          return oldData;
+        }
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            videos: page.videos.map((video: any) => {
+              if (video.id !== videoId) {
+                return video;
+              }
+
+              const hasLiked = video.likes?.some(
+                (like: any) => like.userId === video.currentUserId,
+              );
+
+              const updatedLikes = hasLiked
+                ? video.likes.filter(
+                    (like: any) => like.userId !== video.currentUserId,
+                  )
+                : [
+                    ...video.likes,
+                    {
+                      id: 'temp-like-id',
+                      userId: video.currentUserId,
+                      user: video.currentUser,
+                    },
+                  ];
+
+              return {...video, likes: updatedLikes};
+            }),
+          })),
+        };
+      });
+
+      return {previousSingle, previousList};
+    },
+
+    onError: (err, {videoId}, context: any) => {
+      if (context?.previousSingle) {
+        queryClient.setQueryData(['video', videoId], context.previousSingle);
+      }
+      if (context?.previousList) {
+        queryClient.setQueryData(['videos'], context.previousList);
+      }
+      return console.error('Like Video Error:', err);
+    },
+
+    onSuccess: (_data, {videoId}) => {
+      queryClient.invalidateQueries({queryKey: ['video', videoId]});
+      queryClient.invalidateQueries({queryKey: ['videos']});
+    },
+  });
+};
+
 export const commentVideo = async (videoId: string) => {
   try {
     const response = await api(`/api/video/comments/${videoId}`, {
@@ -154,105 +253,6 @@ export const useCommentVideo = () => {
                   ];
 
               return {...video, comments: updatedComments};
-            }),
-          })),
-        };
-      });
-
-      return {previousSingle, previousList};
-    },
-
-    onError: (err, {videoId}, context: any) => {
-      if (context?.previousSingle) {
-        queryClient.setQueryData(['video', videoId], context.previousSingle);
-      }
-      if (context?.previousList) {
-        queryClient.setQueryData(['videos'], context.previousList);
-      }
-      return console.error('Like Video Error:', err);
-    },
-
-    onSuccess: (_data, {videoId}) => {
-      queryClient.invalidateQueries({queryKey: ['video', videoId]});
-      queryClient.invalidateQueries({queryKey: ['videos']});
-    },
-  });
-};
-
-export const useLikeVideo = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({videoId}: {videoId: string}) => likeVideo(videoId),
-
-    onMutate: async ({videoId}) => {
-      await queryClient.cancelQueries({queryKey: ['videos']});
-
-      const previousList = queryClient.getQueryData(['videos']);
-      await Promise.all([
-        queryClient.cancelQueries({queryKey: ['video', videoId]}),
-        queryClient.cancelQueries({queryKey: ['videos']}),
-      ]);
-
-      const previousSingle = queryClient.getQueryData(['video', videoId]);
-
-      queryClient.setQueryData(['video', videoId], (oldData: any) => {
-        if (!oldData) {
-          return oldData;
-        }
-
-        const hasLiked = oldData.likes?.some(
-          (like: any) => like.userId === oldData.currentUserId,
-        );
-
-        const updatedLikes = hasLiked
-          ? oldData.likes.filter(
-              (like: any) => like.userId !== oldData.currentUserId,
-            )
-          : [
-              ...oldData.likes,
-              {
-                id: 'temp-like-id',
-                userId: oldData.currentUserId,
-                user: oldData.currentUser,
-              },
-            ];
-
-        return {...oldData, likes: updatedLikes};
-      });
-
-      queryClient.setQueryData(['videos'], (oldData: any) => {
-        if (!oldData) {
-          return oldData;
-        }
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page: any) => ({
-            ...page,
-            videos: page.videos.map((video: any) => {
-              if (video.id !== videoId) {
-                return video;
-              }
-
-              const hasLiked = video.likes?.some(
-                (like: any) => like.userId === video.currentUserId,
-              );
-
-              const updatedLikes = hasLiked
-                ? video.likes.filter(
-                    (like: any) => like.userId !== video.currentUserId,
-                  )
-                : [
-                    ...video.likes,
-                    {
-                      id: 'temp-like-id',
-                      userId: video.currentUserId,
-                      user: video.currentUser,
-                    },
-                  ];
-
-              return {...video, likes: updatedLikes};
             }),
           })),
         };
