@@ -6,10 +6,16 @@ import {
   Callout,
   Camera,
 } from '@maplibre/maplibre-react-native';
-import {Card, Text, ActivityIndicator, IconButton} from 'react-native-paper';
+import {
+  Card,
+  Text,
+  ActivityIndicator,
+  IconButton,
+  useTheme,
+} from 'react-native-paper';
 import {requestLocation} from '../hooks/requestLocation';
 
-const LOCATION_TIMEOUT = 10000; // 10 seconds timeout
+const LOCATION_TIMEOUT = 10000;
 
 const MapScreen: React.FC = () => {
   const [userLocation, setUserLocation] = useState<{
@@ -19,6 +25,7 @@ const MapScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [locationError, setLocationError] = useState<string | null>(null);
   const mapRef = useRef<MapView>(null);
+  const theme = useTheme();
 
   const getLocationWithTimeout = async () => {
     let timeoutId: NodeJS.Timeout;
@@ -72,14 +79,9 @@ const MapScreen: React.FC = () => {
       if (location) {
         setUserLocation(location);
 
-        // Add 3-second delay before flying to location
         await new Promise(resolve => setTimeout(resolve, 3000));
 
-        mapRef.current?.flyTo(
-          [location.lng, location.lat],
-          14, // Higher zoom level when manually requested
-          2000, // Animation duration
-        );
+        mapRef.current?.flyTo([location.lng, location.lat], 14, 2000);
       }
     } catch (error: any) {
       console.error('Failed to get location:', error);
@@ -96,7 +98,11 @@ const MapScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View
+        style={[
+          styles.loadingContainer,
+          {backgroundColor: theme.colors.background},
+        ]}>
         <ActivityIndicator size="large" />
         <Text style={styles.loadingText}>Getting your location...</Text>
       </View>
@@ -105,7 +111,11 @@ const MapScreen: React.FC = () => {
 
   if (locationError) {
     return (
-      <View style={styles.errorContainer}>
+      <View
+        style={[
+          styles.errorContainer,
+          {backgroundColor: theme.colors.background},
+        ]}>
         <Text style={styles.errorText}>{locationError}</Text>
         <TouchableOpacity
           style={styles.retryButton}
@@ -158,14 +168,21 @@ const MapScreen: React.FC = () => {
 
       <IconButton
         icon="crosshairs-gps"
-        iconColor="#000"
+        iconColor={theme.colors.primary}
         size={24}
-        style={styles.locationButton}
+        style={[
+          styles.locationButton,
+          {backgroundColor: theme.colors.secondary},
+        ]}
         onPress={flyToUserLocation}
       />
 
       {loading && (
-        <View style={styles.loadingOverlay}>
+        <View
+          style={[
+            styles.loadingOverlay,
+            {backgroundColor: theme.colors.backdrop},
+          ]}>
           <ActivityIndicator size="large" />
         </View>
       )}
@@ -186,7 +203,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+
     padding: 20,
   },
   errorText: {
@@ -229,7 +246,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 24,
     right: 16,
-    backgroundColor: 'white',
+
     borderRadius: 24,
     width: 48,
     height: 48,
@@ -248,7 +265,6 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.2)',
   },
 });
 

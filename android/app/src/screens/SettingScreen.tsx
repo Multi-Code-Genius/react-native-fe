@@ -15,6 +15,7 @@ import {
 import isEqual from 'lodash/isEqual';
 import {pickBy} from 'lodash';
 import {useAuthStore} from '../store/authStore';
+import {useNavigation} from '@react-navigation/native';
 
 const LabelBox = ({
   label,
@@ -71,6 +72,7 @@ export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
   const [editableUserData, setEditableUserData] = useState<any>({});
   const {logout} = useAuthStore();
   const [dialogVisible, setDialogVisible] = useState(false);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -121,7 +123,7 @@ export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
   return (
     <>
       <Appbar.Header style={{backgroundColor: theme.colors.background}}>
-        <Appbar.BackAction onPress={() => setShowSettings(false)} />
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
 
         <Appbar.Content title="Settings" />
         {!isEditing ? (

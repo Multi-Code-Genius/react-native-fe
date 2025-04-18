@@ -17,9 +17,7 @@ type ProfileScreenProps = {
   setShowSettings: (show: boolean) => void;
 };
 
-export const ProfileScreen: React.FC<ProfileScreenProps> = ({
-  setShowSettings,
-}) => {
+export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
   const navigation = useNavigation();
   const {data, isLoading, error, refetch} = useUserInfo();
   const userId = data?.user?.id;
@@ -187,7 +185,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             <IconButton
               icon="cog"
               size={24}
-              onPress={() => setShowSettings(true)}
+              onPress={() => navigation.navigate('Settings')}
               iconColor="#000"
               containerColor="#fff"
             />

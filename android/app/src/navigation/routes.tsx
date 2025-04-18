@@ -14,6 +14,7 @@ import {ProfileSinglePost} from '../components/ProfilePosts/ProfileSinglePost';
 import {PrivateRoutes} from './PrivateRoutes';
 import {FreindsListScreen} from '../screens/FreindsListScreen';
 import {FriendsRequestAcceptScreen} from '../screens/FriendsRequestAcceptScreen';
+import {SettingScreen} from '../screens/SettingScreen';
 
 const Stack = createStackNavigator();
 
@@ -65,11 +66,19 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
   return (
     <QueryClientProvider client={queryClient}>
       <NavigationContainer linking={linking} fallback={fallback}>
-        <Stack.Navigator screenOptions={{headerShown: false}}>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            animation: 'fade',
+          }}>
           {isAuthenticated ? (
             <>
               <Stack.Screen name="Main" component={PrivateRoutes} />
-
+              <Stack.Screen
+                name="Settings"
+                component={SettingScreen}
+                options={{title: 'Settings', animation: 'default'}}
+              />
               <Stack.Screen name="ProfileList" component={ProfileReelList} />
               <Stack.Screen name="FriendsList" component={FreindsListScreen} />
               <Stack.Screen
