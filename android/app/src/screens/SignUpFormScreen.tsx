@@ -13,11 +13,12 @@ import {Animated} from 'react-native';
 import {useUserSignup} from '../api/auth/auth';
 import {useNavigation} from '@react-navigation/native';
 import {useAuthStore} from '../store/authStore';
+import {ActivityIndicator} from 'react-native-paper';
 
 export function SignUpFormScreen() {
   const navigation = useNavigation();
   const [data, setData] = useState({name: '', email: '', password: ''});
-  const {mutate: signup} = useUserSignup();
+  const {mutate: signup, isSuccess, isPending} = useUserSignup();
   const saveToken = useAuthStore(state => state.saveToken);
   const slideAnim = useRef(new Animated.Value(500)).current;
 
@@ -113,8 +114,13 @@ export function SignUpFormScreen() {
 
                 <TouchableOpacity
                   style={styles.loginButton}
+                  disabled={isPending}
                   onPress={handleSignup}>
-                  <Text style={styles.loginButtonText}>SignUp</Text>
+                  <Text style={styles.loginButtonText}>
+                    isPending || isSuccess ? (
+                    <ActivityIndicator size="small" color="#000" />) : (
+                    'SignUp' )
+                  </Text>
                 </TouchableOpacity>
 
                 <Text style={styles.signupText}>

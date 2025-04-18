@@ -1,14 +1,23 @@
-import { View, Text, TextInput, Button, Alert, ImageBackground, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
-import { useResetPassword } from '../api/auth/auth';
-import { Animated } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  ImageBackground,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {useResetPassword} from '../api/auth/auth';
+import {Animated} from 'react-native';
+import {ActivityIndicator} from 'react-native-paper';
 
-export default function ResetPasswordScreen({ route }: any) {
+export default function ResetPasswordScreen({route}: any) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const slideAnim = useRef(new Animated.Value(500)).current;
-
-
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -19,28 +28,27 @@ export default function ResetPasswordScreen({ route }: any) {
     }).start();
   }, []);
 
-  const { mutate } = useResetPassword();
-  const { token } = route.params;
+  const {mutate, isPending} = useResetPassword();
+  const {token} = route.params;
 
   const handleResetPassword = () => {
     if (newPassword !== confirmPassword) {
       Alert.alert('Error', 'Passwords do not match');
       return;
     }
-    mutate({ token: token, newPassword: newPassword });
+    mutate({token: token, newPassword: newPassword});
   };
 
   return (
     <ImageBackground
       source={require('../assets/image/backgroundimage.png')}
       style={styles.background}
-      resizeMode="cover"
-    >
+      resizeMode="cover">
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-      >
-        <Animated.View style={[styles.content, { transform: [{ translateY: slideAnim }] }]}>
+        keyboardShouldPersistTaps="handled">
+        <Animated.View
+          style={[styles.content, {transform: [{translateY: slideAnim}]}]}>
           <Text className="text-2xl  font-bold text-center text-white mb-6">
             Reset Password
           </Text>
@@ -59,8 +67,17 @@ export default function ResetPasswordScreen({ route }: any) {
             onChangeText={setConfirmPassword}
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
-            <Text style={styles.loginButtonText} >Reset Password</Text>
+          <TouchableOpacity
+            style={styles.button}
+            disabled={isPending}
+            onPress={handleResetPassword}>
+            <Text style={styles.loginButtonText}>
+              {isPending ? (
+                <ActivityIndicator size="small" color="#000" />
+              ) : (
+                'Reset Password'
+              )}
+            </Text>
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>
