@@ -8,9 +8,17 @@ import {
   View,
 } from 'react-native';
 import {useUserInfo} from '../api/user/user';
-import {Avatar, Badge, Button, Searchbar, useTheme} from 'react-native-paper';
+import {
+  Appbar,
+  Avatar,
+  Badge,
+  Button,
+  Searchbar,
+  useTheme,
+} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native';
 import {useAcceptRequest, useDeclineRequest} from '../api/request/request';
+import {useNavigation} from '@react-navigation/native';
 
 export function FriendsRequestAcceptScreen() {
   const {data} = useUserInfo();
@@ -19,6 +27,8 @@ export function FriendsRequestAcceptScreen() {
   const [deletingId, setDeletingId] = useState(null);
   const acceptRequestMutation = useAcceptRequest();
   const deleteRequestMutation = useDeclineRequest();
+
+  const navigation = useNavigation();
   const theme = useTheme();
 
   const acceptedRequests = data?.user?.pendingRequests;
@@ -26,10 +36,15 @@ export function FriendsRequestAcceptScreen() {
   return (
     <SafeAreaView className="flex-1 bg-black">
       <View className="p-4">
-        <Text className="text-center text-[18px] text-base text-gray-400 font-semibold">
-          Friends requests
-        </Text>
-        <View className=" h-[1px] bg-gray-300 w-full mt-3" />
+        <View className="flex-row items-center ">
+          <Appbar.BackAction onPress={() => navigation.goBack()} />
+
+          <Text className="text-center text-[20px] text-base text-gray-400 font-semibold">
+            Friends requests
+          </Text>
+        </View>
+
+        <View className=" h-[1px] bg-gray-300 w-full " />
       </View>
       <Searchbar
         placeholder="Search User"

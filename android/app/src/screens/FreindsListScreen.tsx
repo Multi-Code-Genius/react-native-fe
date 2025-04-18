@@ -1,4 +1,4 @@
-import {useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
@@ -8,13 +8,13 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import {Avatar, Searchbar, useTheme} from 'react-native-paper';
-import {useUserStore} from '../store/userStore';
+import {Appbar, Avatar, Searchbar, useTheme} from 'react-native-paper';
 import {useUserInfo} from '../api/user/user';
 
 export function FreindsListScreen() {
   const {data} = useUserInfo();
   const theme = useTheme();
+  const navigation = useNavigation();
 
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -22,16 +22,19 @@ export function FreindsListScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-black">
-      <View className="p-4">
-        <Text className="text-center text-base text-gray-400 font-semibold">
-          {data?.user?.name}
-        </Text>
-        <Text className="text-center text-xl text-white font-bold">
-          FRIENDS
-        </Text>
-        <View className=" h-[1px] bg-gray-300 w-full mt-2" />
-      </View>
+      <View className="flex-row items-center justify-between px-1 py-2">
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Appbar.BackAction color="white" />
+        </TouchableOpacity>
 
+        <View className="absolute left-0 right-0 items-center">
+          <Text className="text-base text-gray-400 font-semibold">
+            {data?.user?.name}
+          </Text>
+          <Text className="text-xl text-white font-bold">FRIENDS</Text>
+        </View>
+      </View>
+      <View className=" h-[1px] bg-gray-300 w-full " />
       <Searchbar
         placeholder="Search"
         placeholderTextColor="#666"
@@ -42,6 +45,7 @@ export function FreindsListScreen() {
           backgroundColor: '#1a1a1a',
           marginHorizontal: 16,
           marginBottom: 12,
+          marginTop: 12,
         }}
         iconColor="white"
       />
