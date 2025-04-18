@@ -23,6 +23,7 @@ export const useSendRequest = () => {
     mutationFn: (data: any) => sendRequest(data),
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['all-user']});
+      queryClient.invalidateQueries({queryKey: ['profile']});
     },
   });
 };
@@ -48,6 +49,7 @@ export const useAcceptRequest = () => {
     mutationFn: (id: string) => acceptRequest(id),
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['profile']});
+      queryClient.invalidateQueries({queryKey: ['all-user']});
     },
   });
 };
@@ -73,6 +75,7 @@ export const useDeclineRequest = () => {
     mutationFn: (id: string) => declineRequest(id),
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['profile']});
+      queryClient.invalidateQueries({queryKey: ['all-user']});
     },
   });
 };

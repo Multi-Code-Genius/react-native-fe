@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -8,30 +8,37 @@ import {
   View,
 } from 'react-native';
 import {useUserInfo} from '../api/user/user';
-import {
-  Appbar,
-  Avatar,
-  Badge,
-  Button,
-  Searchbar,
-  useTheme,
-} from 'react-native-paper';
+import {Appbar, Avatar, Searchbar, useTheme} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native';
 import {useAcceptRequest, useDeclineRequest} from '../api/request/request';
 import {useNavigation} from '@react-navigation/native';
 
 export function FriendsRequestAcceptScreen() {
-  const {data} = useUserInfo();
+  const {data, refetch} = useUserInfo();
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingId, setLoadingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
-  const acceptRequestMutation = useAcceptRequest();
-  const deleteRequestMutation = useDeclineRequest();
 
   const navigation = useNavigation();
+  const {
+    mutate: acceptRequestMutation,
+    isSuccess,
+    isPending,
+  } = useAcceptRequest();
+  const {
+    mutate: deleteRequestMutation,
+    isSuccess: declineSuccess,
+    isPending: declinePending,
+  } = useDeclineRequest();
   const theme = useTheme();
 
   const acceptedRequests = data?.user?.pendingRequests;
+
+  console.log('data', data);
+
+  useEffect(() => {
+    refetch();
+  }, [isSuccess, declineSuccess, refetch]);
 
   return (
     <SafeAreaView className="flex-1 bg-black">
@@ -95,11 +102,11 @@ export function FriendsRequestAcceptScreen() {
                 // onPress={() => acceptRequestMutation.mutate(item.id)}
                 onPress={() => {
                   setLoadingId(item.id);
-                  acceptRequestMutation.mutate(item.id, {
+                  acceptRequestMutation(item.id, {
                     onSettled: () => setLoadingId(null),
                   });
                 }}
-                disabled={acceptRequestMutation.isPending}
+                disabled={isPending}
                 style={{minHeight: 28, minWidth: 70}}>
                 {loadingId === item.id ? (
                   <ActivityIndicator size="small" color="white" />
@@ -115,11 +122,11 @@ export function FriendsRequestAcceptScreen() {
                 // onPress={() => deleteRequestMutation.mutate(item.id)}
                 onPress={() => {
                   setDeletingId(item.id);
-                  deleteRequestMutation.mutate(item.id, {
+                  deleteRequestMutation(item.id, {
                     onSettled: () => setDeletingId(null),
                   });
                 }}
-                disabled={deleteRequestMutation.isPending}
+                disabled={declinePending}
                 style={{minHeight: 28, minWidth: 70}}>
                 <Text className="text-white text-xs font-semibold">
                   {deletingId === item.id ? (

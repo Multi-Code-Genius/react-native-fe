@@ -25,8 +25,19 @@
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="default_channel_id"
+            android:value="default"
             tools:replace="android:value" />
+
+        <service
+            android:name="io.invertase.firebase.messaging.ReactNativeFirebaseMessagingService"
+            android:exported="true"
+            tools:replace="android:exported">
+            
+        <intent-filter>
+          <action android:name="com.google.firebase.MESSAGING_EVENT" />
+        </intent-filter>
+        </service>
+            
 
         <activity
             android:name=".MainActivity"
