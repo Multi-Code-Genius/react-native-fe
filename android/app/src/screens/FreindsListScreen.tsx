@@ -14,12 +14,10 @@ import {useUserInfo} from '../api/user/user';
 
 export function FreindsListScreen() {
   const {data} = useUserInfo();
-  console.log('data=====>>>>>', data);
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  console.log('data?.users?.acceptedRequests', data?.user?.acceptedRequests);
-  const acceptedRequests = data?.user?.acceptedRequest;
+  const acceptedRequests = data?.user?.acceptedRequests;
 
   return (
     <SafeAreaView className="flex-1 bg-black">
@@ -52,20 +50,18 @@ export function FreindsListScreen() {
         keyExtractor={item => item.id}
         contentContainerStyle={{paddingHorizontal: 16}}
         renderItem={({item}) => (
-          <TouchableOpacity
-            activeOpacity={0.7}
-            className="flex-row items-center py-3 border-b border-gray-800">
-            <View className="w-[50px] h-[50px] rounded-full overflow-hidden mr-4">
+          <View className="flex-row items-center justify-between py-3">
+            <View className="flex-row items-center">
               <Image
                 source={{uri: item.sender.profile_pic}}
-                className="w-full h-full"
+                className="w-10 h-10 rounded-full mr-3"
                 resizeMode="cover"
               />
+              <Text className="text-white text-md font-medium">
+                {item.sender.name}
+              </Text>
             </View>
-            <Text className="text-white text-[16px] font-semibold">
-              {item.sender.name}
-            </Text>
-          </TouchableOpacity>
+          </View>
         )}
       />
     </SafeAreaView>

@@ -1,5 +1,12 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, StyleSheet, Alert, RefreshControl, View} from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  Alert,
+  RefreshControl,
+  View,
+  TouchableOpacity,
+} from 'react-native';
 import Animated, {
   FadeInUp,
   useSharedValue,
@@ -20,7 +27,7 @@ import {
 import {useGetAllUser, useUserInfo} from '../api/user/user';
 import {useUserStore} from '../store/userStore';
 import {useAuthStore} from '../store/authStore';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {connectSocket} from '../config/socket';
 import moment from 'moment';
 import {useSendRequest} from '../api/request/request';
@@ -28,6 +35,7 @@ import {requestUserPermission} from '../utils/fcm';
 import messaging from '@react-native-firebase/messaging';
 import notifee, {AndroidImportance} from '@notifee/react-native';
 import {useSendTokenToBackend} from '../api/notification/notification';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type User = {
   id: string;
@@ -93,6 +101,7 @@ const UserListScreen = () => {
   const users = userData?.users || [];
   const theme = useTheme();
   const {mutate: sendTokenMutation} = useSendTokenToBackend();
+  const navigation = useNavigation();
 
   useFocusEffect(
     useCallback(() => {
@@ -253,6 +262,19 @@ const UserListScreen = () => {
 
   return (
     <Surface style={styles.container}>
+      <TouchableOpacity
+        style={styles.actionButton}
+        onPress={() => {
+          (navigation as any).navigate('FriendsRequestAcceptScreen');
+        }}>
+        <Icon
+          name="heart"
+          size={25}
+          color={'white'}
+          style={{display: 'flex', alignItems: 'flex-end'}}
+        />
+      </TouchableOpacity>
+
       <FlatList
         data={users}
         refreshControl={
@@ -260,7 +282,7 @@ const UserListScreen = () => {
         }
         keyExtractor={item => item.id}
         renderItem={renderItem}
-        contentContainerStyle={{paddingVertical: 20}}
+        contentContainerStyle={{paddingVertical: 10}}
         showsVerticalScrollIndicator={false}
       />
     </Surface>
@@ -281,6 +303,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#0f0f0f',
     paddingHorizontal: 12,
     paddingTop: 8,
+  },
+  actionButton: {
+    marginTop: 10,
+    alignItems: 'flex-end',
   },
   card: {
     backgroundColor: '#1a1a1a',

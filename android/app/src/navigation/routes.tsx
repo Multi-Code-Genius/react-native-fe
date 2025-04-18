@@ -13,6 +13,7 @@ import {ProfileReelList} from '../components/ProfileReelList';
 import {ProfileSinglePost} from '../components/ProfilePosts/ProfileSinglePost';
 import {PrivateRoutes} from './PrivateRoutes';
 import {FreindsListScreen} from '../screens/FreindsListScreen';
+import {FriendsRequestAcceptScreen} from '../screens/FriendsRequestAcceptScreen';
 
 const Stack = createStackNavigator();
 
@@ -71,6 +72,10 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
 
               <Stack.Screen name="ProfileList" component={ProfileReelList} />
               <Stack.Screen name="FriendsList" component={FreindsListScreen} />
+              <Stack.Screen
+                name="FriendsRequestAcceptScreen"
+                component={FriendsRequestAcceptScreen}
+              />
               <Stack.Screen
                 name="SinglePostPhoto"
                 component={ProfileSinglePost}
