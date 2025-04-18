@@ -8,12 +8,13 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import {Searchbar} from 'react-native-paper';
+import {Avatar, Searchbar, useTheme} from 'react-native-paper';
 import {useUserStore} from '../store/userStore';
 import {useUserInfo} from '../api/user/user';
 
 export function FreindsListScreen() {
   const {data} = useUserInfo();
+  const theme = useTheme();
 
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -51,12 +52,25 @@ export function FreindsListScreen() {
         contentContainerStyle={{paddingHorizontal: 16}}
         renderItem={({item}) => (
           <View className="flex-row items-center justify-between py-3">
-            <View className="flex-row items-center">
-              <Image
-                source={{uri: item.sender.profile_pic}}
-                className="w-10 h-10 rounded-full mr-3"
-                resizeMode="cover"
-              />
+            <View className="flex-row items-center gap-4">
+              {item.sender.profile_pic ? (
+                <View style={{position: 'relative'}}>
+                  <Image
+                    source={{uri: item.sender.profile_pic}}
+                    className="w-12 h-12 rounded-full "
+                    resizeMode="cover"
+                  />
+                </View>
+              ) : (
+                <View style={{position: 'relative'}}>
+                  <Avatar.Text
+                    style={{backgroundColor: theme.colors.secondary}}
+                    size={42}
+                    label={item.sender?.name?.slice(0, 2).toUpperCase() ?? ''}
+                  />
+                </View>
+              )}
+
               <Text className="text-white text-md font-medium">
                 {item.sender.name}
               </Text>

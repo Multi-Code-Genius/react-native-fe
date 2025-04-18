@@ -56,7 +56,7 @@ export function FriendsRequestAcceptScreen() {
                 <View style={{position: 'relative'}}>
                   <Image
                     source={{uri: item.sender.profile_pic}}
-                    className="w-12 h-12 rounded-full mr-3"
+                    className="w-12 h-12 rounded-full "
                     resizeMode="cover"
                   />
                 </View>
@@ -64,7 +64,7 @@ export function FriendsRequestAcceptScreen() {
                 <View style={{position: 'relative'}}>
                   <Avatar.Text
                     style={{backgroundColor: theme.colors.secondary}}
-                    size={48}
+                    size={42}
                     label={item.sender?.name?.slice(0, 2).toUpperCase() ?? ''}
                   />
                 </View>
