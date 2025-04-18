@@ -170,29 +170,15 @@ export const PrivateRoutes: React.FC = () => {
                   <View
                     style={{
                       flexDirection: 'row',
-                      justifyContent: 'space-around',
+                      justifyContent: 'space-between',
                       marginVertical: 16,
                     }}>
                     <View style={{alignItems: 'center'}}>
-                      <PhotoPostUploader
-                        style={{
-                          backgroundColor: theme.colors.primary,
-                          padding: 16,
-                          borderRadius: 50,
-                          marginBottom: 8,
-                        }}
-                      />
+                      <PhotoPostUploader />
                     </View>
 
                     <View style={{alignItems: 'center'}}>
-                      <VideoUploaderComponent
-                        style={{
-                          backgroundColor: theme.colors.primary,
-                          padding: 16,
-                          borderRadius: 50,
-                          marginBottom: 8,
-                        }}
-                      />
+                      <VideoUploaderComponent />
                     </View>
                   </View>
 
