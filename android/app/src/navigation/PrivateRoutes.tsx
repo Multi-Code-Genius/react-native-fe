@@ -1,23 +1,20 @@
-import React, {useRef, useMemo, useCallback} from 'react';
+import React, {useRef, useCallback} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
 import ReelsScreen from '../screens/ReelsScreen';
 import {ProfileScreen} from '../screens/ProfileScreen';
-import {
-  Avatar,
-  Button,
-  Card,
-  IconButton,
-  Portal,
-  Text,
-} from 'react-native-paper';
+import {Card, IconButton, Portal, Text} from 'react-native-paper';
 import {useTheme} from 'react-native-paper';
-import {BlurView} from '@react-native-community/blur';
-import {StyleSheet, View, TouchableOpacity} from 'react-native';
-import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
+
+import {StyleSheet, View} from 'react-native';
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
+} from '@gorhom/bottom-sheet';
 import {PhotoPostUploader} from '../components/PhotoPostUploader';
 import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const Tab = createBottomTabNavigator();
 
@@ -30,6 +27,20 @@ export const PrivateRoutes: React.FC = () => {
   const handleOpenSheet = useCallback(() => {
     bottomSheetRef.current?.expand();
   }, []);
+
+  const renderBackdrop = useCallback(
+    props => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        opacity={0.5}
+        pressBehavior="close"
+        style={{backgroundColor: theme.colors.backdrop}}
+      />
+    ),
+    [],
+  );
 
   return (
     <>
@@ -133,6 +144,9 @@ export const PrivateRoutes: React.FC = () => {
           snapPoints={['25%']}
           enablePanDownToClose
           backgroundStyle={{backgroundColor: theme.colors.surface}}
+          enableDynamicSizing
+          enableOverDrag
+          backdropComponent={renderBackdrop}
           handleIndicatorStyle={{backgroundColor: theme.colors.onSecondary}}>
           <BottomSheetScrollView>
             <View className="p-5">
