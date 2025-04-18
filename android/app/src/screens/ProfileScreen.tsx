@@ -4,13 +4,13 @@ import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
 import {ActivityIndicator, IconButton} from 'react-native-paper';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useUploadImage} from '../api/image/image';
-import {useUserInfo} from '../api/user/user';
 import {TouchableOpacity} from 'react-native';
 import {Dimensions} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useFocusEffect} from '@react-navigation/native';
 import {PhotoPostUploader} from '../components/PhotoPostUploader';
 import {SceneMap, TabView} from 'react-native-tab-view';
+import {useUserListLogic} from '../hooks/useUserListLogic';
 
 type ProfileScreenProps = {
   setIndex: (index: number) => void;
@@ -19,7 +19,13 @@ type ProfileScreenProps = {
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
   const navigation = useNavigation();
-  const {data, isLoading, error, refetch} = useUserInfo();
+  const {
+    data,
+    profileRefetch: refetch,
+    profileLoading: isLoading,
+    profileError: error,
+  } = useUserListLogic();
+
   const userId = data?.user?.id;
   const [refreshing, setRefreshing] = useState(false);
 
@@ -62,10 +68,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
 
   const handleMediaPick = () => {
     launchImageLibrary({mediaType: 'photo'}, response => {
-      if (response.didCancel || !response.assets?.length) return;
+      if (response.didCancel || !response.assets?.length) {
+        return;
+      }
 
       const asset = response.assets[0];
-      if (!asset.uri || !userId) return;
+      if (!asset.uri || !userId) {
+        return;
+      }
 
       const formData = new FormData();
       formData.append('profile_pic', {

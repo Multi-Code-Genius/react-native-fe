@@ -1,45 +1,27 @@
-import {useEffect, useRef} from 'react';
-import {AppState} from 'react-native';
-import axios from 'axios';
+import {api} from './api';
 
-export function useHeartbeat(userId: string) {
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const appState = useRef(AppState.currentState);
+const sendPing = async () => {
+  try {
+    const response = await api('/api/user/ping', {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'},
+      cache: 'no-store',
+    });
+    const resp = await response;
+    return resp;
+  } catch (err) {
+    console.error('Ping error:', err);
+  }
+};
 
-  const sendPing = async () => {
-    try {
-      await axios.post('https://yourserver.com/api/ping', {userId});
-      console.log('Ping sent');
-    } catch (err) {
-      console.error('Ping error:', err);
-    }
-  };
+import {useQuery} from '@tanstack/react-query';
 
-  const startPinging = () => {
-    sendPing();
-    intervalRef.current = setInterval(sendPing, 15000);
-  };
-
-  const stopPinging = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  };
-
-  useEffect(() => {
-    const handleAppStateChange = (nextAppState: string) => {
-      if (nextAppState === 'active') {
-        startPinging();
-      } else {
-        stopPinging();
-      }
-      appState.current = nextAppState;
-    };
-
-    const sub = AppState.addEventListener('change', handleAppStateChange);
-    startPinging();
-
-    return () => {
-      stopPinging();
-      sub.remove();
-    };
-  }, []);
+export function usePingOnline(isActive: boolean) {
+  return useQuery({
+    queryKey: ['ping-online'],
+    queryFn: sendPing,
+    refetchInterval: isActive ? 15000 : false,
+    refetchOnWindowFocus: false,
+    enabled: isActive,
+  });
 }

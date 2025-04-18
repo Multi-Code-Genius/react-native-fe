@@ -4,26 +4,42 @@ import notifee, {AndroidImportance} from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import {useUserInfo} from '../api/user/user';
 import {useUserStore} from '../store/userStore';
-import {useAuthStore} from '../store/authStore';
-import {connectSocket} from '../config/socket';
 import {requestUserPermission} from '../utils/fcm';
 import {useSendTokenToBackend} from '../api/notification/notification';
 import {useGetAllUser} from '../api/user/user';
+import {AppState} from 'react-native';
+import {usePingOnline} from './useHeartBeat';
 
 export const useUserListLogic = () => {
-  const {data, refetch: profileRefetch} = useUserInfo();
-  const {token} = useAuthStore();
+  const {
+    data,
+    refetch: profileRefetch,
+    isLoading: profileLoading,
+    error: profileError,
+  } = useUserInfo();
+
   const {loadUserData, setUserData} = useUserStore();
   const {mutate: sendTokenMutation} = useSendTokenToBackend();
   const {data: userData, isLoading, refetch} = useGetAllUser();
   const [refreshing, setRefreshing] = useState(false);
+  const [isAppActive, setIsAppActive] = useState(true);
 
   const users = userData?.users || [];
 
   useEffect(() => {
+    const sub = AppState.addEventListener('change', nextState => {
+      setIsAppActive(nextState === 'active');
+    });
+
+    return () => sub.remove();
+  }, []);
+
+  usePingOnline(isAppActive);
+
+  useEffect(() => {
     setUserData(data?.user);
     loadUserData();
-    connectSocket(token ?? '');
+
     requestUserPermission(sendTokenMutation);
 
     const setupChannel = async () => {
@@ -72,5 +88,7 @@ export const useUserListLogic = () => {
     refreshing,
     onRefresh,
     profileRefetch,
+    profileLoading,
+    profileError,
   };
 };

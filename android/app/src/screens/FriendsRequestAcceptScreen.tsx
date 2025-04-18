@@ -8,15 +8,16 @@ import {
   Text,
   View,
 } from 'react-native';
-import {useUserInfo} from '../api/user/user';
+
 import {Appbar, Avatar, Searchbar, useTheme} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native';
 import {useAcceptRequest, useDeclineRequest} from '../api/request/request';
 import {useNavigation} from '@react-navigation/native';
 import {RefreshControl} from 'react-native-gesture-handler';
+import {useUserListLogic} from '../hooks/useUserListLogic';
 
 export function FriendsRequestAcceptScreen() {
-  const {data, refetch} = useUserInfo();
+  const {data, profileRefetch: refetch} = useUserListLogic();
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingId, setLoadingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
