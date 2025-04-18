@@ -64,9 +64,8 @@ const ReelCard: React.FC<ReelItemProps> = ({
   };
 
   const handleSubmitComment = () => {
-    console.log('clicked!!');
     console.log(postComment);
-    onComments();
+    onComments(postComment);
     setPostComment('');
   };
 
@@ -172,7 +171,6 @@ const ReelCard: React.FC<ReelItemProps> = ({
               </View>
               <TextInput
                 placeholder="Add a comment..."
-                value={postComment}
                 defaultValue={postComment}
                 onChangeText={setPostComment}
                 right={
@@ -237,7 +235,7 @@ const styles = StyleSheet.create({
   bottomInfo: {
     position: 'absolute',
     top: '75%',
-    left: 16,
+    left: 20,
     right: 100,
   },
   userRow: {

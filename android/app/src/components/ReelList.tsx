@@ -92,8 +92,8 @@ const ReelList: React.FC<ReelsScreenProps> = ({isActive}) => {
             mutate({videoId: item.id});
           }
         }}
-        onComments={() => {
-          commentMutate({videoId: item.id});
+        onComments={(text: string) => {
+          commentMutate({text, videoId: item.id});
         }}
       />
     );

@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {ActivityIndicator, Surface} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useSendRequest} from '../api/request/request';
+import {useDeclineRequest, useSendRequest} from '../api/request/request';
 import UserCard from '../components/UserCard';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 const UserListScreen = () => {

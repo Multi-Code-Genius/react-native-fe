@@ -164,14 +164,14 @@ export const useLikeVideo = () => {
   });
 };
 
-export const commentVideo = async (videoId: string) => {
+export const commentVideo = async (videoId: string, text: string) => {
   try {
     const response = await api(`/api/video/comments/${videoId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({comment: 'Hello, this is My Test Comment!'}),
+      body: JSON.stringify({text}),
     });
     return await response;
   } catch (error) {
@@ -184,7 +184,8 @@ export const useCommentVideo = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({videoId}: {videoId: string}) => commentVideo(videoId),
+    mutationFn: ({videoId, text}: {videoId: string; text: string}) =>
+      commentVideo(videoId, text),
     onMutate: async ({videoId}) => {
       await queryClient.cancelQueries({queryKey: ['videos']});
 

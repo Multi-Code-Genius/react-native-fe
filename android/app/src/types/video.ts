@@ -31,7 +31,7 @@ export interface ReelItemProps {
   appState: string;
   usableHeight: number;
   onDoubleTap: (data: boolean) => void;
-  onComments: () => void;
+  onComments: (text: string) => void;
 }
 
 export interface CommentsTypes {

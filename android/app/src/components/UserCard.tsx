@@ -27,60 +27,84 @@ const UserCard: React.FC<Props> = ({user, currentUserId, index, onRequest}) => {
   const theme = useTheme();
   const avatarSource = user.profile_pic ? {uri: user.profile_pic} : undefined;
 
-  if (user.id === currentUserId) return null;
-
   return (
     <Animated.View
       entering={FadeInUp.duration(300)}
       style={{marginVertical: 8}}>
       <Card
         mode="elevated"
-        style={{backgroundColor: '#1a1a1a', borderRadius: 12}}>
+        style={{
+          backgroundColor: '#1a1a1a',
+          borderRadius: 12,
+          marginVertical: 8,
+        }}>
         <Card.Content
-          style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
-          <View style={{position: 'relative'}}>
-            {avatarSource ? (
-              <Avatar.Image size={48} source={avatarSource} />
-            ) : (
-              <Avatar.Text
-                style={{backgroundColor: theme.colors.secondary}}
-                size={48}
-                label={user.name.slice(0, 2).toUpperCase()}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+          {/* Left side: Avatar + info */}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 10,
+              flex: 1,
+            }}>
+            <View style={{position: 'relative'}}>
+              {avatarSource ? (
+                <Avatar.Image size={48} source={avatarSource} />
+              ) : (
+                <Avatar.Text
+                  style={{backgroundColor: theme.colors.secondary}}
+                  size={48}
+                  label={user.name.slice(0, 2).toUpperCase()}
+                />
+              )}
+              <Badge
+                size={16}
+                style={{
+                  backgroundColor: user.isOnline
+                    ? theme.colors.primary
+                    : theme.colors.error,
+                  position: 'absolute',
+                  bottom: 0,
+                  right: -4,
+                }}
               />
-            )}
-            <Badge
-              size={16}
-              style={{
-                backgroundColor: user.isOnline
-                  ? theme.colors.primary
-                  : theme.colors.error,
-                position: 'absolute',
-                bottom: 0,
-                right: -4,
-              }}
+            </View>
+
+            <View style={{flex: 1}}>
+              <Text
+                variant="titleMedium"
+                style={{color: theme.colors.onPrimary}}>
+                {user.name}
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={{color: theme.colors.secondary}}>
+                {user.email}
+              </Text>
+              {!user.isOnline && (
+                <Text
+                  variant="bodySmall"
+                  style={{color: theme.colors.secondary}}>
+                  Last seen: {moment(user.lastSeen).fromNow()}
+                </Text>
+              )}
+            </View>
+          </View>
+
+          {/* Right side: Button */}
+          <View>
+            <RequestButton
+              id={user.id}
+              currentUserId={currentUserId}
+              suggestedUser={user}
+              onRequest={onRequest}
             />
           </View>
-          <Surface style={{flex: 1}} elevation={0}>
-            <Text variant="titleMedium" style={{color: theme.colors.onPrimary}}>
-              {user.name}
-            </Text>
-            <Text variant="bodyMedium" style={{color: theme.colors.secondary}}>
-              {user.email}
-            </Text>
-            {!user.isOnline && (
-              <Text variant="bodySmall" style={{color: theme.colors.secondary}}>
-                Last seen: {moment(user.lastSeen).fromNow()}
-              </Text>
-            )}
-          </Surface>
-          <RequestButton
-            id={user.id}
-            isAlreadySent={
-              user.sentRequests.some(i => i.receiverId === currentUserId) ||
-              user.receivedRequests.some(i => i.senderId === currentUserId)
-            }
-            onRequest={onRequest}
-          />
         </Card.Content>
       </Card>
     </Animated.View>
