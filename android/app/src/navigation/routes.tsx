@@ -2,8 +2,6 @@ import React, {useEffect} from 'react';
 import {NavigationContainer, LinkingOptions} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useAuthStore} from '../store/authStore';
-import {QueryClientProvider} from '@tanstack/react-query';
-import queryClient from '../config/queryClient';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import {SignUpFormScreen} from '../screens/SignUpFormScreen';
 import LoginScreen from '../screens/LoginScreen';
@@ -64,40 +62,38 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
   }, [initializeAuth]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <NavigationContainer linking={linking} fallback={fallback}>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-            animation: 'fade',
-          }}>
-          {isAuthenticated ? (
-            <>
-              <Stack.Screen name="Main" component={PrivateRoutes} />
-              <Stack.Screen
-                name="Settings"
-                component={SettingScreen}
-                options={{title: 'Settings', animation: 'default'}}
-              />
-              <Stack.Screen name="ProfileList" component={ProfileReelList} />
-              <Stack.Screen name="FriendsList" component={FreindsListScreen} />
-              <Stack.Screen
-                name="FriendsRequestAcceptScreen"
-                component={FriendsRequestAcceptScreen}
-              />
-              <Stack.Screen
-                name="SinglePostPhoto"
-                component={ProfileSinglePost}
-              />
-            </>
-          ) : (
-            <>
-              <Stack.Screen name="Auth" component={PublicRoutes} />
-            </>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </QueryClientProvider>
+    <NavigationContainer linking={linking} fallback={fallback}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          animation: 'fade',
+        }}>
+        {isAuthenticated ? (
+          <>
+            <Stack.Screen name="Main" component={PrivateRoutes} />
+            <Stack.Screen
+              name="Settings"
+              component={SettingScreen}
+              options={{title: 'Settings', animation: 'default'}}
+            />
+            <Stack.Screen name="ProfileList" component={ProfileReelList} />
+            <Stack.Screen name="FriendsList" component={FreindsListScreen} />
+            <Stack.Screen
+              name="FriendsRequestAcceptScreen"
+              component={FriendsRequestAcceptScreen}
+            />
+            <Stack.Screen
+              name="SinglePostPhoto"
+              component={ProfileSinglePost}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Auth" component={PublicRoutes} />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 

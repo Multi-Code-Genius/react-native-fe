@@ -95,13 +95,12 @@ export function VideoUploaderComponent() {
   };
 
   return (
-    <Button mode="contained" onPress={videoUploader} disabled={isUploading}>
-      <View className="flex-row items-center justify-center gap-4">
-        {isUploading && (
-          <ActivityIndicator animating={true} size="small" color="white" />
-        )}
-        <Text style={{color: 'white'}}>Upload Video</Text>
-      </View>
+    <Button
+      mode="outlined"
+      onPress={videoUploader}
+      loading={isUploading}
+      icon="play-box">
+      Upload Video
     </Button>
   );
 }

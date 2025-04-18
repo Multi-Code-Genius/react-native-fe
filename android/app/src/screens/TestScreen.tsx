@@ -1,21 +1,43 @@
-import {StyleSheet, View} from 'react-native';
 import React from 'react';
-import {Text, useTheme} from 'react-native-paper';
+import {Text, View} from 'react-native';
+import ActionSheet, {useSheetRef} from 'react-native-actions-sheet';
+import {Button} from 'react-native-paper';
 
-const TestScreen = () => {
-  const theme = useTheme();
+function TestScreen() {
+  const ref = useSheetRef('return-data');
+
   return (
-    <View
-      style={[styles.container, {backgroundColor: theme.colors.background}]}>
-      <Text>TestScreen</Text>
+    <View>
+      <Button onPress={() => ref.current.show()}>Open Sheet</Button>
+      <ActionSheet
+        indicatorStyle={{
+          marginTop: 10,
+          width: 150,
+        }}
+        gestureEnabled
+        drawUnderStatusBar>
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 10,
+            paddingHorizontal: 12,
+            paddingTop: 20,
+          }}>
+          <Text
+            style={{
+              color: 'black',
+              fontSize: 30,
+              textAlign: 'center',
+              marginBottom: 10,
+            }}>
+            Are you sure you want to star react-native-actions-sheet repo on
+            Github?
+          </Text>
+        </View>
+      </ActionSheet>
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+}
 
 export default TestScreen;

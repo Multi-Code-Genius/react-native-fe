@@ -59,7 +59,11 @@ export function PhotoPostUploader() {
 
   return (
     <View>
-      <Button mode="outlined" onPress={handlePickImage} disabled={isPending}>
+      <Button
+        icon="image"
+        mode="outlined"
+        onPress={handlePickImage}
+        disabled={isPending}>
         Upload Post
       </Button>
 

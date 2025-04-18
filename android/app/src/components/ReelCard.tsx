@@ -173,6 +173,7 @@ const ReelCard: React.FC<ReelItemProps> = ({
               <TextInput
                 placeholder="Add a comment..."
                 value={postComment}
+                defaultValue={postComment}
                 onChangeText={setPostComment}
                 right={
                   <TextInput.Icon
