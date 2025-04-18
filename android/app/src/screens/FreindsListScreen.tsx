@@ -7,16 +7,25 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import {Appbar, Avatar, Searchbar, useTheme} from 'react-native-paper';
 import {useUserInfo} from '../api/user/user';
+import {useDeclineRequest} from '../api/request/request';
 
 export function FreindsListScreen() {
   const {data} = useUserInfo();
   const theme = useTheme();
   const navigation = useNavigation();
 
+  const {
+    mutate: deleteRequestMutation,
+    isSuccess: declineSuccess,
+    isPending: declinePending,
+  } = useDeclineRequest();
+
   const [searchQuery, setSearchQuery] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
 
   const acceptedRequests = data?.user?.acceptedRequests;
 
@@ -78,6 +87,28 @@ export function FreindsListScreen() {
               <Text className="text-white text-md font-medium">
                 {item.sender.name}
               </Text>
+            </View>
+            <View>
+              <TouchableOpacity
+                className="bg-gray-700 px-3 py-1 rounded-md justify-center items-center"
+                onPress={() => {
+                  setDeletingId(item.id);
+                  deleteRequestMutation(item.id, {
+                    onSettled: () => setDeletingId(null),
+                  });
+                }}
+                disabled={declinePending}
+                style={{minHeight: 28, minWidth: 70}}>
+                <Text className="text-white text-xs font-semibold">
+                  {deletingId === item.id ? (
+                    <ActivityIndicator size="small" color="white" />
+                  ) : (
+                    <Text className="text-white text-xs font-semibold">
+                      Remove
+                    </Text>
+                  )}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         )}
