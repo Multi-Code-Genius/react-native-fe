@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Image,
   SafeAreaView,
@@ -12,12 +13,14 @@ import {Appbar, Avatar, Searchbar, useTheme} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native';
 import {useAcceptRequest, useDeclineRequest} from '../api/request/request';
 import {useNavigation} from '@react-navigation/native';
+import {RefreshControl} from 'react-native-gesture-handler';
 
 export function FriendsRequestAcceptScreen() {
   const {data, refetch} = useUserInfo();
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingId, setLoadingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const navigation = useNavigation();
   const {
@@ -34,7 +37,16 @@ export function FriendsRequestAcceptScreen() {
 
   const acceptedRequests = data?.user?.pendingRequests;
 
-  console.log('data', data);
+  const onRefresh = useCallback(async () => {
+    try {
+      setRefreshing(true);
+      await refetch();
+    } catch (err) {
+      Alert.alert('Error', 'Failed to refresh data');
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
 
   useEffect(() => {
     refetch();
@@ -70,6 +82,9 @@ export function FriendsRequestAcceptScreen() {
       <FlatList
         data={acceptedRequests}
         keyExtractor={item => item.id}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         contentContainerStyle={{paddingHorizontal: 16}}
         renderItem={({item}) => (
           <View className="flex-row items-center justify-between py-3">
