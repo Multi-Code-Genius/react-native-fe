@@ -117,9 +117,11 @@ export function SignUpFormScreen() {
                   disabled={isPending}
                   onPress={handleSignup}>
                   <Text style={styles.loginButtonText}>
-                    isPending || isSuccess ? (
-                    <ActivityIndicator size="small" color="#000" />) : (
-                    'SignUp' )
+                    {isPending ? (
+                      <ActivityIndicator size="small" color="#000" />
+                    ) : (
+                      'SignUp'
+                    )}
                   </Text>
                 </TouchableOpacity>
 

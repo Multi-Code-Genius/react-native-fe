@@ -93,13 +93,11 @@ export const useResetPassword = (
   _onSuccess?: (response: ResetPasswordResponse) => void,
   onError?: (error: unknown) => void,
 ) => {
-  // const queryClient = useQueryClient();
   const navigation =
     useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
   return useMutation<ResetPasswordResponse, unknown, ResetPasswordParams>({
     mutationFn: resetPassword,
     onSuccess: (res: unknown) => {
-      // queryClient.invalidateQueries({queryKey: ['todos']});
       navigation.navigate('Login');
     },
     onError,
