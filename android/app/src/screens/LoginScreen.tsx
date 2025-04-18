@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
-  View,
   Text,
   TextInput,
   TouchableOpacity,
@@ -21,7 +20,7 @@ type Props = StackScreenProps<any, 'Login'>;
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
   const [data, setData] = useState({email: '', password: ''});
-  const {mutate: login, isPending, isSuccess} = useUserLogin();
+  const {mutate: login, isPending, isSuccess, isError} = useUserLogin();
   const saveToken = useAuthStore(state => state.saveToken);
   const slideAnim = useRef(new Animated.Value(500)).current;
 

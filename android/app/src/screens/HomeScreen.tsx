@@ -118,31 +118,38 @@ const UserListScreen = () => {
 
     requestUserPermission(sendTokenMutation);
 
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      await notifee.displayNotification({
-        title: remoteMessage.notification?.title || 'New Notification',
-        body: remoteMessage.notification?.body || '',
-        android: {
-          channelId: 'default',
-          smallIcon: 'ic_launcher',
-          importance: AndroidImportance.HIGH,
-        },
-      });
-    });
-
-    async function setup() {
+    const setupChannel = async () => {
       await notifee.requestPermission();
-
       await notifee.createChannel({
         id: 'default',
         name: 'Default Channel',
         importance: AndroidImportance.HIGH,
       });
-    }
+    };
 
-    setup();
+    setupChannel();
 
-    return unsubscribe;
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log('Foreground notification:', remoteMessage);
+
+      await notifee.displayNotification({
+        title: remoteMessage.notification?.title || '📣 Notification',
+        body: remoteMessage.notification?.body || 'You have a new message.',
+        android: {
+          channelId: 'default',
+          pressAction: {
+            id: 'default',
+          },
+          smallIcon: 'ic_launcher',
+          color: '#4CAF50',
+          importance: AndroidImportance.HIGH,
+        },
+      });
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const handlerRequest = (id: string) => {

@@ -24,7 +24,9 @@ export const useAuthStore = create<AuthState>(set => {
     logout: async () => {
       await AsyncStorage.removeItem('isAuthenticated');
       await AsyncStorage.removeItem('accessToken');
+      await AsyncStorage.removeItem('FCTtoken');
       set({isAuthenticated: false});
+      set({fctToken: null});
     },
 
     saveToken: async (token: string) => {

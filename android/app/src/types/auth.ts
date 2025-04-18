@@ -67,7 +67,7 @@ export type AuthState = {
   saveToken: (token: string) => Promise<void>;
   initializeAuth: () => Promise<void>;
   removeToken: () => void;
-  fctToken: string;
+  fctToken: string | null;
   setFctToken: (token: string) => void;
 };
 
