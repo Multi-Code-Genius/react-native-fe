@@ -81,6 +81,9 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
             <Stack.Screen
               name="FriendsRequestAcceptScreen"
               component={FriendsRequestAcceptScreen}
+              options={{
+                animation: 'default',
+              }}
             />
             <Stack.Screen
               name="SinglePostPhoto"

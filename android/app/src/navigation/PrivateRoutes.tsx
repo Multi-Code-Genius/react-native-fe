@@ -31,21 +31,13 @@ export const PrivateRoutes: React.FC = () => {
     bottomSheetRef.current?.expand();
   }, []);
 
-  const LeftContent = props => <Avatar.Icon {...props} icon="folder" />;
-
   return (
     <>
       <Tab.Navigator
         screenOptions={{
           tabBarActiveTintColor: theme.colors.primary,
           tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.6)',
-          tabBarBackground: () => (
-            <BlurView
-              style={StyleSheet.absoluteFill}
-              blurType="light"
-              blurAmount={100}
-            />
-          ),
+
           tabBarStyle: {
             backgroundColor: theme.colors.scrim,
             position: 'absolute',
