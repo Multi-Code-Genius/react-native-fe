@@ -112,10 +112,7 @@ export default function App() {
       <GestureHandlerRootView style={{flex: 1}}>
         <PaperProvider theme={spotifyTheme}>
           <SafeAreaProvider>
-            <StatusBar barStyle="default" translucent />
-            <SafeAreaView
-              style={styles.container}
-              edges={['top', 'left', 'right']}>
+            <SafeAreaView style={styles.container} edges={['left', 'right']}>
               <SheetProvider context="global">
                 <AppNavigator
                   linking={linking}

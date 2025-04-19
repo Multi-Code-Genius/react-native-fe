@@ -5,8 +5,9 @@ import {
   RefreshControl,
   StyleSheet,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import {ActivityIndicator, Surface} from 'react-native-paper';
+import {ActivityIndicator, IconButton, Surface} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDeclineRequest, useSendRequest} from '../api/request/request';
 import UserCard from '../components/UserCard';
@@ -48,15 +49,22 @@ const UserListScreen = () => {
 
   return (
     <Surface style={styles.container}>
-      <TouchableOpacity
-        style={styles.actionButton}
-        onPress={() =>
-          (navigation as any).navigate('FriendsRequestAcceptScreen')
-        }>
-        <Icon name="heart" size={25} color={'white'} />
-      </TouchableOpacity>
+      <View style={styles.actionButton}>
+        <IconButton
+          icon="heart"
+          iconColor={'white'}
+          onPress={() =>
+            (navigation as any).navigate('FriendsRequestAcceptScreen')
+          }
+        />
+        <IconButton
+          icon="message-outline"
+          iconColor="white"
+          onPress={() => (navigation as any).navigate('TestScreen')}
+        />
+      </View>
 
-      <FlatList
+      {/* <FlatList
         data={users}
         keyExtractor={item => item.id}
         refreshControl={
@@ -72,7 +80,7 @@ const UserListScreen = () => {
         )}
         contentContainerStyle={{paddingVertical: 10}}
         showsVerticalScrollIndicator={false}
-      />
+      /> */}
     </Surface>
   );
 };
@@ -94,6 +102,7 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     marginTop: 10,
-    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
   },
 });

@@ -13,6 +13,7 @@ import {PrivateRoutes} from './PrivateRoutes';
 import {FreindsListScreen} from '../screens/FreindsListScreen';
 import {FriendsRequestAcceptScreen} from '../screens/FriendsRequestAcceptScreen';
 import {SettingScreen} from '../screens/SettingScreen';
+import TestScreen from '../screens/TestScreen';
 
 const Stack = createStackNavigator();
 
@@ -75,6 +76,15 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               name="Settings"
               component={SettingScreen}
               options={{title: 'Settings', animation: 'default'}}
+            />
+            <Stack.Screen
+              name="TestScreen"
+              component={TestScreen}
+              options={{
+                title: 'Chats',
+                animation: 'default',
+                headerShown: true,
+              }}
             />
             <Stack.Screen name="ProfileList" component={ProfileReelList} />
             <Stack.Screen name="FriendsList" component={FreindsListScreen} />

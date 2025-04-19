@@ -15,6 +15,7 @@ import BottomSheet, {
 import {PhotoPostUploader} from '../components/PhotoPostUploader';
 import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import TestScreen from '../screens/TestScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -51,15 +52,6 @@ export const PrivateRoutes: React.FC = () => {
 
           tabBarStyle: {
             backgroundColor: theme.colors.scrim,
-            position: 'absolute',
-            borderRadius: 30,
-            bottom: 10,
-            width: '90%',
-            marginHorizontal: '5%',
-            height: 60,
-            borderTopWidth: 0,
-            elevation: 0,
-            overflow: 'hidden',
           },
           tabBarItemStyle: {
             marginVertical: 10,
