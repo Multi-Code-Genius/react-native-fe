@@ -1,32 +1,38 @@
 import React, {useRef, useCallback} from 'react';
+import {View, StyleSheet, Animated} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import HomeScreen from '../screens/HomeScreen';
-import MapScreen from '../screens/MapScreen';
-import ReelsScreen from '../screens/ReelsScreen';
-import {ProfileScreen} from '../screens/ProfileScreen';
-import {Card, IconButton, Portal, Text} from 'react-native-paper';
-import {useTheme} from 'react-native-paper';
-
-import {StyleSheet, View} from 'react-native';
+import {useTheme, Card, IconButton, Portal, Text} from 'react-native-paper';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+
+import HomeScreen from '../screens/HomeScreen';
+import MapScreen from '../screens/MapScreen';
+import ReelsScreen from '../screens/ReelsScreen';
+import {ProfileScreen} from '../screens/ProfileScreen';
 import {PhotoPostUploader} from '../components/PhotoPostUploader';
 import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import TestScreen from '../screens/TestScreen';
 
 const Tab = createBottomTabNavigator();
-
 const NoScreen = () => null;
 
 export const PrivateRoutes: React.FC = () => {
   const theme = useTheme();
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const animatedScale = useRef(new Animated.Value(1)).current;
 
   const handleOpenSheet = useCallback(() => {
     bottomSheetRef.current?.expand();
+  }, []);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    Animated.timing(animatedScale, {
+      toValue: index >= 0 ? 1.1 : 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
   const renderBackdrop = useCallback(
@@ -40,95 +46,100 @@ export const PrivateRoutes: React.FC = () => {
         style={{backgroundColor: theme.colors.backdrop}}
       />
     ),
-    [],
+    [theme.colors.backdrop],
   );
 
   return (
-    <>
-      <Tab.Navigator
-        screenOptions={{
-          tabBarActiveTintColor: theme.colors.primary,
-          tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.6)',
+    <GestureHandlerRootView
+      style={{flex: 1, backgroundColor: theme.colors.background}}>
+      <Animated.View style={{flex: 1, transform: [{scale: animatedScale}]}}>
+        <Tab.Navigator
+          screenOptions={{
+            tabBarActiveTintColor: theme.colors.primary,
+            tabBarInactiveTintColor: theme.colors.secondary,
+            tabBarStyle: {
+              backgroundColor: theme.colors.scrim,
+              borderTopWidth: 0,
+              maxHeight: 60,
+              height: '100%',
+            },
+            tabBarItemStyle: {
+              marginVertical: 20,
+            },
+            headerShown: false,
+            tabBarShowLabel: false,
+          }}>
+          <Tab.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{
+              tabBarIcon: ({color, size, focused}) => (
+                <IconButton
+                  icon={focused ? 'home' : 'home-outline'}
+                  iconColor={color}
+                  size={size}
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Map"
+            component={MapScreen}
+            options={{
+              tabBarIcon: ({color, size, focused}) => (
+                <IconButton
+                  icon={focused ? 'map' : 'map-outline'}
+                  iconColor={color}
+                  size={size}
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="ActionButton"
+            component={NoScreen}
+            options={{
+              tabBarIcon: ({color, size}) => (
+                <IconButton
+                  icon="plus-circle"
+                  iconColor={theme.colors.primary}
+                  size={40}
+                  onPress={handleOpenSheet}
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Reels"
+            component={ReelsScreen}
+            options={{
+              tabBarIcon: ({color, size, focused}) => (
+                <IconButton
+                  icon={
+                    focused ? 'play-box-multiple' : 'play-box-multiple-outline'
+                  }
+                  iconColor={color}
+                  size={size}
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Profile"
+            component={ProfileScreen}
+            options={{
+              tabBarIcon: ({color, size, focused}) => (
+                <IconButton
+                  icon={focused ? 'account' : 'account-outline'}
+                  iconColor={color}
+                  size={size}
+                />
+              ),
+            }}
+          />
+        </Tab.Navigator>
+      </Animated.View>
 
-          tabBarStyle: {
-            backgroundColor: theme.colors.scrim,
-          },
-          tabBarItemStyle: {
-            marginVertical: 10,
-          },
-          headerShown: false,
-          tabBarShowLabel: false,
-        }}>
-        <Tab.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            tabBarIcon: ({color, size, focused}) => (
-              <IconButton
-                icon={focused ? 'home' : 'home-outline'}
-                iconColor={color}
-                size={size}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Map"
-          component={MapScreen}
-          options={{
-            tabBarIcon: ({color, size, focused}) => (
-              <IconButton
-                icon={focused ? 'map' : 'map-outline'}
-                iconColor={color}
-                size={size}
-              />
-            ),
-          }}
-        />
-
-        <Tab.Screen
-          name="ActionButton"
-          component={NoScreen}
-          options={{
-            tabBarIcon: ({color, size, focused}) => (
-              <IconButton
-                icon="plus-circle"
-                iconColor={theme.colors.primary}
-                size={40}
-                onPress={handleOpenSheet}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Reels"
-          component={ReelsScreen}
-          options={{
-            tabBarIcon: ({color, size, focused}) => (
-              <IconButton
-                icon={
-                  focused ? 'play-box-multiple' : 'play-box-multiple-outline'
-                }
-                iconColor={color}
-                size={size}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{
-            tabBarIcon: ({color, size, focused}) => (
-              <IconButton
-                icon={focused ? 'account' : 'account-outline'}
-                iconColor={color}
-                size={size}
-              />
-            ),
-          }}
-        />
-      </Tab.Navigator>
       <Portal>
         <BottomSheet
           ref={bottomSheetRef}
@@ -139,9 +150,10 @@ export const PrivateRoutes: React.FC = () => {
           enableDynamicSizing
           enableOverDrag
           backdropComponent={renderBackdrop}
-          handleIndicatorStyle={{backgroundColor: theme.colors.onSecondary}}>
+          handleIndicatorStyle={{backgroundColor: theme.colors.onSecondary}}
+          onChange={handleSheetChanges}>
           <BottomSheetScrollView>
-            <View className="p-5">
+            <View style={styles.sheetContainer}>
               <Card
                 mode="contained"
                 style={{
@@ -159,17 +171,11 @@ export const PrivateRoutes: React.FC = () => {
                     Upload Media
                   </Text>
 
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      marginVertical: 16,
-                    }}>
-                    <View style={{alignItems: 'center'}}>
+                  <View style={styles.uploadRow}>
+                    <View style={styles.uploadItem}>
                       <PhotoPostUploader />
                     </View>
-
-                    <View style={{alignItems: 'center'}}>
+                    <View style={styles.uploadItem}>
                       <VideoUploaderComponent />
                     </View>
                   </View>
@@ -189,6 +195,20 @@ export const PrivateRoutes: React.FC = () => {
           </BottomSheetScrollView>
         </BottomSheet>
       </Portal>
-    </>
+    </GestureHandlerRootView>
   );
 };
+
+const styles = StyleSheet.create({
+  sheetContainer: {
+    padding: 20,
+  },
+  uploadRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 16,
+  },
+  uploadItem: {
+    alignItems: 'center',
+  },
+});

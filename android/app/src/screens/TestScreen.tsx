@@ -1,7 +1,13 @@
-import {Chat, MessageType} from '@flyerhq/react-native-chat-ui';
+import {
+  Chat,
+  defaultTheme,
+  darkTheme,
+  MessageType,
+} from '@flyerhq/react-native-chat-ui';
 import moment from 'moment';
 import React, {useState, useEffect} from 'react';
 import {launchImageLibrary} from 'react-native-image-picker';
+import {useTheme} from 'react-native-paper';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 const uuidv4 = () => {
@@ -12,7 +18,6 @@ const uuidv4 = () => {
   });
 };
 
-// Two static users
 const currentUser = {
   id: 'user1',
   firstName: 'John',
@@ -27,8 +32,8 @@ const otherUser = {
 
 const TestScreen = () => {
   const [messages, setMessages] = useState<MessageType.Any[]>([]);
+  const theme = useTheme();
 
-  // Example static conversation
   useEffect(() => {
     const initialMessages: MessageType.Any[] = [
       {
@@ -70,7 +75,6 @@ const TestScreen = () => {
     };
     addMessage(textMessage);
 
-    // Simulate reply from Alice after 1s
     setTimeout(() => {
       const reply: MessageType.Text = {
         author: otherUser,
@@ -113,16 +117,39 @@ const TestScreen = () => {
   };
 
   return (
-    <SafeAreaProvider>
-      <Chat
-        messages={messages}
-        onSendPress={handleSendPress}
-        user={currentUser}
-        onAttachmentPress={handleImageSelection}
-        showUserAvatars
-        showUserNames
-      />
-    </SafeAreaProvider>
+    <Chat
+      messages={messages}
+      onSendPress={handleSendPress}
+      user={currentUser}
+      onAttachmentPress={handleImageSelection}
+      theme={{
+        ...darkTheme,
+        colors: {
+          ...darkTheme.colors,
+          background: theme.colors.background,
+          primary: theme.colors.primary,
+          secondary: theme.colors.surfaceVariant,
+
+          inputBackground: theme.colors.surfaceVariant,
+        },
+        fonts: {
+          ...darkTheme.fonts,
+          sentMessageBodyTextStyle: {
+            fontFamily: theme.fonts.default,
+            color: theme.colors.onPrimary,
+          },
+          receivedMessageBodyTextStyle: {
+            fontFamily: theme.fonts.default,
+            color: theme.colors.onPrimary,
+          },
+          inputTextStyle: {
+            fontFamily: theme.fonts.default,
+          },
+        },
+      }}
+      showUserAvatars
+      showUserNames
+    />
   );
 };
 

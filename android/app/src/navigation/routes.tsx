@@ -14,6 +14,7 @@ import {FreindsListScreen} from '../screens/FreindsListScreen';
 import {FriendsRequestAcceptScreen} from '../screens/FriendsRequestAcceptScreen';
 import {SettingScreen} from '../screens/SettingScreen';
 import TestScreen from '../screens/TestScreen';
+import {useTheme} from 'react-native-paper';
 
 const Stack = createStackNavigator();
 
@@ -62,12 +63,20 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
     initialize();
   }, [initializeAuth]);
 
+  const configSlow = {
+    animation: 'spring',
+    config: {
+      stiffness: 60,
+      damping: 15,
+      mass: 1.5,
+    },
+  };
+  const theme = useTheme();
   return (
     <NavigationContainer linking={linking} fallback={fallback}>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          animation: 'fade',
         }}>
         {isAuthenticated ? (
           <>
@@ -75,17 +84,31 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
             <Stack.Screen
               name="Settings"
               component={SettingScreen}
-              options={{title: 'Settings', animation: 'default'}}
+              options={{
+                title: 'Settings',
+                transitionSpec: {
+                  open: configSlow,
+                  close: configSlow,
+                },
+              }}
             />
             <Stack.Screen
               name="TestScreen"
               component={TestScreen}
               options={{
                 title: 'Chats',
-                animation: 'default',
+                headerStyle: {
+                  backgroundColor: theme.colors.background,
+                },
+                headerTintColor: theme.colors.onPrimary,
                 headerShown: true,
+                transitionSpec: {
+                  open: configSlow,
+                  close: configSlow,
+                },
               }}
             />
+
             <Stack.Screen name="ProfileList" component={ProfileReelList} />
             <Stack.Screen name="FriendsList" component={FreindsListScreen} />
             <Stack.Screen

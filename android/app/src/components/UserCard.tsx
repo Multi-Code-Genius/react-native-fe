@@ -40,35 +40,35 @@ const UserCard: React.FC<Props> = ({user, onRequest}) => {
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
-          {/* Left side: Avatar + info */}{' '}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 10,
-              flex: 1,
-            }}>
-            <View style={{position: 'relative'}}>
-              {avatarSource ? (
-                <Avatar.Image size={48} source={avatarSource} />
-              ) : (
-                <Avatar.Text
-                  style={{backgroundColor: theme.colors.secondary}}
-                  size={48}
-                  label={user.name.slice(0, 2).toUpperCase()}
-                />
-              )}
-              <Badge
-                size={16}
-                style={{
-                  backgroundColor: user.isOnline
-                    ? theme.colors.primary
-                    : theme.colors.error,
-                  position: 'absolute',
-                  bottom: 0,
-                  right: -4,
-                }}
-              />
+          <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
+            <View
+              style={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 10,
+              }}>
+              <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+                {avatarSource ? (
+                  <Avatar.Image size={48} source={avatarSource} />
+                ) : (
+                  <Avatar.Text
+                    style={{backgroundColor: theme.colors.secondary}}
+                    size={48}
+                    label={user.name.slice(0, 2).toUpperCase()}
+                  />
+                )}
+                <View style={{marginLeft: -8, marginBottom: -8}}>
+                  <Badge
+                    size={16}
+                    style={{
+                      backgroundColor: user.isOnline
+                        ? theme.colors.primary
+                        : theme.colors.error,
+                    }}
+                  />
+                </View>
+              </View>
             </View>
 
             <View style={{flex: 1}}>
@@ -82,7 +82,7 @@ const UserCard: React.FC<Props> = ({user, onRequest}) => {
                 style={{color: theme.colors.secondary}}>
                 {user.email}
               </Text>
-              {!user.isOnline && (
+              {!user.isOnline && user.lastSeen && (
                 <Text
                   variant="bodySmall"
                   style={{color: theme.colors.secondary}}>
@@ -91,6 +91,7 @@ const UserCard: React.FC<Props> = ({user, onRequest}) => {
               )}
             </View>
           </View>
+
           <View>
             <RequestButton id={user.id} onRequest={onRequest} />
           </View>
