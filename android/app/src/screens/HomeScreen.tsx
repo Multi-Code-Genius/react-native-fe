@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {ActivityIndicator, IconButton, Surface} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useDeclineRequest, useSendRequest} from '../api/request/request';
+import {useSendRequest} from '../api/request/request';
 import UserCard from '../components/UserCard';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 const UserListScreen = () => {
@@ -70,13 +70,8 @@ const UserListScreen = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        renderItem={({item, index}) => (
-          <UserCard
-            user={item}
-            index={index}
-            currentUserId={data?.user?.id}
-            onRequest={onSendRequest}
-          />
+        renderItem={({item}) => (
+          <UserCard user={item} onRequest={onSendRequest} />
         )}
         contentContainerStyle={{paddingVertical: 10}}
         showsVerticalScrollIndicator={false}

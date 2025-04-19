@@ -1,6 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
-import {Card, Surface, Text, Avatar, Badge, useTheme} from 'react-native-paper';
+import {Card, Text, Avatar, Badge, useTheme} from 'react-native-paper';
 import Animated, {FadeInUp} from 'react-native-reanimated';
 import RequestButton from './RequestButton';
 import moment from 'moment';
@@ -12,18 +12,14 @@ type User = {
   profile_pic: string | null;
   isOnline: boolean;
   lastSeen: string | null;
-  sentRequests: [{receiverId?: string; senderId?: string}];
-  receivedRequests: [{receiverId?: string; senderId?: string}];
 };
 
 interface Props {
   user: User;
-  currentUserId: string;
   onRequest: (id: string) => void;
-  index: number;
 }
 
-const UserCard: React.FC<Props> = ({user, currentUserId, index, onRequest}) => {
+const UserCard: React.FC<Props> = ({user, onRequest}) => {
   const theme = useTheme();
   const avatarSource = user.profile_pic ? {uri: user.profile_pic} : undefined;
 
@@ -44,7 +40,7 @@ const UserCard: React.FC<Props> = ({user, currentUserId, index, onRequest}) => {
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
-          {/* Left side: Avatar + info */}
+          {/* Left side: Avatar + info */}{' '}
           <View
             style={{
               flexDirection: 'row',
@@ -95,15 +91,8 @@ const UserCard: React.FC<Props> = ({user, currentUserId, index, onRequest}) => {
               )}
             </View>
           </View>
-
-          {/* Right side: Button */}
           <View>
-            <RequestButton
-              id={user.id}
-              currentUserId={currentUserId}
-              suggestedUser={user}
-              onRequest={onRequest}
-            />
+            <RequestButton id={user.id} onRequest={onRequest} />
           </View>
         </Card.Content>
       </Card>
