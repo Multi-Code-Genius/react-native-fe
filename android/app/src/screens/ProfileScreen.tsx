@@ -185,7 +185,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
   const postCount =
     (data?.user?.posts?.length || 0) + (data?.user?.videos?.length || 0);
 
-  const friendsCount = data?.user?.acceptedRequests?.length || 0;
+  const friendsCount = data?.user?.friends?.length || 0;
 
   return (
     <>
@@ -239,9 +239,9 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
                   </View>
                 </TouchableOpacity>
               </View>
-              {/* <Text className="text-[20px] font-semibold text-gray-600">
+              <Text className="text-[20px] font-semibold text-gray-600">
                 {data?.user?.email || 'your@email.com'}
-              </Text> */}
+              </Text>
             </View>
           </View>
         </View>

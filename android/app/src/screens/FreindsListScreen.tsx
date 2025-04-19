@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   SafeAreaView,
   Text,
@@ -8,13 +8,20 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import {Appbar, Avatar, Searchbar, useTheme} from 'react-native-paper';
-import {useUserInfo} from '../api/user/user';
 import {useDeclineRequest} from '../api/request/request';
+import {useUserListLogic} from '../hooks/useUserListLogic';
 
 export function FreindsListScreen() {
-  const {data} = useUserInfo();
+  const {
+    data,
+    profileRefetch: refetch,
+    profileLoading: isLoading,
+    profileError: error,
+  } = useUserListLogic();
+
   const theme = useTheme();
   const navigation = useNavigation();
 
@@ -26,8 +33,18 @@ export function FreindsListScreen() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingId, setDeletingId] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const acceptedRequests = data?.user?.acceptedRequests;
+  const onRefresh = useCallback(async () => {
+    try {
+      setRefreshing(true);
+      await refetch();
+    } catch (err) {
+      Alert.alert('Error', 'Failed to refresh data');
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
 
   return (
     <SafeAreaView className="flex-1 bg-black">
@@ -60,16 +77,18 @@ export function FreindsListScreen() {
       />
 
       <FlatList
-        data={acceptedRequests}
+        data={data.user.friends}
         keyExtractor={item => item.id}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
         contentContainerStyle={{paddingHorizontal: 16}}
         renderItem={({item}) => (
           <View className="flex-row items-center justify-between py-3">
             <View className="flex-row items-center gap-4">
-              {item.sender.profile_pic ? (
+              {item.profile_pic ? (
                 <View style={{position: 'relative'}}>
                   <Image
-                    source={{uri: item.sender.profile_pic}}
+                    source={{uri: item.profile_pic}}
                     className="w-12 h-12 rounded-full "
                     resizeMode="cover"
                   />
@@ -79,13 +98,13 @@ export function FreindsListScreen() {
                   <Avatar.Text
                     style={{backgroundColor: theme.colors.secondary}}
                     size={42}
-                    label={item.sender?.name?.slice(0, 2).toUpperCase() ?? ''}
+                    label={item?.name?.slice(0, 2).toUpperCase() ?? ''}
                   />
                 </View>
               )}
 
               <Text className="text-white text-md font-medium">
-                {item.sender.name}
+                {item.name}
               </Text>
             </View>
             <View>
@@ -93,7 +112,7 @@ export function FreindsListScreen() {
                 className="bg-gray-700 px-3 py-1 rounded-md justify-center items-center"
                 onPress={() => {
                   setDeletingId(item.id);
-                  deleteRequestMutation(item.id, {
+                  deleteRequestMutation(item.friendRequestId, {
                     onSettled: () => setDeletingId(null),
                   });
                 }}

@@ -1,14 +1,7 @@
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import React, {useCallback} from 'react';
-import {
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {ActivityIndicator, IconButton, Surface} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useSendRequest} from '../api/request/request';
 import UserCard from '../components/UserCard';
 import {useUserListLogic} from '../hooks/useUserListLogic';
@@ -64,7 +57,7 @@ const UserListScreen = () => {
         />
       </View>
 
-      {/* <FlatList
+      <FlatList
         data={users}
         keyExtractor={item => item.id}
         refreshControl={
@@ -75,7 +68,7 @@ const UserListScreen = () => {
         )}
         contentContainerStyle={{paddingVertical: 10}}
         showsVerticalScrollIndicator={false}
-      /> */}
+      />
     </Surface>
   );
 };
