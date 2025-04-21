@@ -18,8 +18,12 @@ const ChatList = () => {
     },
   });
 
-  const handleNavigation = (id: string, profile_pic: string) => {
-    (navigation as any).navigate('ChatScreen', {receiverId: id, profile_pic});
+  const handleNavigation = (id: string, profile_pic: string, name: string) => {
+    (navigation as any).navigate('ChatScreen', {
+      receiverId: id,
+      profile_pic,
+      name,
+    });
   };
   return (
     <View style={styles.container}>
@@ -36,7 +40,9 @@ const ChatList = () => {
                 user={item}
                 onRequest={() => {}}
                 isChatting={true}
-                onPress={() => handleNavigation(item.id, item.profile_pic)}
+                onPress={() =>
+                  handleNavigation(item.id, item.profile_pic, item.name)
+                }
               />
             </View>
           );

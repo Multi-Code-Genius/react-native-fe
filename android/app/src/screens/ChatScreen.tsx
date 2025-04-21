@@ -27,9 +27,10 @@ const ChatScreen = () => {
   const {userData} = useUserStore();
   const route = useRoute();
   const navigation = useNavigation();
-  const {receiverId, profile_pic} = route.params as {
+  const {receiverId, profile_pic, name} = route.params as {
     receiverId: string;
     profile_pic: string;
+    name: string;
   };
   const loggedInUserId = userData?.id || '';
 
@@ -45,10 +46,10 @@ const ChatScreen = () => {
     () => ({
       id: receiverId,
       imageUrl: profile_pic,
-      firstName: data.user.name,
+      firstName: name,
       lastSeen: '2022-01-01',
     }),
-    [receiverId, data.user.name, profile_pic],
+    [receiverId, profile_pic, name],
   );
 
   const {
