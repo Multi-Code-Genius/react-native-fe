@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {View, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
 import {Appbar, Avatar, Text, useTheme} from 'react-native-paper';
 import {Chat, MessageType, darkTheme} from '@flyerhq/react-native-chat-ui';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -13,6 +13,7 @@ import {useSocketStore} from '../store/socketStore';
 import {useUserStore} from '../store/userStore';
 import {useChatMessages} from '../api/message/useMessages';
 import {useUserListLogic} from '../hooks/useUserListLogic';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const uuidv4 = () =>
   'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -30,6 +31,8 @@ const ChatScreen = () => {
   const {socket, connectSocket, disconnectSocket} = useSocketStore();
   const {userData} = useUserStore();
   const route = useRoute();
+  const chatRef = useRef<any>(null); // useRef for scrollToBottom functionality
+  const insets = useSafeAreaInsets();
 
   const {receiverId, profile_pic, name} = route.params as {
     receiverId: string;
@@ -40,19 +43,12 @@ const ChatScreen = () => {
   const loggedInUserId = userData?.id || '';
 
   const currentUser = useMemo(
-    () => ({
-      id: loggedInUserId,
-      firstName: data.user.name,
-    }),
+    () => ({id: loggedInUserId, firstName: data.user.name}),
     [loggedInUserId, data.user.name],
   );
 
   const otherUser = useMemo(
-    () => ({
-      id: receiverId,
-      imageUrl: profile_pic,
-      firstName: name,
-    }),
+    () => ({id: receiverId, imageUrl: profile_pic, firstName: name}),
     [receiverId, profile_pic, name],
   );
 
@@ -88,9 +84,7 @@ const ChatScreen = () => {
       const seen = new Set(prev.map(m => m.id));
       const merged = [...prev];
       for (const m of allMessages) {
-        if (!seen.has(m.id)) {
-          merged.push(m);
-        }
+        if (!seen.has(m.id)) merged.push(m);
       }
       return merged.sort((a, b) => b.createdAt - a.createdAt);
     });
@@ -137,6 +131,10 @@ const ChatScreen = () => {
       receiverId,
       content: partial.text,
     });
+
+    setTimeout(() => {
+      chatRef.current?.scrollToBottom({animated: true});
+    }, 200);
   };
 
   const handleImageSelection = () => {
@@ -161,10 +159,20 @@ const ChatScreen = () => {
             author: currentUser,
           };
           setMessages(prev => [message, ...prev]);
+
+          setTimeout(() => {
+            chatRef.current?.scrollToBottom({animated: true});
+          }, 100);
         }
       },
     );
   };
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      chatRef.current?.scrollToBottom({animated: true});
+    }
+  }, [messages]);
 
   return (
     <View style={styles.container}>
@@ -188,46 +196,49 @@ const ChatScreen = () => {
         </View>
       </Appbar.Header>
 
-      <Chat
-        messages={messages}
-        onSendPress={handleSendPress}
-        user={currentUser}
-        onAttachmentPress={handleImageSelection}
-        showUserAvatars
-        showUserNames
-        isLastPage={!hasNextPage}
-        onEndReached={fetchNextPage}
-        isLoadingMore={isFetchingNextPage}
-        flatListProps={{
-          onEndReachedThreshold: 0.1,
-          initialNumToRender: 20,
-          maintainVisibleContentPosition: {minIndexForVisible: 0},
-        }}
-        theme={{
-          ...darkTheme,
-          colors: {
-            ...darkTheme.colors,
-            background: theme.colors.background,
-            primary: theme.colors.primary,
-            secondary: theme.colors.surfaceVariant,
-            inputBackground: theme.colors.surfaceVariant,
-          },
-          fonts: {
-            ...darkTheme.fonts,
-            sentMessageBodyTextStyle: {
-              fontFamily: theme.fonts.default,
-              color: theme.colors.onPrimary,
-            },
-            receivedMessageBodyTextStyle: {
-              fontFamily: theme.fonts.default,
-              color: theme.colors.onPrimary,
-            },
-            inputTextStyle: {
-              fontFamily: theme.fonts.default,
-            },
-          },
-        }}
-      />
+      <KeyboardAvoidingView
+        style={{flex: 1}}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top + 60 : 0}>
+        <View style={{flex: 1}}>
+          <Chat
+            messages={messages}
+            onSendPress={handleSendPress}
+            ref={chatRef}
+            user={currentUser}
+            onAttachmentPress={handleImageSelection}
+            showUserAvatars
+            showUserNames
+            isLastPage={!hasNextPage}
+            onEndReached={fetchNextPage}
+            isLoadingMore={isFetchingNextPage}
+            theme={{
+              ...darkTheme,
+              colors: {
+                ...darkTheme.colors,
+                background: theme.colors.background,
+                primary: theme.colors.primary,
+                secondary: theme.colors.surfaceVariant,
+                inputBackground: theme.colors.surfaceVariant,
+              },
+              fonts: {
+                ...darkTheme.fonts,
+                sentMessageBodyTextStyle: {
+                  fontFamily: theme.fonts.default,
+                  color: theme.colors.onPrimary,
+                },
+                receivedMessageBodyTextStyle: {
+                  fontFamily: theme.fonts.default,
+                  color: theme.colors.onPrimary,
+                },
+                inputTextStyle: {
+                  fontFamily: theme.fonts.default,
+                },
+              },
+            }}
+          />
+        </View>
+      </KeyboardAvoidingView>
     </View>
   );
 };
@@ -235,6 +246,22 @@ const ChatScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollButton: {
+    position: 'absolute',
+    bottom: '10%',
+    right: 20,
+    height: 40,
+    width: 40,
+    backgroundColor: '#007BFF',
+    borderRadius: 30,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scrollButtonText: {
+    color: 'white',
+    fontSize: 18,
   },
 });
 
