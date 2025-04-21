@@ -1,4 +1,4 @@
-import {useInfiniteQuery, useMutation, useQuery} from '@tanstack/react-query';
+import {useInfiniteQuery, useMutation} from '@tanstack/react-query';
 import {api} from '../../hooks/api';
 
 export const fetchMessages = async (data: any) => {
@@ -30,30 +30,31 @@ export const useMessages = (
 type GetMessagesParams = {
   userId: string;
   withUserId: string;
-  cursor: null;
+  cursor: string | null;
+  limit: number;
 };
 
 export const getMessages = async ({
   userId,
   withUserId,
   cursor = null,
+  limit = 20,
 }: GetMessagesParams) => {
   try {
     const response = await api(
-      `/api/messages/messages/${userId}/${withUserId}`,
+      `/api/messages/messages/${userId}/${withUserId}?cursor=${
+        cursor ?? ''
+      }&limit=${limit}`,
       {
-        params: {cursor, limit: 20},
         method: 'GET',
         headers: {'Content-Type': 'application/json'},
+        cache: 'no-store',
       },
     );
-
     return response ?? [];
   } catch (error) {
-    console.error('GetMessages Error:', error);
-    throw new Error(
-      error instanceof Error ? error.message : 'Fetching messages failed',
-    );
+    console.error('getMessages error:', error);
+    throw new Error('Failed to fetch messages');
   }
 };
 
@@ -61,13 +62,10 @@ export const useChatMessages = (userId: string, withUserId: string) => {
   return useInfiniteQuery({
     queryKey: ['chatMessages', userId, withUserId],
     queryFn: ({pageParam}) =>
-      getMessages({userId, withUserId, cursor: pageParam}),
+      getMessages({userId, withUserId, cursor: pageParam, limit: 20}),
     initialPageParam: null,
     getNextPageParam: lastPage => {
-      if (lastPage.length === 0) {
-        return undefined;
-      }
-      return lastPage[lastPage.length - 1].id;
+      return lastPage.length ? lastPage[0].id : undefined;
     },
   });
 };

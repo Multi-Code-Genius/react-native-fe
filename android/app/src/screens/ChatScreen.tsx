@@ -3,35 +3,40 @@ import {View, StyleSheet} from 'react-native';
 import {Appbar, Avatar, Text, useTheme} from 'react-native-paper';
 import {Chat, MessageType, darkTheme} from '@flyerhq/react-native-chat-ui';
 import {launchImageLibrary} from 'react-native-image-picker';
-import {useIsFocused, useRoute, useNavigation} from '@react-navigation/native';
+import {
+  useIsFocused,
+  useRoute,
+  useNavigation,
+  useFocusEffect,
+} from '@react-navigation/native';
 import {useSocketStore} from '../store/socketStore';
 import {useUserStore} from '../store/userStore';
-import {useFocusEffect} from '@react-navigation/native';
 import {useChatMessages} from '../api/message/useMessages';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 
 const uuidv4 = () =>
   'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = Math.floor(Math.random() * 16);
-    const v = c === 'x' ? r : (r % 4) + 8;
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState<MessageType.Any[]>([]);
   const {data} = useUserListLogic();
-
-  const isFocused = useIsFocused();
   const theme = useTheme();
+  const isFocused = useIsFocused();
+  const navigation = useNavigation();
   const {socket, connectSocket, disconnectSocket} = useSocketStore();
   const {userData} = useUserStore();
   const route = useRoute();
-  const navigation = useNavigation();
+
   const {receiverId, profile_pic, name} = route.params as {
     receiverId: string;
     profile_pic: string;
     name: string;
   };
+
   const loggedInUserId = userData?.id || '';
 
   const currentUser = useMemo(
@@ -47,7 +52,6 @@ const ChatScreen = () => {
       id: receiverId,
       imageUrl: profile_pic,
       firstName: name,
-      lastSeen: '2022-01-01',
     }),
     [receiverId, profile_pic, name],
   );
@@ -67,17 +71,30 @@ const ChatScreen = () => {
   );
 
   useEffect(() => {
-    if (chatHistory?.pages[0]?.length) {
-      const mapped = chatHistory?.pages[0]?.map(msg => ({
-        id: msg.id || uuidv4(),
+    if (!chatHistory?.pages?.length) return;
+
+    const allMessages = chatHistory.pages
+      .flatMap(page => page)
+      .map(msg => ({
+        id: msg.id,
         type: 'text',
         text: msg.content,
         createdAt: new Date(msg.createdAt).getTime(),
         author: msg.senderId === loggedInUserId ? currentUser : otherUser,
-      }));
-      setMessages(mapped.reverse());
-    }
-  }, [chatHistory, loggedInUserId, currentUser, otherUser]);
+      }))
+      .sort((a, b) => b.createdAt - a.createdAt);
+
+    setMessages(prev => {
+      const seen = new Set(prev.map(m => m.id));
+      const merged = [...prev];
+      for (const m of allMessages) {
+        if (!seen.has(m.id)) {
+          merged.push(m);
+        }
+      }
+      return merged.sort((a, b) => b.createdAt - a.createdAt);
+    });
+  }, [chatHistory]);
 
   useEffect(() => {
     if (isFocused) {
@@ -86,46 +103,35 @@ const ChatScreen = () => {
       disconnectSocket();
     }
     return () => disconnectSocket();
-  }, [isFocused, connectSocket, disconnectSocket, loggedInUserId]);
+  }, [isFocused, loggedInUserId]);
 
   useEffect(() => {
-    if (!socket) {
-      return;
-    }
+    if (!socket) return;
 
     const handleNewMessage = msg => {
-      const formatted: MessageType.Text = {
+      const message: MessageType.Text = {
         id: msg.id || uuidv4(),
         type: 'text',
         text: msg.content,
         createdAt: Date.now(),
         author: msg.senderId === loggedInUserId ? currentUser : otherUser,
       };
-      setMessages(prev => [formatted, ...prev]);
+      setMessages(prev => [message, ...prev]);
     };
 
     socket.on('newMessage', handleNewMessage);
-
-    return () => {
-      socket.off('newMessage', handleNewMessage);
-    };
-  }, [socket, currentUser, loggedInUserId, otherUser]);
-
-  const addMessage = (message: MessageType.Any) => {
-    setMessages(prev => [message, ...prev]);
-  };
+    return () => socket.off('newMessage', handleNewMessage);
+  }, [socket]);
 
   const handleSendPress = (partial: MessageType.PartialText) => {
-    const newMessage: MessageType.Text = {
+    const message: MessageType.Text = {
       id: uuidv4(),
       type: 'text',
       text: partial.text,
       createdAt: Date.now(),
       author: currentUser,
     };
-
-    addMessage(newMessage);
-
+    setMessages(prev => [message, ...prev]);
     socket?.emit('sendMessage', {
       senderId: loggedInUserId,
       receiverId,
@@ -137,25 +143,24 @@ const ChatScreen = () => {
     launchImageLibrary(
       {
         includeBase64: true,
-        maxWidth: 1440,
         mediaType: 'photo',
         quality: 0.7,
       },
       ({assets}) => {
-        const response = assets?.[0];
-        if (response?.base64) {
-          const imageMessage: MessageType.Image = {
-            author: currentUser,
-            createdAt: Date.now(),
-            height: response.height,
+        const img = assets?.[0];
+        if (img?.base64) {
+          const message: MessageType.Image = {
             id: uuidv4(),
-            name: response.fileName ?? response.uri?.split('/').pop() ?? '🖼',
-            size: response.fileSize ?? 0,
             type: 'image',
-            uri: `data:image/*;base64,${response.base64}`,
-            width: response.width,
+            uri: `data:image/*;base64,${img.base64}`,
+            name: img.fileName ?? 'Image',
+            createdAt: Date.now(),
+            height: img.height,
+            width: img.width,
+            size: img.fileSize ?? 0,
+            author: currentUser,
           };
-          addMessage(imageMessage);
+          setMessages(prev => [message, ...prev]);
         }
       },
     );
@@ -165,27 +170,18 @@ const ChatScreen = () => {
     <View style={styles.container}>
       <Appbar.Header elevated style={{paddingHorizontal: 8}}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-
         <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
-          <View>
-            {profile_pic ? (
-              <Avatar.Image size={36} source={{uri: otherUser.imageUrl}} />
-            ) : (
-              <Avatar.Text
-                size={36}
-                label={otherUser.firstName.slice(0, 2).toUpperCase()}
-                style={{backgroundColor: theme.colors.secondary}}
-              />
-            )}
-          </View>
-
+          {profile_pic ? (
+            <Avatar.Image size={36} source={{uri: otherUser.imageUrl}} />
+          ) : (
+            <Avatar.Text
+              size={36}
+              label={otherUser.firstName.slice(0, 2).toUpperCase()}
+              style={{backgroundColor: theme.colors.secondary}}
+            />
+          )}
           <View style={{marginLeft: 12}}>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: '400',
-                color: theme.colors.onPrimary,
-              }}>
+            <Text style={{fontSize: 16, color: theme.colors.onPrimary}}>
               {otherUser.firstName}
             </Text>
           </View>
@@ -200,9 +196,13 @@ const ChatScreen = () => {
         showUserAvatars
         showUserNames
         isLastPage={!hasNextPage}
-        hasNextPage={hasNextPage}
-        onLoadMore={fetchNextPage}
+        onEndReached={fetchNextPage}
         isLoadingMore={isFetchingNextPage}
+        flatListProps={{
+          onEndReachedThreshold: 0.1,
+          initialNumToRender: 20,
+          maintainVisibleContentPosition: {minIndexForVisible: 0},
+        }}
         theme={{
           ...darkTheme,
           colors: {
