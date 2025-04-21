@@ -57,7 +57,12 @@ const UserCard: React.FC<Props> = ({user, onRequest, isChatting, onPress}) => {
                 justifyContent: 'center',
                 marginRight: 10,
               }}>
-              <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'flex-end',
+                  position: 'relative',
+                }}>
                 {avatarSource ? (
                   <Avatar.Image size={48} source={avatarSource} />
                 ) : (
@@ -67,9 +72,14 @@ const UserCard: React.FC<Props> = ({user, onRequest, isChatting, onPress}) => {
                     label={user.name.slice(0, 2).toUpperCase()}
                   />
                 )}
-                <View style={{marginLeft: -8, marginBottom: -8}}>
+                <View
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                  }}>
                   <Badge
-                    size={16}
+                    size={12}
                     style={{
                       backgroundColor: user.isOnline
                         ? theme.colors.primary
@@ -86,11 +96,13 @@ const UserCard: React.FC<Props> = ({user, onRequest, isChatting, onPress}) => {
                 style={{color: theme.colors.onPrimary}}>
                 {user.name}
               </Text>
-              <Text
-                variant="bodyMedium"
-                style={{color: theme.colors.secondary}}>
-                {user.email}
-              </Text>
+              {!isChatting && (
+                <Text
+                  variant="bodyMedium"
+                  style={{color: theme.colors.secondary}}>
+                  {user.email}
+                </Text>
+              )}
               {!user.isOnline && user.lastSeen && (
                 <Text
                   variant="bodySmall"
