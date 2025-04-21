@@ -69,3 +69,38 @@ export const useChatMessages = (userId: string, withUserId: string) => {
     },
   });
 };
+
+export const markAsRead = async (data: {
+  userId: string;
+  withUserId: string;
+}) => {
+  try {
+    const response = await api(
+      `/api/messages/mark-as-read/${data.userId}/${data.withUserId}`,
+      {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+      },
+    );
+    const resp = await response;
+    return resp;
+  } catch (error) {
+    console.error('message Error:', error);
+    throw new Error(error instanceof Error ? error.message : 'message failed');
+  }
+};
+
+export const useMarkAsRead = (
+  _onSuccess?: (response: any) => void,
+  _onError?: (error: any) => void,
+) => {
+  return useMutation({
+    mutationFn: markAsRead,
+    onSuccess: () => {
+      console.log('markAsRead success');
+    },
+    onError: () => {
+      console.log('markAsRead error');
+    },
+  });
+};

@@ -11,7 +11,7 @@ import {
 } from '@react-navigation/native';
 import {useSocketStore} from '../store/socketStore';
 import {useUserStore} from '../store/userStore';
-import {useChatMessages} from '../api/message/useMessages';
+import {useChatMessages, useMarkAsRead} from '../api/message/useMessages';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 // import {v4 as uuidv4} from 'uuid';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -34,6 +34,7 @@ const ChatScreen = () => {
   const route = useRoute();
   const chatRef = useRef<any>(null);
   const insets = useSafeAreaInsets();
+  const {mutate: markAsRead} = useMarkAsRead();
 
   const {receiverId, profile_pic, name} = route.params as {
     receiverId: string;
@@ -64,11 +65,14 @@ const ChatScreen = () => {
   useFocusEffect(
     useCallback(() => {
       refetch();
-    }, [refetch]),
+      markAsRead({userId: loggedInUserId, withUserId: receiverId});
+    }, [refetch, loggedInUserId, receiverId, markAsRead]),
   );
 
   useEffect(() => {
-    if (!chatHistory?.pages?.length) return;
+    if (!chatHistory?.pages?.length) {
+      return;
+    }
 
     const allMessages = chatHistory.pages
       .flatMap(page => page)
