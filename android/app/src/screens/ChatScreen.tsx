@@ -13,8 +13,15 @@ import {useSocketStore} from '../store/socketStore';
 import {useUserStore} from '../store/userStore';
 import {useChatMessages} from '../api/message/useMessages';
 import {useUserListLogic} from '../hooks/useUserListLogic';
-import {v4 as uuidv4} from 'uuid';
+// import {v4 as uuidv4} from 'uuid';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+
+const uuidv4 = () =>
+  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState<MessageType.Any[]>([]);

@@ -114,7 +114,7 @@ const UserCard: React.FC<Props> = ({user, onRequest, isChatting, onPress}) => {
           </View>
 
           {isChatting ? (
-            <IconButton icon="message" size={30} onPress={onPress} />
+            <IconButton icon="android-messages" size={30} onPress={onPress} />
           ) : (
             <View>
               <RequestButton id={user.id} onRequest={onRequest} />
