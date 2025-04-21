@@ -239,7 +239,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
                   </View>
                 </TouchableOpacity>
               </View>
-              <Text className="text-[20px] font-semibold text-gray-600">
+              <Text className="text-[15px] font-semibold text-gray-400">
                 {data?.user?.email || 'your@email.com'}
               </Text>
             </View>

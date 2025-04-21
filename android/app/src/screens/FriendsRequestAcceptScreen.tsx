@@ -9,12 +9,13 @@ import {
   View,
 } from 'react-native';
 
-import {Appbar, Avatar, Searchbar, useTheme} from 'react-native-paper';
+import {Appbar, Avatar, Button, Searchbar, useTheme} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native';
 import {useAcceptRequest, useDeclineRequest} from '../api/request/request';
 import {useNavigation} from '@react-navigation/native';
 import {RefreshControl} from 'react-native-gesture-handler';
 import {useUserListLogic} from '../hooks/useUserListLogic';
+import {SceneMap, TabView} from 'react-native-tab-view';
 
 export function FriendsRequestAcceptScreen() {
   const {data, profileRefetch: refetch} = useUserListLogic();
@@ -22,6 +23,11 @@ export function FriendsRequestAcceptScreen() {
   const [loadingId, setLoadingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
+  const [routes] = useState([
+    {key: 'receiverequest', title: 'Receive Requests'},
+    {key: 'sentrequest', title: 'Sent Requests'},
+  ]);
 
   const navigation = useNavigation();
   const {
@@ -29,6 +35,7 @@ export function FriendsRequestAcceptScreen() {
     isSuccess,
     isPending,
   } = useAcceptRequest();
+
   const {
     mutate: deleteRequestMutation,
     isSuccess: declineSuccess,
@@ -36,7 +43,8 @@ export function FriendsRequestAcceptScreen() {
   } = useDeclineRequest();
   const theme = useTheme();
 
-  const acceptedRequests = data?.user?.pendingRequests;
+  const receivedRequests = data?.user?.receivedRequests;
+  const sentRequests = data?.user?.sentRequests;
 
   const onRefresh = useCallback(async () => {
     try {
@@ -52,6 +60,131 @@ export function FriendsRequestAcceptScreen() {
   useEffect(() => {
     refetch();
   }, [isSuccess, declineSuccess, refetch]);
+
+  const renderItem = (item: any, type: any) => {
+    return (
+      <View className="flex-row items-center justify-between py-3">
+        <View className="flex-row items-center gap-2">
+          {(
+            type === 'receiverequest'
+              ? item?.sender?.profile_pic
+              : item?.receiver?.profile_pic
+          ) ? (
+            <View style={{position: 'relative'}}>
+              <Image
+                source={{
+                  uri:
+                    type === 'receiverequest'
+                      ? item.sender?.profile_pic
+                      : item.receiver?.profile_pic,
+                }}
+                className="w-12 h-12 rounded-full"
+                resizeMode="cover"
+              />
+            </View>
+          ) : (
+            <View style={{position: 'relative'}}>
+              <Avatar.Text
+                style={{backgroundColor: theme.colors.secondary}}
+                size={42}
+                label={
+                  type === 'receiverequest'
+                    ? item.sender?.name?.slice(0, 2).toUpperCase() ?? ''
+                    : item.receiver?.name?.slice(0, 2).toUpperCase() ?? ''
+                }
+              />
+            </View>
+          )}
+          <Text className="text-white text-md font-medium">
+            {/* {item.sender.name} */}
+            {type === 'receiverequest' ? item.sender.name : item.receiver.name}
+          </Text>
+        </View>
+
+        {type === 'receiverequest' && (
+          <View className="flex-row gap-2">
+            <TouchableOpacity
+              className="bg-blue-500 px-3 py-1 rounded-md justify-center items-center"
+              // onPress={() => acceptRequestMutation.mutate(item.id)}
+              onPress={() => {
+                setLoadingId(item.id);
+                acceptRequestMutation(item.id, {
+                  onSettled: () => setLoadingId(null),
+                });
+              }}
+              disabled={isPending}
+              style={{minHeight: 28, minWidth: 70}}>
+              {loadingId === item.id ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <Text className="text-white text-xs font-semibold">
+                  Confirm
+                </Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="bg-gray-700 px-3 py-1 rounded-md justify-center items-center"
+              // onPress={() => deleteRequestMutation.mutate(item.id)}
+              onPress={() => {
+                setDeletingId(item.id);
+                deleteRequestMutation(item.id, {
+                  onSettled: () => setDeletingId(null),
+                });
+              }}
+              disabled={declinePending}
+              style={{minHeight: 28, minWidth: 70}}>
+              <Text className="text-white text-xs font-semibold">
+                {deletingId === item.id ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text className="text-white text-xs font-semibold">
+                    Delete
+                  </Text>
+                )}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        {type === 'sentrequest' && (
+          <Button
+            style={{
+              borderColor: 'white',
+              backgroundColor: '#374151',
+              borderRadius: 6,
+              minHeight: 28,
+              minWidth: 70,
+            }}>
+            <Text className="text-white text-xs font-semibold">Pending</Text>
+          </Button>
+        )}
+      </View>
+    );
+  };
+
+  const ReceivedRequestRoute = () => (
+    <FlatList
+      data={receivedRequests}
+      keyExtractor={item => item.id}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      contentContainerStyle={{paddingHorizontal: 16}}
+      renderItem={({item}) => renderItem(item, 'receiverequest')}
+    />
+  );
+
+  const SentRequestRoute = () => (
+    <FlatList
+      data={sentRequests}
+      keyExtractor={item => item.id}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      contentContainerStyle={{paddingHorizontal: 16}}
+      renderItem={({item}) => renderItem(item, 'sentrequest')}
+    />
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-black">
@@ -79,84 +212,29 @@ export function FriendsRequestAcceptScreen() {
         }}
         iconColor="white"
       />
-
-      <FlatList
-        data={acceptedRequests}
-        keyExtractor={item => item.id}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        contentContainerStyle={{paddingHorizontal: 16}}
-        renderItem={({item}) => (
-          <View className="flex-row items-center justify-between py-3">
-            <View className="flex-row items-center gap-2">
-              {item?.sender?.profile_pic ? (
-                <View style={{position: 'relative'}}>
-                  <Image
-                    source={{uri: item.sender.profile_pic}}
-                    className="w-12 h-12 rounded-full "
-                    resizeMode="cover"
-                  />
-                </View>
-              ) : (
-                <View style={{position: 'relative'}}>
-                  <Avatar.Text
-                    style={{backgroundColor: theme.colors.secondary}}
-                    size={42}
-                    label={item.sender?.name?.slice(0, 2).toUpperCase() ?? ''}
-                  />
-                </View>
-              )}
-              <Text className="text-white text-md font-medium">
-                {item.sender.name}
-              </Text>
-            </View>
-
-            <View className="flex-row gap-2">
-              <TouchableOpacity
-                className="bg-blue-500 px-3 py-1 rounded-md justify-center items-center"
-                // onPress={() => acceptRequestMutation.mutate(item.id)}
-                onPress={() => {
-                  setLoadingId(item.id);
-                  acceptRequestMutation(item.id, {
-                    onSettled: () => setLoadingId(null),
-                  });
-                }}
-                disabled={isPending}
-                style={{minHeight: 28, minWidth: 70}}>
-                {loadingId === item.id ? (
-                  <ActivityIndicator size="small" color="white" />
-                ) : (
-                  <Text className="text-white text-xs font-semibold">
-                    Confirm
-                  </Text>
-                )}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                className="bg-gray-700 px-3 py-1 rounded-md justify-center items-center"
-                // onPress={() => deleteRequestMutation.mutate(item.id)}
-                onPress={() => {
-                  setDeletingId(item.id);
-                  deleteRequestMutation(item.id, {
-                    onSettled: () => setDeletingId(null),
-                  });
-                }}
-                disabled={declinePending}
-                style={{minHeight: 28, minWidth: 70}}>
-                <Text className="text-white text-xs font-semibold">
-                  {deletingId === item.id ? (
-                    <ActivityIndicator size="small" color="white" />
-                  ) : (
-                    <Text className="text-white text-xs font-semibold">
-                      Delete
-                    </Text>
-                  )}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
+      <View className="flex-row justify-around m-4">
+        {routes.map((route, i) => (
+          <TouchableOpacity
+            key={route.key}
+            onPress={() => setTabIndex(i)}
+            className="flex-1 items-center pb-2">
+            <Text className={`text-base font-semibold text-gray-400 `}>
+              {route.title}
+            </Text>
+            {tabIndex === i && (
+              <View className="h-[1px] w-[100px] bg-slate-500 mt-1 rounded-full" />
+            )}
+          </TouchableOpacity>
+        ))}
+      </View>
+      <TabView
+        navigationState={{index: tabIndex, routes}}
+        renderScene={SceneMap({
+          receiverequest: ReceivedRequestRoute,
+          sentrequest: SentRequestRoute,
+        })}
+        onIndexChange={setTabIndex}
+        renderTabBar={() => null}
       />
     </SafeAreaView>
   );
