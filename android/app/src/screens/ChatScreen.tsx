@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
-import {Appbar, useTheme} from 'react-native-paper';
+import {Appbar, Avatar, Text, useTheme} from 'react-native-paper';
 import {Chat, MessageType, darkTheme} from '@flyerhq/react-native-chat-ui';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useIsFocused, useRoute, useNavigation} from '@react-navigation/native';
@@ -163,9 +163,33 @@ const ChatScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header elevated>
+      <Appbar.Header elevated style={{paddingHorizontal: 8}}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Chat" />
+
+        <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
+          <View>
+            {profile_pic ? (
+              <Avatar.Image size={36} source={{uri: otherUser.imageUrl}} />
+            ) : (
+              <Avatar.Text
+                size={36}
+                label={otherUser.firstName.slice(0, 2).toUpperCase()}
+                style={{backgroundColor: theme.colors.secondary}}
+              />
+            )}
+          </View>
+
+          <View style={{marginLeft: 12}}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: '400',
+                color: theme.colors.onPrimary,
+              }}>
+              {otherUser.firstName}
+            </Text>
+          </View>
+        </View>
       </Appbar.Header>
 
       <Chat
