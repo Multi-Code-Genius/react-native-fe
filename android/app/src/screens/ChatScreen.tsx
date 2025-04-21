@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {View, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
 import {Appbar, Avatar, Text, useTheme} from 'react-native-paper';
-import {Chat, MessageType, darkTheme} from '@flyerhq/react-native-chat-ui';
+import {Chat, MessageType, defaultTheme} from '@flyerhq/react-native-chat-ui';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {
   useIsFocused,
@@ -13,14 +13,8 @@ import {useSocketStore} from '../store/socketStore';
 import {useUserStore} from '../store/userStore';
 import {useChatMessages} from '../api/message/useMessages';
 import {useUserListLogic} from '../hooks/useUserListLogic';
+import {v4 as uuidv4} from 'uuid';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-
-const uuidv4 = () =>
-  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState<MessageType.Any[]>([]);
@@ -63,7 +57,11 @@ const ChatScreen = () => {
   useFocusEffect(
     useCallback(() => {
       refetch();
-    }, [refetch]),
+      socket?.emit('markMessagesAsSeen', {
+        receiverId: loggedInUserId,
+        senderId: receiverId,
+      });
+    }, [refetch, socket, loggedInUserId, receiverId]),
   );
 
   useEffect(() => {
@@ -77,6 +75,11 @@ const ChatScreen = () => {
         text: msg.content,
         createdAt: new Date(msg.createdAt).getTime(),
         author: msg.senderId === loggedInUserId ? currentUser : otherUser,
+        status: msg.read
+          ? 'seen'
+          : msg.senderId === loggedInUserId
+          ? 'delivered'
+          : 'delivered',
       }))
       .sort((a, b) => b.createdAt - a.createdAt);
 
@@ -96,37 +99,66 @@ const ChatScreen = () => {
     } else {
       disconnectSocket();
     }
+
     return () => disconnectSocket();
   }, [isFocused, loggedInUserId]);
 
   useEffect(() => {
     if (!socket) return;
 
-    const handleNewMessage = msg => {
-      const message: MessageType.Text = {
+    const handleNewMessage = (msg: {
+      id: string;
+      content: string;
+      senderId: string;
+      read: boolean;
+    }) => {
+      const isFromMe = msg.senderId === loggedInUserId;
+      const formatted: MessageType.Text = {
         id: msg.id || uuidv4(),
         type: 'text',
         text: msg.content,
         createdAt: Date.now(),
-        author: msg.senderId === loggedInUserId ? currentUser : otherUser,
+        author: isFromMe ? currentUser : otherUser,
+        status: isFromMe ? 'sent' : msg.read ? 'seen' : 'delivered',
       };
-      setMessages(prev => [message, ...prev]);
+      setMessages(prev => [formatted, ...prev]);
+    };
+
+    const handleStatusUpdate = ({
+      messageId,
+      status,
+    }: {
+      messageId: string;
+      status: 'sent' | 'delivered' | 'seen';
+    }) => {
+      setMessages(prev =>
+        prev.map(msg => (msg.id === messageId ? {...msg, status} : msg)),
+      );
     };
 
     socket.on('newMessage', handleNewMessage);
-    return () => socket.off('newMessage', handleNewMessage);
-  }, [socket]);
+    socket.on('messageStatusUpdate', handleStatusUpdate);
+
+    return () => {
+      socket.off('newMessage', handleNewMessage);
+      socket.off('messageStatusUpdate', handleStatusUpdate);
+    };
+  }, [socket, currentUser, loggedInUserId, otherUser]);
 
   const handleSendPress = (partial: MessageType.PartialText) => {
-    const message: MessageType.Text = {
-      id: uuidv4(),
+    const messageId = uuidv4();
+    const newMessage: MessageType.Text = {
+      id: messageId,
       type: 'text',
       text: partial.text,
       createdAt: Date.now(),
       author: currentUser,
+      status: 'sending',
     };
-    setMessages(prev => [message, ...prev]);
+    setMessages(prev => [newMessage, ...prev]);
+
     socket?.emit('sendMessage', {
+      messageId,
       senderId: loggedInUserId,
       receiverId,
       content: partial.text,
@@ -147,8 +179,9 @@ const ChatScreen = () => {
       ({assets}) => {
         const img = assets?.[0];
         if (img?.base64) {
-          const message: MessageType.Image = {
-            id: uuidv4(),
+          const messageId = uuidv4();
+          const imageMessage: MessageType.Image = {
+            id: messageId,
             type: 'image',
             uri: `data:image/*;base64,${img.base64}`,
             name: img.fileName ?? 'Image',
@@ -157,12 +190,23 @@ const ChatScreen = () => {
             width: img.width,
             size: img.fileSize ?? 0,
             author: currentUser,
+            status: 'sending',
           };
-          setMessages(prev => [message, ...prev]);
 
-          setTimeout(() => {
-            chatRef.current?.scrollToBottom({animated: true});
-          }, 100);
+          setMessages(prev => [imageMessage, ...prev]);
+
+          socket?.emit('sendImage', {
+            messageId,
+            senderId: loggedInUserId,
+            receiverId,
+            image: `data:image/*;base64,${img.base64}`,
+            metadata: {
+              width: img.width,
+              height: img.height,
+              size: img.fileSize ?? 0,
+              name: img.fileName ?? 'image',
+            },
+          });
         }
       },
     );
