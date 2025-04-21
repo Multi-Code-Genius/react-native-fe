@@ -1,13 +1,12 @@
 import React, {useEffect, useState} from 'react';
+import {View, StyleSheet} from 'react-native';
+import {Appbar, useTheme} from 'react-native-paper';
 import {Chat, MessageType, darkTheme} from '@flyerhq/react-native-chat-ui';
 import {launchImageLibrary} from 'react-native-image-picker';
-import {useTheme} from 'react-native-paper';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useRoute, useNavigation} from '@react-navigation/native';
 import {useSocketStore} from '../store/socketStore';
 import {useGetMessages} from '../api/message/useMessages';
-
-const loggedInUserId = '91fd5ece-4bf1-4830-8ac7-867f3a3cf4f0';
-const receiverId = '3cf5033f-b1bb-4816-aca0-fe4a59a4d445';
+import {useUserStore} from '../store/userStore';
 
 const uuidv4 = () =>
   'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -16,12 +15,17 @@ const uuidv4 = () =>
     return v.toString(16);
   });
 
-const TestScreen = () => {
+const ChatScreen = () => {
   const [messages, setMessages] = useState<MessageType.Any[]>([]);
-  const [messageQueue, setMessageQueue] = useState<any[]>([]);
   const isFocused = useIsFocused();
   const theme = useTheme();
   const {socket, connectSocket, disconnectSocket} = useSocketStore();
+  const {userData} = useUserStore();
+  const route = useRoute();
+  const navigation = useNavigation();
+  const {userId} = route.params;
+  const loggedInUserId = userData?.id;
+  const receiverId = userId;
 
   const currentUser = {
     id: loggedInUserId,
@@ -37,7 +41,7 @@ const TestScreen = () => {
     userId: loggedInUserId,
     withUserId: receiverId,
   });
-
+  console.log('==========>', chatHistory);
   useEffect(() => {
     if (chatHistory?.length) {
       const mapped = chatHistory.map(msg => ({
@@ -51,19 +55,15 @@ const TestScreen = () => {
     }
   }, [chatHistory]);
 
-  // Socket connection
   useEffect(() => {
     if (isFocused) {
       connectSocket(loggedInUserId);
     } else {
       disconnectSocket();
     }
-
     return () => disconnectSocket();
   }, [isFocused]);
-  console.log('-=----->', chatHistory);
 
-  // New message via socket
   useEffect(() => {
     if (!socket) return;
 
@@ -98,10 +98,8 @@ const TestScreen = () => {
       author: currentUser,
     };
 
-    // Update local UI
     addMessage(newMessage);
 
-    // Send via socket
     socket?.emit('sendMessage', {
       senderId: loggedInUserId,
       receiverId,
@@ -119,7 +117,6 @@ const TestScreen = () => {
       },
       ({assets}) => {
         const response = assets?.[0];
-
         if (response?.base64) {
           const imageMessage: MessageType.Image = {
             author: currentUser,
@@ -139,39 +136,52 @@ const TestScreen = () => {
   };
 
   return (
-    <Chat
-      messages={messages}
-      onSendPress={handleSendPress}
-      user={currentUser}
-      onAttachmentPress={handleImageSelection}
-      showUserAvatars
-      showUserNames
-      theme={{
-        ...darkTheme,
-        colors: {
-          ...darkTheme.colors,
-          background: theme.colors.background,
-          primary: theme.colors.primary,
-          secondary: theme.colors.surfaceVariant,
-          inputBackground: theme.colors.surfaceVariant,
-        },
-        fonts: {
-          ...darkTheme.fonts,
-          sentMessageBodyTextStyle: {
-            fontFamily: theme.fonts.default,
-            color: theme.colors.onPrimary,
+    <View style={styles.container}>
+      <Appbar.Header elevated>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Chat" />
+      </Appbar.Header>
+
+      <Chat
+        messages={messages}
+        onSendPress={handleSendPress}
+        user={currentUser}
+        onAttachmentPress={handleImageSelection}
+        showUserAvatars
+        showUserNames
+        theme={{
+          ...darkTheme,
+          colors: {
+            ...darkTheme.colors,
+            background: theme.colors.background,
+            primary: theme.colors.primary,
+            secondary: theme.colors.surfaceVariant,
+            inputBackground: theme.colors.surfaceVariant,
           },
-          receivedMessageBodyTextStyle: {
-            fontFamily: theme.fonts.default,
-            color: theme.colors.onPrimary,
+          fonts: {
+            ...darkTheme.fonts,
+            sentMessageBodyTextStyle: {
+              fontFamily: theme.fonts.default,
+              color: theme.colors.onPrimary,
+            },
+            receivedMessageBodyTextStyle: {
+              fontFamily: theme.fonts.default,
+              color: theme.colors.onPrimary,
+            },
+            inputTextStyle: {
+              fontFamily: theme.fonts.default,
+            },
           },
-          inputTextStyle: {
-            fontFamily: theme.fonts.default,
-          },
-        },
-      }}
-    />
+        }}
+      />
+    </View>
   );
 };
 
-export default TestScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
+
+export default ChatScreen;

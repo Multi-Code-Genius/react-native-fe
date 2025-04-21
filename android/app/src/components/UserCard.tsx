@@ -1,6 +1,13 @@
 import React from 'react';
 import {View} from 'react-native';
-import {Card, Text, Avatar, Badge, useTheme} from 'react-native-paper';
+import {
+  Card,
+  Text,
+  Avatar,
+  Badge,
+  useTheme,
+  IconButton,
+} from 'react-native-paper';
 import Animated, {FadeInUp} from 'react-native-reanimated';
 import RequestButton from './RequestButton';
 import moment from 'moment';
@@ -17,9 +24,11 @@ type User = {
 interface Props {
   user: User;
   onRequest: (id: string) => void;
+  isChatting: boolean;
+  onPress: any;
 }
 
-const UserCard: React.FC<Props> = ({user, onRequest}) => {
+const UserCard: React.FC<Props> = ({user, onRequest, isChatting, onPress}) => {
   const theme = useTheme();
   const avatarSource = user.profile_pic ? {uri: user.profile_pic} : undefined;
 
@@ -92,9 +101,13 @@ const UserCard: React.FC<Props> = ({user, onRequest}) => {
             </View>
           </View>
 
-          <View>
-            <RequestButton id={user.id} onRequest={onRequest} />
-          </View>
+          {isChatting ? (
+            <IconButton icon="message" size={30} onPress={onPress} />
+          ) : (
+            <View>
+              <RequestButton id={user.id} onRequest={onRequest} />
+            </View>
+          )}
         </Card.Content>
       </Card>
     </Animated.View>

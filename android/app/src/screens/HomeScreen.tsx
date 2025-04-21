@@ -53,7 +53,7 @@ const UserListScreen = () => {
         <IconButton
           icon="message-outline"
           iconColor="white"
-          onPress={() => (navigation as any).navigate('TestScreen')}
+          onPress={() => (navigation as any).navigate('ChatList')}
         />
       </View>
 

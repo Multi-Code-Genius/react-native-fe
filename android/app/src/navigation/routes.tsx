@@ -13,8 +13,9 @@ import {PrivateRoutes} from './PrivateRoutes';
 import {FreindsListScreen} from '../screens/FreindsListScreen';
 import {FriendsRequestAcceptScreen} from '../screens/FriendsRequestAcceptScreen';
 import {SettingScreen} from '../screens/SettingScreen';
-import TestScreen from '../screens/TestScreen';
 import {useTheme} from 'react-native-paper';
+import ChatList from '../screens/ChatList';
+import ChatScreen from '../screens/ChatScreen';
 
 const Stack = createStackNavigator();
 
@@ -93,19 +94,25 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               }}
             />
             <Stack.Screen
-              name="TestScreen"
-              component={TestScreen}
+              name="ChatList"
+              component={ChatList}
               options={{
-                title: 'Chats',
+                title: 'Chat List',
+                headerShown: true,
                 headerStyle: {
                   backgroundColor: theme.colors.background,
                 },
                 headerTintColor: theme.colors.onPrimary,
-                headerShown: true,
-                transitionSpec: {
-                  open: configSlow,
-                  close: configSlow,
-                },
+                headerShadowVisible: false,
+                animation: 'slide_from_right',
+              }}
+            />
+            <Stack.Screen
+              name="ChatScreen"
+              component={ChatScreen}
+              options={{
+                title: 'Chats',
+                animation: 'slide_from_right',
               }}
             />
 
