@@ -10,7 +10,13 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import {Appbar, Avatar, Searchbar, useTheme} from 'react-native-paper';
+import {
+  Appbar,
+  Avatar,
+  IconButton,
+  Searchbar,
+  useTheme,
+} from 'react-native-paper';
 import {useDeclineRequest} from '../api/request/request';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 
@@ -45,6 +51,14 @@ export function FreindsListScreen() {
       setRefreshing(false);
     }
   }, [refetch]);
+
+  const handleNavigation = (id: string, profile_pic: string, name: string) => {
+    (navigation as any).navigate('ChatScreen', {
+      receiverId: id,
+      profile_pic,
+      name,
+    });
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-black">
@@ -107,7 +121,7 @@ export function FreindsListScreen() {
                 {item.name}
               </Text>
             </View>
-            <View>
+            <View className="flex-row items-center space-x-2">
               <TouchableOpacity
                 className="bg-gray-700 px-3 py-1 rounded-md justify-center items-center"
                 onPress={() => {
@@ -118,16 +132,22 @@ export function FreindsListScreen() {
                 }}
                 disabled={declinePending}
                 style={{minHeight: 28, minWidth: 70}}>
-                <Text className="text-white text-xs font-semibold">
-                  {deletingId === item.id ? (
-                    <ActivityIndicator size="small" color="white" />
-                  ) : (
-                    <Text className="text-white text-xs font-semibold">
-                      Remove
-                    </Text>
-                  )}
-                </Text>
+                {deletingId === item.id ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text className="text-white text-xs font-semibold">
+                    Remove
+                  </Text>
+                )}
               </TouchableOpacity>
+              <IconButton
+                icon="message"
+                size={18}
+                iconColor="white"
+                onPress={() =>
+                  handleNavigation(item.id, item.profile_pic, item.name)
+                }
+              />
             </View>
           </View>
         )}
