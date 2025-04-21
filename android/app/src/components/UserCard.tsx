@@ -24,7 +24,7 @@ type User = {
 interface Props {
   user: User;
   onRequest: (id: string) => void;
-  isChatting: boolean;
+  isChatting?: boolean;
   onPress: any;
 }
 

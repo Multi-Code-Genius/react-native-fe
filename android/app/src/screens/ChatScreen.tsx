@@ -1,12 +1,14 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Appbar, useTheme} from 'react-native-paper';
 import {Chat, MessageType, darkTheme} from '@flyerhq/react-native-chat-ui';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useIsFocused, useRoute, useNavigation} from '@react-navigation/native';
 import {useSocketStore} from '../store/socketStore';
-import {useGetMessages} from '../api/message/useMessages';
 import {useUserStore} from '../store/userStore';
+import {useFocusEffect} from '@react-navigation/native';
+import {useChatMessages} from '../api/message/useMessages';
+import {useUserListLogic} from '../hooks/useUserListLogic';
 
 const uuidv4 = () =>
   'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -17,34 +19,55 @@ const uuidv4 = () =>
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState<MessageType.Any[]>([]);
+  const {data} = useUserListLogic();
+
   const isFocused = useIsFocused();
   const theme = useTheme();
   const {socket, connectSocket, disconnectSocket} = useSocketStore();
   const {userData} = useUserStore();
   const route = useRoute();
   const navigation = useNavigation();
-  const {userId} = route.params;
-  const loggedInUserId = userData?.id;
-  const receiverId = userId;
-
-  const currentUser = {
-    id: loggedInUserId,
-    firstName: 'You',
+  const {receiverId, profile_pic} = route.params as {
+    receiverId: string;
+    profile_pic: string;
   };
+  const loggedInUserId = userData?.id || '';
 
-  const otherUser = {
-    id: receiverId,
-    firstName: 'Other',
-  };
+  const currentUser = useMemo(
+    () => ({
+      id: loggedInUserId,
+      firstName: data.user.name,
+    }),
+    [loggedInUserId, data.user.name],
+  );
 
-  const {data: chatHistory} = useGetMessages({
-    userId: loggedInUserId,
-    withUserId: receiverId,
-  });
-  console.log('==========>', chatHistory);
+  const otherUser = useMemo(
+    () => ({
+      id: receiverId,
+      imageUrl: profile_pic,
+      firstName: data.user.name,
+      lastSeen: '2022-01-01',
+    }),
+    [receiverId, data.user.name, profile_pic],
+  );
+
+  const {
+    data: chatHistory,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useChatMessages(loggedInUserId, receiverId);
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
+
   useEffect(() => {
-    if (chatHistory?.length) {
-      const mapped = chatHistory.map(msg => ({
+    if (chatHistory?.pages[0]?.length) {
+      const mapped = chatHistory?.pages[0]?.map(msg => ({
         id: msg.id || uuidv4(),
         type: 'text',
         text: msg.content,
@@ -53,7 +76,7 @@ const ChatScreen = () => {
       }));
       setMessages(mapped.reverse());
     }
-  }, [chatHistory]);
+  }, [chatHistory, loggedInUserId, currentUser, otherUser]);
 
   useEffect(() => {
     if (isFocused) {
@@ -62,10 +85,12 @@ const ChatScreen = () => {
       disconnectSocket();
     }
     return () => disconnectSocket();
-  }, [isFocused]);
+  }, [isFocused, connectSocket, disconnectSocket, loggedInUserId]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) {
+      return;
+    }
 
     const handleNewMessage = msg => {
       const formatted: MessageType.Text = {
@@ -83,7 +108,7 @@ const ChatScreen = () => {
     return () => {
       socket.off('newMessage', handleNewMessage);
     };
-  }, [socket]);
+  }, [socket, currentUser, loggedInUserId, otherUser]);
 
   const addMessage = (message: MessageType.Any) => {
     setMessages(prev => [message, ...prev]);
@@ -149,6 +174,10 @@ const ChatScreen = () => {
         onAttachmentPress={handleImageSelection}
         showUserAvatars
         showUserNames
+        isLastPage={!hasNextPage}
+        hasNextPage={hasNextPage}
+        onLoadMore={fetchNextPage}
+        isLoadingMore={isFetchingNextPage}
         theme={{
           ...darkTheme,
           colors: {

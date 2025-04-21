@@ -1,22 +1,14 @@
 import {FlatList, StyleSheet, View} from 'react-native';
 import React from 'react';
 import {useUserListLogic} from '../hooks/useUserListLogic';
-import {IconButton, Text, useTheme} from 'react-native-paper';
 import UserCard from '../components/UserCard';
 import {useNavigation} from '@react-navigation/native';
+import {useTheme} from 'react-native-paper';
 
 const ChatList = () => {
   const theme = useTheme();
   const navigation = useNavigation();
-  const {
-    data,
-    users,
-    isLoading,
-    refreshing,
-    onRefresh,
-    refetch,
-    profileRefetch,
-  } = useUserListLogic();
+  const {data} = useUserListLogic();
 
   const styles = StyleSheet.create({
     container: {
@@ -26,8 +18,8 @@ const ChatList = () => {
     },
   });
 
-  const handleNavigation = id => {
-    navigation.navigate('ChatScreen', {userId: id});
+  const handleNavigation = (id: string, profile_pic: string) => {
+    (navigation as any).navigate('ChatScreen', {receiverId: id, profile_pic});
   };
   return (
     <View style={styles.container}>
@@ -42,8 +34,9 @@ const ChatList = () => {
               }}>
               <UserCard
                 user={item}
+                onRequest={() => {}}
                 isChatting={true}
-                onPress={() => handleNavigation(item.id)}
+                onPress={() => handleNavigation(item.id, item.profile_pic)}
               />
             </View>
           );
