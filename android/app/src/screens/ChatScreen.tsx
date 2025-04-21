@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {View, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
 import {Appbar, Avatar, Text, useTheme} from 'react-native-paper';
-import {Chat, MessageType, defaultTheme} from '@flyerhq/react-native-chat-ui';
+import {Chat, MessageType, darkTheme} from '@flyerhq/react-native-chat-ui';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {
   useIsFocused,
@@ -25,7 +25,7 @@ const ChatScreen = () => {
   const {socket, connectSocket, disconnectSocket} = useSocketStore();
   const {userData} = useUserStore();
   const route = useRoute();
-  const chatRef = useRef<any>(null); // useRef for scrollToBottom functionality
+  const chatRef = useRef<any>(null);
   const insets = useSafeAreaInsets();
 
   const {receiverId, profile_pic, name} = route.params as {
@@ -57,11 +57,7 @@ const ChatScreen = () => {
   useFocusEffect(
     useCallback(() => {
       refetch();
-      socket?.emit('markMessagesAsSeen', {
-        receiverId: loggedInUserId,
-        senderId: receiverId,
-      });
-    }, [refetch, socket, loggedInUserId, receiverId]),
+    }, [refetch]),
   );
 
   useEffect(() => {
@@ -207,6 +203,10 @@ const ChatScreen = () => {
               name: img.fileName ?? 'image',
             },
           });
+
+          setTimeout(() => {
+            chatRef.current?.scrollToBottom({animated: true});
+          }, 100);
         }
       },
     );
@@ -293,15 +293,11 @@ const styles = StyleSheet.create({
   },
   scrollButton: {
     position: 'absolute',
-    bottom: '10%',
+    bottom: 20,
     right: 20,
-    height: 40,
-    width: 40,
     backgroundColor: '#007BFF',
     borderRadius: 30,
     padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   scrollButtonText: {
     color: 'white',
