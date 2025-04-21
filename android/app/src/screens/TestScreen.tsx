@@ -1,90 +1,112 @@
-import {
-  Chat,
-  defaultTheme,
-  darkTheme,
-  MessageType,
-} from '@flyerhq/react-native-chat-ui';
-import moment from 'moment';
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
+import {Chat, MessageType, darkTheme} from '@flyerhq/react-native-chat-ui';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useTheme} from 'react-native-paper';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {useIsFocused} from '@react-navigation/native';
+import {useSocketStore} from '../store/socketStore';
+import {useGetMessages} from '../api/message/useMessages';
 
-const uuidv4 = () => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+const loggedInUserId = '91fd5ece-4bf1-4830-8ac7-867f3a3cf4f0';
+const receiverId = '3cf5033f-b1bb-4816-aca0-fe4a59a4d445';
+
+const uuidv4 = () =>
+  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
     const r = Math.floor(Math.random() * 16);
     const v = c === 'x' ? r : (r % 4) + 8;
     return v.toString(16);
   });
-};
-
-const currentUser = {
-  id: 'user1',
-  firstName: 'John',
-  imageUrl: 'https://i.pravatar.cc/150?img=3',
-};
-
-const otherUser = {
-  id: 'user2',
-  firstName: 'Alice',
-  imageUrl: 'https://i.pravatar.cc/150?img=5',
-};
 
 const TestScreen = () => {
   const [messages, setMessages] = useState<MessageType.Any[]>([]);
+  const [messageQueue, setMessageQueue] = useState<any[]>([]);
+  const isFocused = useIsFocused();
   const theme = useTheme();
+  const {socket, connectSocket, disconnectSocket} = useSocketStore();
+
+  const currentUser = {
+    id: loggedInUserId,
+    firstName: 'You',
+  };
+
+  const otherUser = {
+    id: receiverId,
+    firstName: 'Other',
+  };
+
+  const {data: chatHistory} = useGetMessages({
+    userId: loggedInUserId,
+    withUserId: receiverId,
+  });
 
   useEffect(() => {
-    const initialMessages: MessageType.Any[] = [
-      {
-        id: uuidv4(),
+    if (chatHistory?.length) {
+      const mapped = chatHistory.map(msg => ({
+        id: msg.id || uuidv4(),
         type: 'text',
-        text: 'Hey Alice, how are you?',
-        createdAt: Date.now() - 60000,
-        author: currentUser,
-      },
-      {
-        id: uuidv4(),
+        text: msg.content,
+        createdAt: new Date(msg.createdAt).getTime(),
+        author: msg.senderId === loggedInUserId ? currentUser : otherUser,
+      }));
+      setMessages(mapped.reverse());
+    }
+  }, [chatHistory]);
+
+  // Socket connection
+  useEffect(() => {
+    if (isFocused) {
+      connectSocket(loggedInUserId);
+    } else {
+      disconnectSocket();
+    }
+
+    return () => disconnectSocket();
+  }, [isFocused]);
+  console.log('-=----->', chatHistory);
+
+  // New message via socket
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewMessage = msg => {
+      const formatted: MessageType.Text = {
+        id: msg.id || uuidv4(),
         type: 'text',
-        text: 'Hi John! I’m good. Just working on the project.',
-        createdAt: Date.now() - 40000,
-        author: otherUser,
-      },
-      {
-        id: uuidv4(),
-        type: 'text',
-        text: 'Nice! Send me the mockups when ready.',
-        createdAt: Date.now() - 20000,
-        author: currentUser,
-      },
-    ];
-    setMessages(initialMessages);
-  }, []);
+        text: msg.content,
+        createdAt: Date.now(),
+        author: msg.senderId === loggedInUserId ? currentUser : otherUser,
+      };
+      setMessages(prev => [formatted, ...prev]);
+    };
+
+    socket.on('newMessage', handleNewMessage);
+
+    return () => {
+      socket.off('newMessage', handleNewMessage);
+    };
+  }, [socket]);
 
   const addMessage = (message: MessageType.Any) => {
     setMessages(prev => [message, ...prev]);
   };
 
-  const handleSendPress = (message: MessageType.PartialText) => {
-    const textMessage: MessageType.Text = {
-      author: currentUser,
-      createdAt: Date.now(),
+  const handleSendPress = (partial: MessageType.PartialText) => {
+    const newMessage: MessageType.Text = {
       id: uuidv4(),
-      text: message.text,
       type: 'text',
+      text: partial.text,
+      createdAt: Date.now(),
+      author: currentUser,
     };
-    addMessage(textMessage);
 
-    setTimeout(() => {
-      const reply: MessageType.Text = {
-        author: otherUser,
-        createdAt: Date.now(),
-        id: uuidv4(),
-        text: 'Sure! I’ll send them in a minute 😊',
-        type: 'text',
-      };
-      addMessage(reply);
-    }, 1000);
+    // Update local UI
+    addMessage(newMessage);
+
+    // Send via socket
+    socket?.emit('sendMessage', {
+      senderId: loggedInUserId,
+      receiverId,
+      content: partial.text,
+    });
   };
 
   const handleImageSelection = () => {
@@ -122,6 +144,8 @@ const TestScreen = () => {
       onSendPress={handleSendPress}
       user={currentUser}
       onAttachmentPress={handleImageSelection}
+      showUserAvatars
+      showUserNames
       theme={{
         ...darkTheme,
         colors: {
@@ -129,7 +153,6 @@ const TestScreen = () => {
           background: theme.colors.background,
           primary: theme.colors.primary,
           secondary: theme.colors.surfaceVariant,
-
           inputBackground: theme.colors.surfaceVariant,
         },
         fonts: {
@@ -147,8 +170,6 @@ const TestScreen = () => {
           },
         },
       }}
-      showUserAvatars
-      showUserNames
     />
   );
 };
