@@ -109,18 +109,45 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               }}
             />
 
-            <Stack.Screen name="ProfileList" component={ProfileReelList} />
-            <Stack.Screen name="FriendsList" component={FreindsListScreen} />
+            <Stack.Screen
+              name="ProfileList"
+              component={ProfileReelList}
+              options={{
+                transitionSpec: {
+                  open: configSlow,
+                  close: configSlow,
+                },
+              }}
+            />
+            <Stack.Screen
+              name="FriendsList"
+              component={FreindsListScreen}
+              options={{
+                transitionSpec: {
+                  open: configSlow,
+                  close: configSlow,
+                },
+              }}
+            />
             <Stack.Screen
               name="FriendsRequestAcceptScreen"
               component={FriendsRequestAcceptScreen}
               options={{
-                animation: 'default',
+                transitionSpec: {
+                  open: configSlow,
+                  close: configSlow,
+                },
               }}
             />
             <Stack.Screen
               name="SinglePostPhoto"
               component={ProfileSinglePost}
+              options={{
+                transitionSpec: {
+                  open: configSlow,
+                  close: configSlow,
+                },
+              }}
             />
           </>
         ) : (
