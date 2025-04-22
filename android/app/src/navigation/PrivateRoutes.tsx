@@ -14,6 +14,7 @@ import ReelsScreen from '../screens/ReelsScreen';
 import {ProfileScreen} from '../screens/ProfileScreen';
 import {PhotoPostUploader} from '../components/PhotoPostUploader';
 import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
+import ReelList from '../components/ReelList';
 
 const Tab = createBottomTabNavigator();
 const NoScreen = () => null;
@@ -111,7 +112,7 @@ export const PrivateRoutes: React.FC = () => {
           />
           <Tab.Screen
             name="Reels"
-            component={ReelsScreen}
+            component={ReelList}
             options={{
               tabBarIcon: ({color, size, focused}) => (
                 <IconButton

@@ -1,7 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import {View, Image, Text, Alert, FlatList, StyleSheet} from 'react-native';
 import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
-import {ActivityIndicator, IconButton} from 'react-native-paper';
+import {ActivityIndicator, Divider, IconButton} from 'react-native-paper';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useUploadImage} from '../api/image/image';
 import {TouchableOpacity} from 'react-native';
@@ -245,14 +245,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
             </View>
           </View>
         </View>
-
-        <View className="flex flex-row justify-between mt-8 mb-8 w-full">
-          <PhotoPostUploader />
-          <VideoUploaderComponent />
-        </View>
-
-        <View className=" h-[1px] bg-gray-300 w-full" />
-        <View className="flex-row justify-around m-4">
+        <Divider style={{marginVertical: 20}} />
+        <View className="flex-row justify-around">
           {routes.map((route, i) => (
             <TouchableOpacity
               key={route.key}

@@ -16,6 +16,7 @@ import {SettingScreen} from '../screens/SettingScreen';
 import {useTheme} from 'react-native-paper';
 import ChatList from '../screens/ChatList';
 import ChatScreen from '../screens/ChatScreen';
+import ReelList from '../components/ReelList';
 
 const Stack = createStackNavigator();
 

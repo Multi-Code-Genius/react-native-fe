@@ -69,26 +69,26 @@ const ReelCard: React.FC<ReelItemProps> = ({
     setPostComment('');
   };
 
+  const isPaused = index !== currentIndex || appState !== 'active' || !isActive;
+
   return (
-    <TapGestureHandler
-      numberOfTaps={2}
-      onActivated={() =>
-        userData?.id &&
-        onDoubleTap(
-          videoLikeStatus.includes(item.id) ||
-            (item.likes.length > 0 &&
-              item.likes.some(like => userData.id === like.userId)),
-        )
-      }>
-      <GestureHandlerRootView style={{flex: 1}}>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <TapGestureHandler
+        numberOfTaps={2}
+        onActivated={() =>
+          userData?.id &&
+          onDoubleTap(
+            videoLikeStatus.includes(item.id) ||
+              (item.likes.length > 0 &&
+                item.likes.some(like => userData.id === like.userId)),
+          )
+        }>
         <View style={[styles.videoContainer, {height: usableHeight}]}>
           <Video
             source={{uri: videoUrl}}
             resizeMode="cover"
             repeat
-            paused={
-              index !== currentIndex || !isActive || appState !== 'active'
-            }
+            paused={isPaused}
             muted={false}
             style={StyleSheet.absoluteFill}
             onLoadStart={() => setIsLoading(true)}
@@ -100,9 +100,9 @@ const ReelCard: React.FC<ReelItemProps> = ({
 
           {/* {isLoading && (
             <View style={styles.loaderOverlay}>
-              <ActivityIndicator size="large" color="white" />
+            <ActivityIndicator size="large" color="white" />
             </View>
-          )} */}
+            )} */}
 
           <View style={styles.rightActions}>
             <TouchableOpacity
@@ -151,46 +151,46 @@ const ReelCard: React.FC<ReelItemProps> = ({
             </Text>
           </View>
         </View>
-        <Portal>
-          <BottomSheet
-            ref={bottomSheetRef}
-            index={-1}
-            snapPoints={snapPoints}
-            enablePanDownToClose
-            backgroundStyle={{backgroundColor: theme.colors.background}}
-            handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
-            <BottomSheetScrollView
-              contentContainerStyle={{
-                backgroundColor: theme.colors.background,
-              }}>
-              <CommentSheet comments={item?.comments ?? []} />
-            </BottomSheetScrollView>
-            <View style={styles.inputContainer}>
-              <View style={styles.avatarPlaceholderSmall}>
-                <Icon name="account-circle" size={32} color="#555" />
-              </View>
-              <TextInput
-                placeholder="Add a comment..."
-                defaultValue={postComment}
-                onChangeText={setPostComment}
-                right={
-                  <TextInput.Icon
-                    icon="send"
-                    onPress={handleSubmitComment}
-                    disabled={!postComment.trim()}
-                  />
-                }
-                style={{
-                  width: '90%',
-                  backgroundColor: 'transparent',
-                }}
-                underlineStyle={{display: 'none'}}
-              />
+      </TapGestureHandler>
+      <Portal>
+        <BottomSheet
+          ref={bottomSheetRef}
+          index={-1}
+          snapPoints={snapPoints}
+          enablePanDownToClose
+          backgroundStyle={{backgroundColor: theme.colors.background}}
+          handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
+          <BottomSheetScrollView
+            contentContainerStyle={{
+              backgroundColor: theme.colors.background,
+            }}>
+            <CommentSheet comments={item?.comments ?? []} />
+          </BottomSheetScrollView>
+          <View style={styles.inputContainer}>
+            <View style={styles.avatarPlaceholderSmall}>
+              <Icon name="account-circle" size={32} color="#555" />
             </View>
-          </BottomSheet>
-        </Portal>
-      </GestureHandlerRootView>
-    </TapGestureHandler>
+            <TextInput
+              placeholder="Add a comment..."
+              defaultValue={postComment}
+              onChangeText={setPostComment}
+              right={
+                <TextInput.Icon
+                  icon="send"
+                  onPress={handleSubmitComment}
+                  disabled={!postComment.trim()}
+                />
+              }
+              style={{
+                width: '90%',
+                backgroundColor: 'transparent',
+              }}
+              underlineStyle={{display: 'none'}}
+            />
+          </View>
+        </BottomSheet>
+      </Portal>
+    </GestureHandlerRootView>
   );
 };
 

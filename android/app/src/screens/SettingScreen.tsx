@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {ScrollView, View} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {ScrollView, View, StyleSheet} from 'react-native';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import {userInfoData, useUpdateUserInfo} from '../api/user/user';
 import {
   Button,
@@ -11,6 +11,7 @@ import {
   Appbar,
   Portal,
   Dialog,
+  IconButton,
 } from 'react-native-paper';
 import isEqual from 'lodash/isEqual';
 import {pickBy} from 'lodash';
@@ -33,8 +34,8 @@ const LabelBox = ({
   const theme = useTheme();
 
   return (
-    <Card mode="contained" style={{marginBottom: 12}}>
-      <Card.Content>
+    <Card mode="contained" style={styles.labelBoxCard}>
+      <Card.Content style={styles.cardContent}>
         <Text variant="labelLarge" style={{color: theme.colors.secondary}}>
           {label}
         </Text>
@@ -44,13 +45,13 @@ const LabelBox = ({
             value={value}
             onChangeText={text => onChange?.(field, text)}
             placeholder={`Enter ${label}`}
-            style={{backgroundColor: 'transparent', paddingHorizontal: 0}}
+            style={styles.textInput}
             underlineColor={theme.colors.primary}
             activeUnderlineColor={theme.colors.primary}
             dense
           />
         ) : (
-          <Text variant="bodyLarge" style={{marginTop: 4}}>
+          <Text variant="bodyLarge" style={styles.valueText}>
             {value || 'Not specified'}
           </Text>
         )}
@@ -121,39 +122,52 @@ export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
   };
 
   return (
-    <>
-      <Appbar.Header style={{backgroundColor: theme.colors.background}}>
+    <SafeAreaView
+      style={[styles.container, {backgroundColor: theme.colors.background}]}
+      edges={['top']}>
+      <Appbar.Header
+        style={{backgroundColor: theme.colors.background}}
+        mode="center-aligned">
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-
         <Appbar.Content title="Settings" />
         {!isEditing ? (
           <Appbar.Action
-            icon="pencil"
+            mode="contained"
+            icon="content-save-edit"
             onPress={() => setIsEditing(true)}
             color={theme.colors.primary}
           />
         ) : (
-          <Appbar.Action
-            icon="close"
-            onPress={handleCancel}
-            color={theme.colors.error}
-          />
+          <View style={{flexDirection: 'row'}}>
+            <Appbar.Action
+              mode="contained"
+              icon="content-save-check"
+              onPress={handleSave}
+              color={theme.colors.primary}
+            />
+            <Appbar.Action
+              mode="contained"
+              icon="close"
+              onPress={handleCancel}
+              color={theme.colors.error}
+            />
+          </View>
         )}
 
-        <Appbar.Action
+        <Button
+          mode="elevated"
           icon="logout"
-          onPress={() => {
-            setDialogVisible(true);
-          }}
-          color={theme.colors.error}
-        />
+          contentStyle={{flexDirection: 'row-reverse'}}
+          onPress={() => setDialogVisible(true)}>
+          Logout
+        </Button>
       </Appbar.Header>
 
       <ScrollView
-        contentContainerStyle={{padding: 16}}
+        contentContainerStyle={styles.scrollViewContent}
         style={{backgroundColor: theme.colors.background}}>
-        <Card mode="contained">
-          <Card.Content>
+        <Card mode="contained" style={styles.mainCard}>
+          <Card.Content style={styles.mainCardContent}>
             <LabelBox
               label="Name"
               field="name"
@@ -190,33 +204,10 @@ export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
               isEditing={isEditing}
               onChange={handleChange}
             />
-
-            {isEditing && (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginTop: 16,
-                }}>
-                <Button
-                  mode="outlined"
-                  onPress={handleCancel}
-                  style={{flex: 1, marginRight: 8}}
-                  textColor={theme.colors.error}>
-                  Cancel
-                </Button>
-                <Button
-                  mode="contained"
-                  onPress={handleSave}
-                  style={{flex: 1, marginLeft: 8}}
-                  buttonColor={theme.colors.secondary}>
-                  Save Changes
-                </Button>
-              </View>
-            )}
           </Card.Content>
         </Card>
       </ScrollView>
+
       <Portal>
         <Dialog
           visible={dialogVisible}
@@ -237,6 +228,47 @@ export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-    </>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 50,
+  },
+  scrollViewContent: {
+    padding: 16,
+    paddingBottom: 32,
+  },
+  mainCard: {
+    borderRadius: 8,
+  },
+  mainCardContent: {
+    paddingVertical: 8,
+  },
+  labelBoxCard: {
+    marginBottom: 12,
+    borderRadius: 4,
+    elevation: 0, // Remove shadow for flat look
+    backgroundColor: 'transparent',
+  },
+  cardContent: {
+    paddingVertical: 8,
+    paddingHorizontal: 0,
+  },
+  textInput: {
+    backgroundColor: 'transparent',
+    paddingHorizontal: 0,
+    marginTop: 4,
+  },
+  valueText: {
+    marginTop: 4,
+    paddingVertical: 4,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+});
