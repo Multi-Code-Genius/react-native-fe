@@ -129,16 +129,18 @@ const UserCard: React.FC<Props> = ({
                 onPress={onPress}
                 style={{position: 'relative'}}
               />
-              <Badge
-                style={{
-                  position: 'absolute',
-                  top: 5,
-                  right: 5,
-                  backgroundColor: theme.colors.primary,
-                }}
-                size={18}>
-                {messageCount}
-              </Badge>
+              {messageCount !== 0 && (
+                <Badge
+                  style={{
+                    position: 'absolute',
+                    top: 5,
+                    right: 5,
+                    backgroundColor: theme.colors.primary,
+                  }}
+                  size={18}>
+                  {messageCount}
+                </Badge>
+              )}
             </View>
           ) : (
             <View>
