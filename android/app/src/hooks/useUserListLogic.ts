@@ -73,12 +73,13 @@ export const useUserListLogic = () => {
     try {
       setRefreshing(true);
       await refetch();
+      await profileRefetch();
     } catch (err) {
       Alert.alert('Error', 'Failed to refresh data');
     } finally {
       setRefreshing(false);
     }
-  }, [refetch]);
+  }, [refetch, profileRefetch]);
 
   return {
     data,

@@ -11,6 +11,7 @@ import {
 import {useSendRequest} from '../api/request/request';
 import UserCard from '../components/UserCard';
 import {useUserListLogic} from '../hooks/useUserListLogic';
+import {Message} from '../types/messageTypes';
 const UserListScreen = () => {
   const navigation = useNavigation();
   const {

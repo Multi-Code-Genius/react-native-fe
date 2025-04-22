@@ -1,14 +1,14 @@
-import {FlatList, StyleSheet, View} from 'react-native';
-import React from 'react';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
+import React, {useCallback} from 'react';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 import UserCard from '../components/UserCard';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useTheme} from 'react-native-paper';
 
 const ChatList = () => {
   const theme = useTheme();
   const navigation = useNavigation();
-  const {data} = useUserListLogic();
+  const {data, onRefresh, refreshing, profileRefetch} = useUserListLogic();
 
   const styles = StyleSheet.create({
     container: {
@@ -17,6 +17,12 @@ const ChatList = () => {
       padding: 10,
     },
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      profileRefetch();
+    }, [profileRefetch]),
+  );
 
   const messagesReceived = data?.user?.messagesReceived || [];
 
@@ -43,6 +49,9 @@ const ChatList = () => {
     <View style={styles.container}>
       <FlatList
         data={data?.user?.friends || []}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         keyExtractor={item => item.id}
         renderItem={({item}) => {
           const messageCount = messageMap[item.id]?.length || 0;
