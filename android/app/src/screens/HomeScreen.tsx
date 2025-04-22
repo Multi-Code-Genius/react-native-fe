@@ -1,6 +1,6 @@
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import React, {useCallback} from 'react';
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
+import {FlatList, RefreshControl, StyleSheet, View, Text} from 'react-native';
 import {ActivityIndicator, IconButton, Surface} from 'react-native-paper';
 import {useSendRequest} from '../api/request/request';
 import UserCard from '../components/UserCard';
@@ -30,6 +30,18 @@ const UserListScreen = () => {
       refetch();
       profileRefetch();
     }, [refetch, profileRefetch]),
+  );
+
+  const messagesReceived = data?.user?.messagesReceived;
+
+  const groupedBySender = Object.values(
+    messagesReceived.reduce((acc: any, msg: any) => {
+      if (!acc[msg.senderId]) {
+        acc[msg.senderId] = [];
+      }
+      acc[msg.senderId].push(msg);
+      return acc;
+    }, {}),
   );
 
   if (isLoading) {

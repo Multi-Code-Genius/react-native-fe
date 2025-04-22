@@ -18,6 +18,20 @@ const ChatList = () => {
     },
   });
 
+  const messagesReceived = data?.user?.messagesReceived;
+
+  const groupedBySender = Object.values(
+    messagesReceived.reduce((acc: any, msg: any) => {
+      if (!acc[msg.senderId]) {
+        acc[msg.senderId] = [];
+      }
+      acc[msg.senderId].push(msg);
+      return acc;
+    }, {}),
+  );
+
+  console.log('groupedBySender', groupedBySender);
+
   const handleNavigation = (id: string, profile_pic: string, name: string) => {
     (navigation as any).navigate('ChatScreen', {
       receiverId: id,
