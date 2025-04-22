@@ -1,7 +1,13 @@
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import React, {useCallback} from 'react';
 import {FlatList, RefreshControl, StyleSheet, View, Text} from 'react-native';
-import {ActivityIndicator, IconButton, Surface} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Badge,
+  IconButton,
+  Surface,
+  useTheme,
+} from 'react-native-paper';
 import {useSendRequest} from '../api/request/request';
 import UserCard from '../components/UserCard';
 import {useUserListLogic} from '../hooks/useUserListLogic';
@@ -17,6 +23,7 @@ const UserListScreen = () => {
     profileRefetch,
   } = useUserListLogic();
   const {mutate} = useSendRequest();
+  const theme = useTheme();
 
   const onSendRequest = (receiverId: string) => {
     mutate({
@@ -32,17 +39,7 @@ const UserListScreen = () => {
     }, [refetch, profileRefetch]),
   );
 
-  const messagesReceived = data?.user?.messagesReceived;
-
-  const groupedBySender = Object.values(
-    messagesReceived.reduce((acc: any, msg: any) => {
-      if (!acc[msg.senderId]) {
-        acc[msg.senderId] = [];
-      }
-      acc[msg.senderId].push(msg);
-      return acc;
-    }, {}),
-  );
+  const messagesReceived: Message[] = data?.user?.messagesReceived ?? [];
 
   if (isLoading) {
     return (
@@ -62,11 +59,24 @@ const UserListScreen = () => {
             (navigation as any).navigate('FriendsRequestAcceptScreen')
           }
         />
-        <IconButton
-          icon="message-outline"
-          iconColor="white"
-          onPress={() => (navigation as any).navigate('ChatList')}
-        />
+        <View>
+          <IconButton
+            icon="message-outline"
+            iconColor="white"
+            onPress={() => (navigation as any).navigate('ChatList')}
+            style={{position: 'relative'}}
+          />
+          <Badge
+            style={{
+              position: 'absolute',
+              right: 5,
+              top: 5,
+              backgroundColor: theme.colors.primary,
+            }}
+            size={18}>
+            {messagesReceived.length}
+          </Badge>
+        </View>
       </View>
 
       <FlatList

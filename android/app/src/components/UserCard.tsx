@@ -7,6 +7,7 @@ import {
   Badge,
   useTheme,
   IconButton,
+  MD3Colors,
 } from 'react-native-paper';
 import Animated, {FadeInUp} from 'react-native-reanimated';
 import RequestButton from './RequestButton';
@@ -26,9 +27,16 @@ interface Props {
   onRequest: (id: string) => void;
   isChatting?: boolean;
   onPress: any;
+  messageCount: number;
 }
 
-const UserCard: React.FC<Props> = ({user, onRequest, isChatting, onPress}) => {
+const UserCard: React.FC<Props> = ({
+  user,
+  onRequest,
+  isChatting,
+  onPress,
+  messageCount,
+}) => {
   const theme = useTheme();
   const avatarSource = user.profile_pic ? {uri: user.profile_pic} : undefined;
 
@@ -114,7 +122,24 @@ const UserCard: React.FC<Props> = ({user, onRequest, isChatting, onPress}) => {
           </View>
 
           {isChatting ? (
-            <IconButton icon="android-messages" size={30} onPress={onPress} />
+            <View>
+              <IconButton
+                icon="android-messages"
+                size={30}
+                onPress={onPress}
+                style={{position: 'relative'}}
+              />
+              <Badge
+                style={{
+                  position: 'absolute',
+                  top: 5,
+                  right: 5,
+                  backgroundColor: theme.colors.primary,
+                }}
+                size={18}>
+                {messageCount}
+              </Badge>
+            </View>
           ) : (
             <View>
               <RequestButton id={user.id} onRequest={onRequest} />

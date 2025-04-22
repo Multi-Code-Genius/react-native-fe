@@ -18,19 +18,18 @@ const ChatList = () => {
     },
   });
 
-  const messagesReceived = data?.user?.messagesReceived;
+  const messagesReceived = data?.user?.messagesReceived || [];
 
-  const groupedBySender = Object.values(
-    messagesReceived.reduce((acc: any, msg: any) => {
+  const messageMap = messagesReceived.reduce(
+    (acc: Record<string, any[]>, msg: any) => {
       if (!acc[msg.senderId]) {
         acc[msg.senderId] = [];
       }
       acc[msg.senderId].push(msg);
       return acc;
-    }, {}),
+    },
+    {},
   );
-
-  console.log('groupedBySender', groupedBySender);
 
   const handleNavigation = (id: string, profile_pic: string, name: string) => {
     (navigation as any).navigate('ChatScreen', {
@@ -39,17 +38,17 @@ const ChatList = () => {
       name,
     });
   };
+
   return (
     <View style={styles.container}>
       <FlatList
         data={data?.user?.friends || []}
         keyExtractor={item => item.id}
         renderItem={({item}) => {
+          const messageCount = messageMap[item.id]?.length || 0;
+
           return (
-            <View
-              style={{
-                flex: 1,
-              }}>
+            <View style={{flex: 1}}>
               <UserCard
                 user={item}
                 onRequest={() => {}}
@@ -57,6 +56,7 @@ const ChatList = () => {
                 onPress={() =>
                   handleNavigation(item.id, item.profile_pic, item.name)
                 }
+                messageCount={messageCount}
               />
             </View>
           );
