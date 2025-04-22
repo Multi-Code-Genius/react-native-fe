@@ -66,16 +66,18 @@ const UserListScreen = () => {
             onPress={() => (navigation as any).navigate('ChatList')}
             style={{position: 'relative'}}
           />
-          <Badge
-            style={{
-              position: 'absolute',
-              right: 5,
-              top: 5,
-              backgroundColor: theme.colors.primary,
-            }}
-            size={18}>
-            {messagesReceived.length}
-          </Badge>
+          {messagesReceived.length !== 0 && (
+            <Badge
+              style={{
+                position: 'absolute',
+                right: 5,
+                top: 5,
+                backgroundColor: theme.colors.primary,
+              }}
+              size={18}>
+              {messagesReceived.length}
+            </Badge>
+          )}
         </View>
       </View>
 
