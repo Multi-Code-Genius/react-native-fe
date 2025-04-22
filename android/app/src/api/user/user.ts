@@ -18,6 +18,7 @@ export const userInfoData = async () => {
 };
 
 export const useUserInfo = () => {
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   return useQuery({
     queryKey: ['profile'],
     queryFn: userInfoData,
@@ -25,7 +26,7 @@ export const useUserInfo = () => {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     retry: 0,
-    enabled: useAuthStore.getState().isAuthenticated,
+    enabled: isAuthenticated,
   });
 };
 
