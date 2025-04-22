@@ -1,5 +1,5 @@
 import {PermissionsAndroid} from 'react-native';
-import Geolocation from 'react-native-geolocation-service';
+import Geolocation from '@react-native-community/geolocation';
 
 type Location = {
   lat: number;
@@ -43,14 +43,9 @@ const getCurrentPosition = (): Promise<Location> => {
         reject(new Error(`LOCATION_ERROR:${error.code}:${error.message}`));
       },
       {
-        accuracy: {
-          android: 'high',
-        },
         enableHighAccuracy: true,
         timeout: 15000,
         maximumAge: 10000,
-        showLocationDialog: true,
-        forceRequestLocation: true,
       },
     );
   });
