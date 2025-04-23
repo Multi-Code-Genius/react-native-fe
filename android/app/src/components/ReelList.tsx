@@ -138,21 +138,27 @@ const ReelList: React.FC<ReelsScreenProps> = () => {
         horizontal={false}
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}
-        removeClippedSubviews
+        // removeClippedSubviews
         snapToInterval={usableHeight}
         decelerationRate="fast"
         onMomentumScrollEnd={handleScrollEnd}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={onViewableItemsChanged}
-        initialNumToRender={1}
-        maxToRenderPerBatch={1}
+        initialNumToRender={3}
+        maxToRenderPerBatch={5}
         windowSize={3}
-        contentContainerStyle={{paddingBottom: 60}}
+        removeClippedSubviews={true}
         getItemLayout={(_, index) => ({
           length: usableHeight,
           offset: usableHeight * index,
           index,
         })}
+        contentContainerStyle={{paddingBottom: 60}}
+        // getItemLayout={(_, index) => ({
+        //   length: usableHeight,
+        //   offset: usableHeight * index,
+        //   index,
+        // })}
       />
     </SafeAreaView>
   );

@@ -53,7 +53,11 @@ export const PrivateRoutes: React.FC = () => {
   return (
     <GestureHandlerRootView
       style={{flex: 1, backgroundColor: theme.colors.background}}>
-      <Animated.View style={{flex: 1, transform: [{scale: animatedScale}]}}>
+      <Animated.View
+        style={{
+          flex: 1,
+          // transform: [{scale: animatedScale}],
+        }}>
         <Tab.Navigator
           screenOptions={{
             tabBarActiveTintColor: theme.colors.primary,

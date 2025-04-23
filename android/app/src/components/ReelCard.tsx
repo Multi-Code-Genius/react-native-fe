@@ -1,4 +1,4 @@
-import React, {useRef, useMemo, useCallback, useState} from 'react';
+import React, {useRef, useMemo, useCallback, useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -38,11 +38,21 @@ const ReelCard: React.FC<ReelItemProps> = ({
 
   const {userData} = useUserStore();
 
-  item.likes.forEach(i => {
-    if (userData?.id === i.userId) {
-      addLikesReels(i.id);
-    }
-  });
+  // item.likes.forEach(i => {
+  //   if (userData?.id === i.userId) {
+  //     addLikesReels(i.id);
+  //   }
+  // });
+
+  useEffect(() => {
+    if (!item || !userData?.id) return;
+
+    item.likes.forEach(like => {
+      if (like.userId === userData.id) {
+        addLikesReels(like.id);
+      }
+    });
+  }, [item.likes, userData?.id, addLikesReels]);
 
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
