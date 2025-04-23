@@ -13,7 +13,6 @@ import {useSocketStore} from '../store/socketStore';
 import {useUserStore} from '../store/userStore';
 import {useChatMessages, useMarkAsRead} from '../api/message/useMessages';
 import {useUserListLogic} from '../hooks/useUserListLogic';
-// import {v4 as uuidv4} from 'uuid';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const uuidv4 = () =>
@@ -24,12 +23,12 @@ const uuidv4 = () =>
   });
 
 const ChatScreen = () => {
-  const [messages, setMessages] = useState<MessageType.Any[]>([]);
   const {data} = useUserListLogic();
   const theme = useTheme();
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const {socket, connectSocket, disconnectSocket} = useSocketStore();
+  const {socket, connectSocket, disconnectSocket, messages, setMessages} =
+    useSocketStore();
   const {userData} = useUserStore();
   const route = useRoute();
   const chatRef = useRef<any>(null);
@@ -82,23 +81,25 @@ const ChatScreen = () => {
         text: msg.content,
         createdAt: new Date(msg.createdAt).getTime(),
         author: msg.senderId === loggedInUserId ? currentUser : otherUser,
-        status: msg.read
-          ? 'seen'
-          : msg.senderId === loggedInUserId
-          ? 'delivered'
-          : 'delivered',
-      }))
-      .sort((a, b) => b.createdAt - a.createdAt);
+        status: msg.read ? 'seen' : 'sent',
+      }));
 
     setMessages(prev => {
-      const seen = new Set(prev.map(m => m.id));
-      const merged = [...prev];
-      for (const m of allMessages) {
-        if (!seen.has(m.id)) merged.push(m);
+      const msgMap = new Map<string, MessageType.Text>();
+
+      for (const m of prev) {
+        msgMap.set(m.id, m);
       }
-      return merged.sort((a, b) => b.createdAt - a.createdAt);
+
+      for (const m of allMessages) {
+        msgMap.set(m.id, m);
+      }
+
+      const merged = Array.from(msgMap.values());
+
+      return merged.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
     });
-  }, [chatHistory]);
+  }, [chatHistory, currentUser, loggedInUserId, otherUser, setMessages]);
 
   useEffect(() => {
     if (isFocused) {
@@ -108,7 +109,7 @@ const ChatScreen = () => {
     }
 
     return () => disconnectSocket();
-  }, [isFocused, loggedInUserId]);
+  }, [isFocused, loggedInUserId, connectSocket, disconnectSocket]);
 
   useEffect(() => {
     if (!socket) return;
@@ -121,37 +122,46 @@ const ChatScreen = () => {
     }) => {
       const isFromMe = msg.senderId === loggedInUserId;
       const formatted: MessageType.Text = {
-        id: msg.id || uuidv4(),
+        id: msg.id,
         type: 'text',
         text: msg.content,
         createdAt: Date.now(),
         author: isFromMe ? currentUser : otherUser,
-        status: isFromMe ? 'sent' : msg.read ? 'seen' : 'delivered',
+        status: msg.read ? 'seen' : 'sent',
       };
-      setMessages(prev => [formatted, ...prev]);
-    };
 
-    const handleStatusUpdate = ({
-      messageId,
-      status,
-    }: {
-      messageId: string;
-      status: 'sent' | 'delivered' | 'seen';
-    }) => {
-      console.log(`Status update received: ${messageId} -> ${status}`);
-      setMessages(prev =>
-        prev.map(msg => (msg.id === messageId ? {...msg, status} : msg)),
-      );
+      setMessages(prev => {
+        const withoutOld = prev.filter(m => m.id !== msg.id);
+        const updated = [formatted, ...withoutOld];
+        return updated.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
+      });
     };
 
     socket.on('newMessage', handleNewMessage);
-    socket.on('messageStatusUpdate', handleStatusUpdate);
+    socket.emit('markMessageAsRead', {
+      userId: loggedInUserId,
+      senderId: receiverId,
+    });
+
+    socket.on('messagesRead', ({by}) => {
+      refetch();
+    });
+
+    console.log('🔌 Socket listener added for newMessage');
 
     return () => {
       socket.off('newMessage', handleNewMessage);
-      socket.off('messageStatusUpdate', handleStatusUpdate);
+      console.log('❌ Socket listener removed for newMessage');
     };
-  }, [socket, currentUser, loggedInUserId, otherUser]);
+  }, [
+    socket,
+    loggedInUserId,
+    currentUser,
+    otherUser,
+    setMessages,
+    refetch,
+    receiverId,
+  ]);
 
   const handleSendPress = (partial: MessageType.PartialText) => {
     const messageId = uuidv4();
@@ -163,7 +173,7 @@ const ChatScreen = () => {
       author: currentUser,
       status: 'sending',
     };
-    setMessages(prev => [newMessage, ...prev]);
+    setMessages(newMessage);
 
     socket?.emit('sendMessage', {
       messageId,
@@ -201,7 +211,7 @@ const ChatScreen = () => {
             status: 'sending',
           };
 
-          setMessages(prev => [imageMessage, ...prev]);
+          setMessages(imageMessage);
 
           socket?.emit('sendImage', {
             messageId,

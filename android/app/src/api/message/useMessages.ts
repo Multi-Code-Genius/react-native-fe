@@ -1,4 +1,8 @@
-import {useInfiniteQuery, useMutation} from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import {api} from '../../hooks/api';
 
 export const fetchMessages = async (data: any) => {
@@ -94,10 +98,11 @@ export const useMarkAsRead = (
   _onSuccess?: (response: any) => void,
   _onError?: (error: any) => void,
 ) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: markAsRead,
     onSuccess: () => {
-      console.log('markAsRead success');
+      queryClient.invalidateQueries({queryKey: ['chatMessages']});
     },
     onError: () => {
       console.log('markAsRead error');
