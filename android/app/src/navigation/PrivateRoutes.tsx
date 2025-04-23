@@ -61,7 +61,7 @@ export const PrivateRoutes: React.FC = () => {
             tabBarStyle: {
               backgroundColor: theme.colors.scrim,
               borderTopWidth: 0,
-              maxHeight: 60,
+              maxHeight: 70,
               height: '100%',
             },
             tabBarItemStyle: {
@@ -137,6 +137,7 @@ export const PrivateRoutes: React.FC = () => {
                 />
               ),
             }}
+            c
           />
         </Tab.Navigator>
       </Animated.View>

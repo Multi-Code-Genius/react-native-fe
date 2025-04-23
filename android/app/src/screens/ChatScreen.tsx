@@ -268,8 +268,10 @@ const ChatScreen = () => {
             isLastPage={!hasNextPage}
             onEndReached={fetchNextPage}
             isLoadingMore={isFetchingNextPage}
+            enableAnimation
             theme={{
               ...darkTheme,
+
               colors: {
                 ...darkTheme.colors,
                 background: theme.colors.background,
@@ -289,6 +291,10 @@ const ChatScreen = () => {
                 },
                 inputTextStyle: {
                   fontFamily: theme.fonts.default,
+                },
+                emptyChatPlaceholderTextStyle: {
+                  transform: [{scaleX: -1}],
+                  color: theme.colors.secondary,
                 },
               },
             }}

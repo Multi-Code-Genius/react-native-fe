@@ -5,6 +5,7 @@ import {
   PointAnnotation,
   Callout,
   Camera,
+  MarkerView,
 } from '@maplibre/maplibre-react-native';
 import {
   Card,
@@ -131,14 +132,14 @@ const MapScreen: React.FC = () => {
       <MapView
         ref={mapRef}
         style={StyleSheet.absoluteFillObject}
-        mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+        mapStyle="https://api.maptiler.com/maps/streets-v2/style.json?key=6R1qeXkgDjyItDGLuc5M"
         scrollEnabled
         zoomEnabled>
         {userLocation && (
           <Camera
             centerCoordinate={[userLocation.lng, userLocation.lat]}
             zoomLevel={11}
-            animationMode="flyTo"
+            animationMode="linearTo"
             animationDuration={2000}
           />
         )}
@@ -150,13 +151,16 @@ const MapScreen: React.FC = () => {
             <View style={styles.markerContainer}>
               <Text className="text-4xl">🧍🏻‍♂️</Text>
             </View>
+
             <Callout style={styles.callout}>
               <Card style={styles.card}>
                 <Card.Content>
                   <Text variant="titleMedium" style={styles.cardTitle}>
                     Your Location
                   </Text>
-                  <Text variant="bodyMedium" style={styles.cardDescription}>
+                  <Text
+                    variant="bodyMedium"
+                    style={{color: theme.colors.primary}}>
                     {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
                   </Text>
                 </Card.Content>
@@ -170,10 +174,7 @@ const MapScreen: React.FC = () => {
         icon="crosshairs-gps"
         iconColor={theme.colors.primary}
         size={24}
-        style={[
-          styles.locationButton,
-          {backgroundColor: theme.colors.secondary},
-        ]}
+        style={[styles.locationButton, {backgroundColor: theme.colors.surface}]}
         onPress={flyToUserLocation}
       />
 
@@ -244,7 +245,7 @@ const styles = StyleSheet.create({
   },
   locationButton: {
     position: 'absolute',
-    top: 24,
+    bottom: 24,
     right: 16,
 
     borderRadius: 24,

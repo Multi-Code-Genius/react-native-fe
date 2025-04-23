@@ -11,6 +11,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import {PhotoPostUploader} from '../components/PhotoPostUploader';
 import {SceneMap, TabView} from 'react-native-tab-view';
 import {useUserListLogic} from '../hooks/useUserListLogic';
+import ImagePicker from 'react-native-image-crop-picker';
 
 type ProfileScreenProps = {
   setIndex: (index: number) => void;
@@ -67,28 +68,29 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
   );
 
   const handleMediaPick = () => {
-    launchImageLibrary({mediaType: 'photo'}, response => {
-      if (response.didCancel || !response.assets?.length) {
-        return;
-      }
+    if (!userId) return;
 
-      const asset = response.assets[0];
-      if (!asset.uri || !userId) {
-        return;
-      }
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+    })
+      .then(image => {
+        const formData = new FormData();
+        formData.append('profile_pic', {
+          uri: image.path,
+          name: 'image.jpg',
+          type: image.mime,
+        });
 
-      const formData = new FormData();
-      formData.append('profile_pic', {
-        uri: asset.uri,
-        name: asset.fileName ?? 'image.jpg',
-        type: asset.type ?? 'image/jpeg',
+        uploadImageMutation.mutate({
+          id: userId,
+          payload: formData,
+        });
+      })
+      .catch(err => {
+        console.log('Image pick error:', err);
       });
-
-      uploadImageMutation.mutate({
-        id: userId,
-        payload: formData,
-      });
-    });
   };
 
   const renderItem = (item: any, type: any) => {
