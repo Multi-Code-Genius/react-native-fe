@@ -234,9 +234,8 @@ const styles = StyleSheet.create({
   },
   bottomInfo: {
     position: 'absolute',
-    top: '75%',
-    left: 20,
-    right: 100,
+    bottom: '5%',
+    marginHorizontal: 20,
   },
   userRow: {
     flexDirection: 'row',
