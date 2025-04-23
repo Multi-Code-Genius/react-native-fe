@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {launchImageLibrary} from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 import {Button} from 'react-native-paper';
 import {useUploadPhoto} from '../api/photo/photo';
 
@@ -19,27 +19,34 @@ export function PhotoPostUploader() {
   const [description, setDescription] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
-  const handlePickImage = () => {
-    launchImageLibrary({mediaType: 'photo'}, response => {
-      if (response.didCancel || !response.assets?.length) return;
+  const handlePickImage = async () => {
+    try {
+      const pickedImage = await ImagePicker.openPicker({
+        mediaType: 'photo',
+        cropping: true,
+        compressImageQuality: 0.8,
+      });
 
-      const asset = response.assets[0];
-      setImage(asset);
+      setImage(pickedImage);
       setModalVisible(true);
-    });
+    } catch (error) {
+      if (error.code !== 'E_PICKER_CANCELLED') {
+        Alert.alert('Error', 'Image selection failed.');
+      }
+    }
   };
 
   const handleUpload = () => {
-    if (!image?.uri) return;
+    if (!image?.path) return;
 
     const formData = new FormData();
     formData.append('description', description);
     formData.append('post', {
-      uri: image.uri,
-      type: image.type || 'image/jpeg',
-      name: image.fileName || 'photo.jpg',
+      uri: image.path,
+      type: image.mime || 'image/jpeg',
+      name: image.filename || 'photo.jpg',
     });
-    console.log('formData', formData);
+
     uploadPhotoMutation(formData, {
       onSuccess: () => {
         Alert.alert('Success', 'Photo uploaded successfully!');
@@ -85,9 +92,9 @@ export function PhotoPostUploader() {
               borderRadius: 10,
               padding: 20,
             }}>
-            {image?.uri && (
+            {image?.path && (
               <Image
-                source={{uri: image.uri}}
+                source={{uri: image.path}}
                 style={{width: '100%', height: 200, borderRadius: 10}}
                 resizeMode="cover"
               />
