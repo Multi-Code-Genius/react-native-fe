@@ -24,6 +24,8 @@ import BottomSheet, {
 import {IconButton, Portal, TextInput, useTheme} from 'react-native-paper';
 import CommentSheet from '../CommentSheet';
 import {debounce} from 'lodash';
+import {KeyboardAvoidingView} from 'react-native';
+import {Platform} from 'react-native';
 
 export function ProfileSinglePost() {
   const route = useRoute();
@@ -162,7 +164,9 @@ export function ProfileSinglePost() {
           backgroundStyle={{backgroundColor: theme.colors.background}}
           handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
           <BottomSheetScrollView
-            contentContainerStyle={{backgroundColor: theme.colors.background}}>
+            contentContainerStyle={{
+              backgroundColor: theme.colors.background,
+            }}>
             <CommentSheet comments={data?.video?.comments ?? []} />
           </BottomSheetScrollView>
           <View style={styles.inputContainer}>
@@ -212,7 +216,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   input: {
-    width: '60%',
+    width: '80%',
     marginTop: 8,
     marginBottom: 10,
     borderRadius: 10,

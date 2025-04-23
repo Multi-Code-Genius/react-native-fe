@@ -7,13 +7,22 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Video from 'react-native-video';
-import {Avatar, Portal, TextInput, useTheme} from 'react-native-paper';
+import {
+  Avatar,
+  IconButton,
+  Portal,
+  TextInput,
+  useTheme,
+} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   GestureHandlerRootView,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import BottomSheet, {
+  BottomSheetScrollView,
+  BottomSheetTextInput,
+} from '@gorhom/bottom-sheet';
 import {ReelItemProps} from '../types/video';
 import {useUserStore} from '../store/userStore';
 import {videoStore} from '../store/videoStore';
@@ -35,6 +44,7 @@ const ReelCard: React.FC<ReelItemProps> = ({
   const commentCount = item.comments?.length || 0;
   const user = item.user;
   const {videoLikeStatus, addLikesReels} = videoStore();
+  const [inputKey, setInputKey] = useState(0);
 
   const {userData} = useUserStore();
 
@@ -77,6 +87,7 @@ const ReelCard: React.FC<ReelItemProps> = ({
     console.log(postComment);
     onComments(postComment);
     setPostComment('');
+    setInputKey(prev => prev + 1);
   };
 
   const isPaused = index !== currentIndex || appState !== 'active' || !isActive;
@@ -176,26 +187,26 @@ const ReelCard: React.FC<ReelItemProps> = ({
             }}>
             <CommentSheet comments={item?.comments ?? []} />
           </BottomSheetScrollView>
+
           <View style={styles.inputContainer}>
-            <View style={styles.avatarPlaceholderSmall}>
-              <Icon name="account-circle" size={32} color="#555" />
-            </View>
-            <TextInput
-              placeholder="Add a comment..."
+            <Icon
+              name="account-circle"
+              size={32}
+              color="#555"
+              style={{marginRight: 12}}
+            />
+            <BottomSheetTextInput
+              key={`comment-input-${inputKey}`}
+              style={styles.input}
               defaultValue={postComment}
+              placeholder="Add a comment..."
               onChangeText={setPostComment}
-              right={
-                <TextInput.Icon
-                  icon="send"
-                  onPress={handleSubmitComment}
-                  disabled={!postComment.trim()}
-                />
-              }
-              style={{
-                width: '90%',
-                backgroundColor: 'transparent',
-              }}
-              underlineStyle={{display: 'none'}}
+            />
+
+            <IconButton
+              icon="send"
+              onPress={handleSubmitComment}
+              disabled={!postComment.trim()}
             />
           </View>
         </BottomSheet>
@@ -275,5 +286,16 @@ const styles = StyleSheet.create({
     color: '#888',
     flex: 1,
     fontSize: 14,
+  },
+  input: {
+    height: 40,
+    width: '80%',
+    marginTop: 8,
+    marginBottom: 10,
+    borderRadius: 10,
+    fontSize: 16,
+    lineHeight: 20,
+    padding: 8,
+    backgroundColor: 'rgba(151, 151, 151, 0.25)',
   },
 });
