@@ -138,6 +138,7 @@ const ChatScreen = () => {
       messageId: string;
       status: 'sent' | 'delivered' | 'seen';
     }) => {
+      console.log(`Status update received: ${messageId} -> ${status}`);
       setMessages(prev =>
         prev.map(msg => (msg.id === messageId ? {...msg, status} : msg)),
       );

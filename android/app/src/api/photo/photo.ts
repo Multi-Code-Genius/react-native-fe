@@ -141,3 +141,62 @@ export const useLikePhoto = () => {
     },
   });
 };
+
+export const commentPhoto = async (postId: string, text: string) => {
+  try {
+    const response = await api(`/api/post/comments/${postId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({text}),
+    });
+    return await response;
+  } catch (error) {
+    console.error('Comment Photo Error', error);
+    throw new Error(error instanceof Error ? error.message : 'comment failed');
+  }
+};
+
+export const useCommentPhoto = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({postId, text}: {postId: string; text: string}) =>
+      commentPhoto(postId, text),
+
+    onMutate: async ({postId}) => {
+      await queryClient.cancelQueries({queryKey: ['photo', postId]});
+
+      const previous = queryClient.getQueryData(['photo', postId]);
+
+      queryClient.setQueryData(['photo', postId], (oldData: any) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          video: {
+            ...oldData.video,
+            comments: [
+              ...(oldData.video.comments || []),
+              {
+                id: 'temp-id',
+                userId: oldData.currentUserId,
+                user: oldData.currentUser,
+                text: 'Sending...',
+              },
+            ],
+          },
+        };
+      });
+      return {previous};
+    },
+    onError: (_err, {postId}, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['photo', postId], context.previous);
+      }
+    },
+
+    onSuccess: (_data, {postId}) => {
+      queryClient.invalidateQueries({queryKey: ['photo', postId]});
+    },
+  });
+};

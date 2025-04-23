@@ -1,24 +1,47 @@
 import {useRoute} from '@react-navigation/native';
-import React, {useEffect} from 'react';
-import {SafeAreaView, View, Image, Text, TouchableOpacity} from 'react-native';
-import {useLikePhoto, useSinglePhoto} from '../../api/photo/photo';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {
+  SafeAreaView,
+  View,
+  Image,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import {
+  useCommentPhoto,
+  useLikePhoto,
+  useSinglePhoto,
+} from '../../api/photo/photo';
 import {Header} from './Header';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {photoStore} from '../../store/photoStore';
 import {useUserStore} from '../../store/userStore';
+import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import {Portal, TextInput, useTheme} from 'react-native-paper';
+import CommentSheet from '../CommentSheet';
 
 export function ProfileSinglePost() {
-  const {params} = useRoute();
-  const {postId} = params as {postId: string};
-
-  const {data, error, isLoading} = useSinglePhoto(postId);
+  const route = useRoute();
+  const theme = useTheme();
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['50%'], []);
+  const [postComment, setPostComment] = useState('');
   const {userData} = useUserStore();
   const {photoLikeStatus, addLikesPhoto, updatePhotoLikeStatus} = photoStore();
   const likePhotoMutation = useLikePhoto();
+  const commentPhototMutation = useCommentPhoto();
 
-  // const hasLiked =
-  //   photoLikeStatus.includes(postId) ||
-  //   data?.video?.likes?.some((like: any) => like.userId === userData?.id);
+  const {postId} = route.params as {postId?: string};
+  const {data, error, isLoading} = useSinglePhoto(postId || '');
+
+  if (!postId) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.text}>Invalid post</Text>
+      </View>
+    );
+  }
 
   useEffect(() => {
     if (data?.video?.likes?.some((like: any) => like.userId === userData?.id)) {
@@ -26,29 +49,40 @@ export function ProfileSinglePost() {
     }
   }, [data?.video?.likes, userData?.id, postId]);
 
+  const handleLikeToggle = () => {
+    updatePhotoLikeStatus(postId);
+    likePhotoMutation.mutate({photoId: postId});
+  };
+
+  const openCommentSheet = useCallback(() => {
+    bottomSheetRef.current?.expand();
+  }, []);
+
+  const handleCommentSubmit = () => {
+    if (!postComment.trim()) return;
+    commentPhototMutation.mutate({postId, text: postComment});
+    setPostComment('');
+  };
+
   if (error) {
     return (
-      <View className="flex-1 bg-white justify-center items-center">
-        <Text className="text-black text-base">Failed to load image</Text>
+      <View style={styles.centered}>
+        <Text style={styles.text}>Failed to load image</Text>
       </View>
     );
   }
 
   if (isLoading || !data) {
     return (
-      <View className="flex-1 bg-white justify-center items-center">
-        <Text className="text-black text-base">Loading...</Text>
+      <View style={styles.centered}>
+        <Text style={styles.text}>Loading...</Text>
       </View>
     );
   }
 
   const imageUrl = data?.video?.post;
   const likeCount = data?.video?.likes?.length || 0;
-
-  const handleLikeToggle = () => {
-    updatePhotoLikeStatus(postId);
-    likePhotoMutation.mutate({photoId: postId});
-  };
+  const commentCount = data?.video?.comments?.length || 0;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -68,30 +102,101 @@ export function ProfileSinglePost() {
         <Image
           source={{uri: imageUrl}}
           className="w-full h-[300px] rounded-xl mb-4"
-          resizeMode="cover"
         />
 
-        <TouchableOpacity
-          className="flex-row items-center gap-2"
-          onPress={handleLikeToggle}>
-          <Icon
-            name="heart"
-            size={28}
-            color={
-              userData?.id &&
-              (photoLikeStatus.includes(postId) ||
-                (data?.video?.likes?.length > 0 &&
-                  data?.video?.likes.some(
+        <View className="flex-row items-center gap-2 mb-1">
+          <TouchableOpacity
+            onPress={handleLikeToggle}
+            className="flex-row items-center gap-1">
+            <Icon
+              name="heart"
+              size={28}
+              color={
+                userData?.id &&
+                (photoLikeStatus.includes(postId) ||
+                  data?.video?.likes?.some(
                     (like: any) => like.userId === userData.id,
-                  )))
-                ? 'red'
-                : 'grey'
-            }
-          />
-          {/* <Icon name="heart" size={28} color={hasLiked ? 'red' : 'gray'} /> */}
-          <Text className="text-black text-base font-bold">{likeCount}</Text>
-        </TouchableOpacity>
+                  ))
+                  ? 'red'
+                  : 'grey'
+              }
+            />
+            <Text style={{marginLeft: 4}}>{likeCount}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="flex-row items-center gap-2"
+            onPress={openCommentSheet}>
+            <Icon name="comment-outline" size={24} color="black" />
+            <Text className="text-black text-base font-bold">
+              {commentCount}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className="flex-row gap-2">
+          <Text className="text-[14px] font-bold ">
+            {data?.video?.user?.name}:
+          </Text>
+          <Text className="text-[14px]">{data?.video?.description}</Text>
+        </View>
       </View>
+
+      <Portal>
+        <BottomSheet
+          ref={bottomSheetRef}
+          index={-1}
+          snapPoints={snapPoints}
+          enablePanDownToClose
+          backgroundStyle={{backgroundColor: theme.colors.background}}
+          handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
+          <BottomSheetScrollView
+            contentContainerStyle={{backgroundColor: theme.colors.background}}>
+            <CommentSheet comments={data?.video?.comments ?? []} />
+          </BottomSheetScrollView>
+          <View style={styles.inputContainer}>
+            <Icon
+              name="account-circle"
+              size={32}
+              color="#555"
+              style={{marginRight: 12}}
+            />
+            <TextInput
+              placeholder="Add a comment..."
+              defaultValue={postComment}
+              onChangeText={setPostComment}
+              right={
+                <TextInput.Icon
+                  icon="send"
+                  onPress={handleCommentSubmit}
+                  disabled={!postComment.trim()}
+                />
+              }
+              style={{flex: 1, backgroundColor: 'transparent'}}
+              underlineStyle={{display: 'none'}}
+            />
+          </View>
+        </BottomSheet>
+      </Portal>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: 'black',
+    fontSize: 16,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderTopWidth: 0.5,
+    borderTopColor: '#333',
+  },
+});
