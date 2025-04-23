@@ -74,6 +74,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
       width: 300,
       height: 400,
       cropping: true,
+      cropperCircleOverlay: true,
+      avoidEmptySpaceAroundImage: true,
     })
       .then(image => {
         const formData = new FormData();

@@ -99,6 +99,7 @@ export function VideoUploaderComponent() {
       mode="outlined"
       onPress={videoUploader}
       loading={isUploading}
+      disabled={isUploading}
       icon="play-box">
       Upload Video
     </Button>

@@ -17,9 +17,13 @@ import {Header} from './Header';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {photoStore} from '../../store/photoStore';
 import {useUserStore} from '../../store/userStore';
-import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
-import {Portal, TextInput, useTheme} from 'react-native-paper';
+import BottomSheet, {
+  BottomSheetScrollView,
+  BottomSheetTextInput,
+} from '@gorhom/bottom-sheet';
+import {IconButton, Portal, TextInput, useTheme} from 'react-native-paper';
 import CommentSheet from '../CommentSheet';
+import {debounce} from 'lodash';
 
 export function ProfileSinglePost() {
   const route = useRoute();
@@ -31,6 +35,7 @@ export function ProfileSinglePost() {
   const {photoLikeStatus, addLikesPhoto, updatePhotoLikeStatus} = photoStore();
   const likePhotoMutation = useLikePhoto();
   const commentPhototMutation = useCommentPhoto();
+  const [inputKey, setInputKey] = useState(0);
 
   const {postId} = route.params as {postId?: string};
   const {data, error, isLoading} = useSinglePhoto(postId || '');
@@ -60,8 +65,15 @@ export function ProfileSinglePost() {
 
   const handleCommentSubmit = () => {
     if (!postComment.trim()) return;
-    commentPhototMutation.mutate({postId, text: postComment});
-    setPostComment('');
+    commentPhototMutation.mutate(
+      {postId, text: postComment},
+      {
+        onSuccess: () => {
+          setInputKey(prev => prev + 1);
+          setPostComment('');
+        },
+      },
+    );
   };
 
   if (error) {
@@ -160,19 +172,18 @@ export function ProfileSinglePost() {
               color="#555"
               style={{marginRight: 12}}
             />
-            <TextInput
-              placeholder="Add a comment..."
+            <BottomSheetTextInput
+              key={`comment-input-${inputKey}`}
+              style={styles.input}
               defaultValue={postComment}
+              placeholder="Add a comment..."
               onChangeText={setPostComment}
-              right={
-                <TextInput.Icon
-                  icon="send"
-                  onPress={handleCommentSubmit}
-                  disabled={!postComment.trim()}
-                />
-              }
-              style={{flex: 1, backgroundColor: 'transparent'}}
-              underlineStyle={{display: 'none'}}
+            />
+
+            <IconButton
+              icon="send"
+              onPress={handleCommentSubmit}
+              disabled={!postComment.trim()}
             />
           </View>
         </BottomSheet>
@@ -198,5 +209,16 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopWidth: 0.5,
     borderTopColor: '#333',
+    position: 'relative',
+  },
+  input: {
+    width: '60%',
+    marginTop: 8,
+    marginBottom: 10,
+    borderRadius: 10,
+    fontSize: 16,
+    lineHeight: 20,
+    padding: 8,
+    backgroundColor: 'rgba(151, 151, 151, 0.25)',
   },
 });

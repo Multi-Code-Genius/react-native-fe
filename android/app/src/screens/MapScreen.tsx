@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
   IconButton,
   useTheme,
+  Icon,
 } from 'react-native-paper';
 import {requestLocation} from '../hooks/requestLocation';
 
