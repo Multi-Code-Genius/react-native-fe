@@ -176,18 +176,20 @@ export function ProfileSinglePost() {
               color="#555"
               style={{marginRight: 12}}
             />
-            <BottomSheetTextInput
-              key={`comment-input-${inputKey}`}
-              style={styles.input}
-              defaultValue={postComment}
+            <TextInput
               placeholder="Add a comment..."
+              defaultValue={postComment}
+              key={`comment-input-${inputKey}`}
               onChangeText={setPostComment}
-            />
-
-            <IconButton
-              icon="send"
-              onPress={handleCommentSubmit}
-              disabled={!postComment.trim()}
+              right={
+                <TextInput.Icon
+                  icon="send"
+                  onPress={handleCommentSubmit}
+                  disabled={!postComment.trim()}
+                />
+              }
+              style={{flex: 1, backgroundColor: 'transparent'}}
+              underlineStyle={{display: 'none'}}
             />
           </View>
         </BottomSheet>
