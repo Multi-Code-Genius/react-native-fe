@@ -26,7 +26,7 @@ export const useSocketStore = create<SocketStore>(set => ({
   },
   setMessagesInLast: updater => {
     set(state => ({
-      messages: [...state.messages, updater],
+      messages: [updater, ...state.messages],
     }));
   },
 
