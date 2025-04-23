@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 import {View, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
 import {Appbar, Avatar, Text, useTheme} from 'react-native-paper';
 import {Chat, MessageType, darkTheme} from '@flyerhq/react-native-chat-ui';
@@ -27,8 +27,14 @@ const ChatScreen = () => {
   const theme = useTheme();
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const {socket, connectSocket, disconnectSocket, messages, setMessages} =
-    useSocketStore();
+  const {
+    socket,
+    connectSocket,
+    disconnectSocket,
+    messages,
+    setMessages,
+    setMessagesInLast,
+  } = useSocketStore();
   const {userData} = useUserStore();
   const route = useRoute();
   const chatRef = useRef<any>(null);
@@ -173,7 +179,7 @@ const ChatScreen = () => {
       author: currentUser,
       status: 'sending',
     };
-    setMessages(newMessage);
+    setMessagesInLast(newMessage);
 
     socket?.emit('sendMessage', {
       messageId,

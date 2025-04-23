@@ -2,13 +2,18 @@ import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import React, {useCallback} from 'react';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 import UserCard from '../components/UserCard';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+} from '@react-navigation/native';
 import {useTheme} from 'react-native-paper';
 
 const ChatList = () => {
   const theme = useTheme();
   const navigation = useNavigation();
   const {data, onRefresh, refreshing, profileRefetch} = useUserListLogic();
+  const isFocused = useIsFocused();
 
   const styles = StyleSheet.create({
     container: {
@@ -21,7 +26,7 @@ const ChatList = () => {
   useFocusEffect(
     useCallback(() => {
       profileRefetch();
-    }, [profileRefetch]),
+    }, [profileRefetch, isFocused]),
   );
 
   const messagesReceived = data?.user?.messagesReceived || [];

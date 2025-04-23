@@ -8,6 +8,7 @@ interface SocketStore {
   messages: MessageType.Any[];
   setMessages: (message: MessageType.Any) => void;
   connectSocket: (userId: string) => void;
+  setMessagesInLast: (message: any) => void;
   disconnectSocket: () => void;
 }
 
@@ -21,6 +22,11 @@ export const useSocketStore = create<SocketStore>(set => ({
         typeof updater === 'function'
           ? updater(state.messages)
           : [...state.messages, updater],
+    }));
+  },
+  setMessagesInLast: updater => {
+    set(state => ({
+      messages: [...state.messages, updater],
     }));
   },
 
