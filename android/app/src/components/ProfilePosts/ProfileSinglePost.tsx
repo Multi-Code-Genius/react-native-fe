@@ -20,19 +20,15 @@ import {useUserStore} from '../../store/userStore';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
-  BottomSheetTextInput,
 } from '@gorhom/bottom-sheet';
-import {IconButton, Portal, TextInput, useTheme} from 'react-native-paper';
+import {Portal, TextInput, useTheme} from 'react-native-paper';
 import CommentSheet from '../CommentSheet';
-import {debounce} from 'lodash';
-import {KeyboardAvoidingView} from 'react-native';
-import {Platform} from 'react-native';
 
 export function ProfileSinglePost() {
   const theme = useTheme();
   const route = useRoute();
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['50%', '70%'], []);
+  const snapPoints = useMemo(() => ['70%'], []);
   const [postComment, setPostComment] = useState('');
   const {userData} = useUserStore();
   const {photoLikeStatus, addLikesPhoto, updatePhotoLikeStatus} = photoStore();
@@ -163,9 +159,6 @@ export function ProfileSinglePost() {
         </View>
 
         <View className="flex-row gap-2">
-          <Text className="text-[14px] font-bold ">
-            {data?.video?.user?.name}:
-          </Text>
           <Text className="text-[14px]">{data?.video?.description}</Text>
         </View>
       </View>
@@ -174,9 +167,13 @@ export function ProfileSinglePost() {
         <BottomSheet
           ref={bottomSheetRef}
           index={-1}
-          snapPoints={snapPoints}
-          enablePanDownToClose
           backdropComponent={renderBackdrop}
+          enableBlurKeyboardOnGesture
+          enableContentPanningGesture
+          enableHandlePanningGesture
+          enablePanDownToClose
+          enableOverDrag
+          enableDynamicSizing
           backgroundStyle={{backgroundColor: theme.colors.background}}
           handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
           <BottomSheetScrollView

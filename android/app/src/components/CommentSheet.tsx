@@ -6,11 +6,6 @@ import {CommentsTypes} from '../types/video';
 const CommentSheet = ({comments}: {comments: CommentsTypes[] | []}) => {
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text variant="headlineMedium">Comments</Text>
-        <Divider />
-      </View>
-
       {comments.map(comment => (
         <View key={comment.id} style={styles.comment}>
           <View style={styles.avatarPlaceholder}>

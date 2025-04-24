@@ -122,7 +122,15 @@ const UserCard: React.FC<Props> = ({
             </View>
           </View>
 
-          {!isChatting && (
+          {isChatting ? (
+            <View>
+              {messageCount > 0 && (
+                <Badge style={{backgroundColor: theme.colors.primary}}>
+                  {messageCount}
+                </Badge>
+              )}
+            </View>
+          ) : (
             <View>
               <RequestButton id={user.id} onRequest={onRequest} />
             </View>
