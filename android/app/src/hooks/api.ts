@@ -58,36 +58,27 @@ export const api = async (endpoint: string, config: any = {}) => {
     // const apiUrl = 'http://192.168.1.17:5001';
 
     const response = await fetch(`${apiUrl}${endpoint}`, requestConfig);
-    console.log('response');
-    if (response?.status !== 200) {
-      if (response?.status === 414) {
-        console.error('URI Too Long (414) - Logging out user');
-        await removeToken('accessToken');
-        await removeToken('isAuthenticated');
+    if (!response.ok) {
+      const errorData = await response
+        .json()
+        .catch(() => ({message: 'Something went wrong'}));
 
-        return null;
-      }
+      const message = errorData.message || 'Something went wrong';
 
-      if (response.status === 401) {
+      if ([401, 414].includes(response.status)) {
         await removeToken('accessToken');
         await removeToken('isAuthenticated');
         useAuthStore.getState().removeToken();
-        return null;
-      }
-      if (response.status === 304) {
-        return null;
       }
 
-      const error = await response
-        .json()
-        .catch(() => ({message: 'Something went wrong'}));
-      throw new Error(error.message || 'Something went wrong');
+      throw new Error(message);
     }
 
     return response.headers.get('Content-Type')?.includes('application/json')
       ? response.json()
       : response;
-  } catch (error: unknown) {
-    console.log('Error Message', error);
+  } catch (error: any) {
+    console.log('API Error:', error?.message || error);
+    throw error;
   }
 };
