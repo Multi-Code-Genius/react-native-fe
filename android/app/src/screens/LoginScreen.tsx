@@ -1,28 +1,29 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Text,
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   ImageBackground,
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import {StackScreenProps} from '@react-navigation/stack';
-import {useUserLogin} from '../api/auth/auth';
-import {useAuthStore} from '../store/authStore';
-import {Animated} from 'react-native';
-import {ActivityIndicator} from 'react-native-paper';
+import { StackScreenProps } from '@react-navigation/stack';
+import { useUserLogin } from '../api/auth/auth';
+import { useAuthStore } from '../store/authStore';
+import { Animated } from 'react-native';
+import { ActivityIndicator, Snackbar } from 'react-native-paper';
 
 type Props = StackScreenProps<any, 'Login'>;
 
-const LoginScreen: React.FC<Props> = ({navigation}) => {
-  const [data, setData] = useState({email: '', password: ''});
-  const {mutate: login, isPending, isSuccess, isError} = useUserLogin();
+const LoginScreen: React.FC<Props> = ({ navigation }) => {
+  const [data, setData] = useState({ email: '', password: '' });
+  const { mutate: login, isPending, isSuccess } = useUserLogin();
   const saveToken = useAuthStore(state => state.saveToken);
   const slideAnim = useRef(new Animated.Value(500)).current;
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -34,24 +35,29 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
   }, []);
 
   const handleChange = (field: keyof typeof data, value: string) => {
-    setData(prev => ({...prev, [field]: value}));
+    setData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
     if (!data.email || !data.password) {
-      Alert.alert('Error', 'Please fill all fields');
+      setSnackbarMessage('Please fill all fields');
+      setSnackbarVisible(true);
       return;
     }
     login(data, {
-      onSuccess: async ({token}) => {
+      onSuccess: async ({ token }) => {
         if (!token) {
-          Alert.alert('Error', 'No token received.');
+          setSnackbarMessage('No token received.');
+          setSnackbarVisible(true);
           return;
         }
         await saveToken(token);
       },
-      onError: () => {
-        Alert.alert('Error', 'Login failed. Please try again.');
+      onError: (error: any) => {
+        const message =
+          error?.message || 'Login failed. Please try again.';
+        setSnackbarMessage(message);
+        setSnackbarVisible(true);
       },
     });
   };
@@ -72,7 +78,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled">
           <Animated.View
-            style={[styles.content, {transform: [{translateY: slideAnim}]}]}>
+            style={[styles.content, { transform: [{ translateY: slideAnim }] }]}>
             <Text style={styles.loginTitle}>👤 Login</Text>
             <Text style={styles.label}>Your email address</Text>
             <TextInput
@@ -105,14 +111,13 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
               style={styles.loginButton}
               disabled={isPending}
               onPress={handleSubmit}>
-              <Text style={styles.loginButtonText}>
-                {isPending || isSuccess ? (
-                  <ActivityIndicator size="small" color="#000" />
-                ) : (
-                  'Log In'
-                )}
-              </Text>
+              {isPending ? (
+                <ActivityIndicator size="small" color="#000" />
+              ) : (
+                <Text style={styles.loginButtonText}>Log In</Text>
+              )}
             </TouchableOpacity>
+
             <Text style={styles.signupText}>
               Don’t have an account?
               <Text
@@ -124,6 +129,17 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={3000}
+        action={{
+          label: 'OK',
+          onPress: () => setSnackbarVisible(false),
+          textColor: 'white'
+        }}>
+        {snackbarMessage}
+      </Snackbar>
     </ImageBackground>
   );
 };
