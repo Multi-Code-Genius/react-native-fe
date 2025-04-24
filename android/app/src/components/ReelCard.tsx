@@ -9,7 +9,7 @@ import {
   GestureHandlerRootView,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import {Avatar, Portal, useTheme} from 'react-native-paper';
+import {Avatar, Portal, TextInput, useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Video from 'react-native-video';
 import {useUserStore} from '../store/userStore';
