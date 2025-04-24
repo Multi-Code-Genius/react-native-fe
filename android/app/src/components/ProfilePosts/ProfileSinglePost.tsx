@@ -21,22 +21,34 @@ import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
-import {Portal, TextInput, useTheme} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Portal,
+  TextInput,
+  useTheme,
+} from 'react-native-paper';
 import CommentSheet from '../CommentSheet';
 
-export function ProfileSinglePost() {
+type ProfileSinglePostProps = {
+  postData?: any;
+  isFirst: boolean;
+};
+
+export function ProfileSinglePost({postData, isFirst}: ProfileSinglePostProps) {
   const theme = useTheme();
   const route = useRoute();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['70%'], []);
   const [postComment, setPostComment] = useState('');
+  const [inputKey, setInputKey] = useState(0);
+
   const {userData} = useUserStore();
   const {photoLikeStatus, addLikesPhoto, updatePhotoLikeStatus} = photoStore();
   const likePhotoMutation = useLikePhoto();
   const commentPhototMutation = useCommentPhoto();
-  const [inputKey, setInputKey] = useState(0);
 
-  const {postId} = route.params as {postId?: string};
+  const postId = postData?.id || (route.params as {postId?: string})?.postId;
+
   const {data, error, isLoading} = useSinglePhoto(postId || '');
 
   const renderBackdrop = useCallback(
@@ -56,14 +68,6 @@ export function ProfileSinglePost() {
   const openCommentSheet = useCallback(() => {
     bottomSheetRef.current?.expand();
   }, []);
-
-  if (!postId) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.text}>Invalid post</Text>
-      </View>
-    );
-  }
 
   useEffect(() => {
     if (data?.video?.likes?.some((like: any) => like.userId === userData?.id)) {
@@ -89,6 +93,14 @@ export function ProfileSinglePost() {
     );
   };
 
+  if (!postId) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.text}>Invalid post</Text>
+      </View>
+    );
+  }
+
   if (error) {
     return (
       <View style={styles.centered}>
@@ -97,13 +109,13 @@ export function ProfileSinglePost() {
     );
   }
 
-  if (isLoading || !data) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.text}>Loading...</Text>
-      </View>
-    );
-  }
+  // if (isLoading || !data) {
+  //   return (
+  //     <View style={styles.centered}>
+  //       <ActivityIndicator size={'small'} className="item-center" />
+  //     </View>
+  //   );
+  // }
 
   const imageUrl = data?.video?.post;
   const likeCount = data?.video?.likes?.length || 0;
@@ -111,7 +123,7 @@ export function ProfileSinglePost() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <Header data={data} />
+      {isFirst && <Header data={data} />}
       <View className="w-full h-full p-4">
         <View className="flex-row items-center gap-2 mb-2">
           <View className=" h-[45px] w-[45px] rounded-full border-4 border-gray-100 overflow-hidden">
@@ -159,6 +171,9 @@ export function ProfileSinglePost() {
         </View>
 
         <View className="flex-row gap-2">
+          <Text className="text-[14px] font-bold italic ">
+            {data?.video?.user?.name}
+          </Text>
           <Text className="text-[14px]">{data?.video?.description}</Text>
         </View>
       </View>
@@ -167,13 +182,9 @@ export function ProfileSinglePost() {
         <BottomSheet
           ref={bottomSheetRef}
           index={-1}
+          snapPoints={snapPoints}
           backdropComponent={renderBackdrop}
-          enableBlurKeyboardOnGesture
-          enableContentPanningGesture
-          enableHandlePanningGesture
           enablePanDownToClose
-          enableOverDrag
-          enableDynamicSizing
           backgroundStyle={{backgroundColor: theme.colors.background}}
           handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
           <BottomSheetScrollView

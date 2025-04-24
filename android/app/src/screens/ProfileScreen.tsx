@@ -116,7 +116,13 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
           if (type === 'reel') {
             (navigation as any).navigate('ProfileList', {videoId: item.id});
           } else {
-            (navigation as any).navigate('SinglePostPhoto', {postId: item.id});
+            const index = data?.user?.posts.findIndex(p => p.id === item.id);
+
+            // (navigation as any).navigate('SinglePostPhoto', {postId: item.id});
+            (navigation as any).navigate('fullPostViewer', {
+              posts: data?.user?.posts,
+              initialIndex: index,
+            });
           }
         }}>
         {imageUrl ? (

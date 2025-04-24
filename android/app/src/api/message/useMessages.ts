@@ -102,6 +102,7 @@ export const useMarkAsRead = (
   return useMutation({
     mutationFn: markAsRead,
     onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['profile']});
       queryClient.invalidateQueries({queryKey: ['chatMessages']});
     },
     onError: () => {

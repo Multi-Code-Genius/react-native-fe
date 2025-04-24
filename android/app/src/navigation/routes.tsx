@@ -18,6 +18,7 @@ import ChatList from '../screens/ChatList';
 import ChatScreen from '../screens/ChatScreen';
 
 import UserProfile from '../components/UserProfile';
+import {FullPostViewer} from '../components/ProfilePosts/FullPostViewer';
 
 const Stack = createStackNavigator();
 
@@ -160,6 +161,16 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
             <Stack.Screen
               name="SinglePostPhoto"
               component={ProfileSinglePost}
+              options={{
+                transitionSpec: {
+                  open: configSlow,
+                  close: configSlow,
+                },
+              }}
+            />
+            <Stack.Screen
+              name="fullPostViewer"
+              component={FullPostViewer}
               options={{
                 transitionSpec: {
                   open: configSlow,

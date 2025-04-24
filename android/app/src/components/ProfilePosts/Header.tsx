@@ -4,9 +4,8 @@ import {View} from 'react-native';
 
 export function Header(props: any) {
   const {data} = props;
-  console.log('data', data);
   return (
-    <View className="flex justify-center items-center m-2">
+    <View className="flex justify-center items-center m-2 ">
       <Text className="text-[15px] font-semibold color-slate-600">
         {data?.video?.user?.name}
       </Text>
