@@ -20,6 +20,7 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import BottomSheet, {
+  BottomSheetBackdrop,
   BottomSheetScrollView,
   BottomSheetTextInput,
 } from '@gorhom/bottom-sheet';
@@ -39,6 +40,15 @@ const ReelCard: React.FC<ReelItemProps> = ({
   onDoubleTap,
   onComments,
 }) => {
+  const theme = useTheme();
+  const navigation = useNavigation();
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [postComment, setPostComment] = useState('');
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['50%', '70%'], []);
+
   const videoUrl = item?.videoUrl;
   const likeCount = item.likes?.length || 0;
   const commentCount = item.comments?.length || 0;
@@ -47,6 +57,23 @@ const ReelCard: React.FC<ReelItemProps> = ({
   const [inputKey, setInputKey] = useState(0);
 
   const {userData} = useUserStore();
+
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        opacity={0.5}
+        pressBehavior="close"
+        style={{backgroundColor: theme.colors.backdrop}}
+      />
+    ),
+    [theme.colors.backdrop],
+  );
+  const openCommentSheet = useCallback(() => {
+    bottomSheetRef.current?.expand();
+  }, []);
 
   // item.likes.forEach(i => {
   //   if (userData?.id === i.userId) {
@@ -64,18 +91,6 @@ const ReelCard: React.FC<ReelItemProps> = ({
     });
   }, [item.likes, userData?.id, addLikesReels]);
 
-  const navigation = useNavigation();
-  const [isLoading, setIsLoading] = useState(true);
-  const [postComment, setPostComment] = useState('');
-  const theme = useTheme();
-
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['50%', '70%'], []);
-
-  const openCommentSheet = useCallback(() => {
-    bottomSheetRef.current?.expand();
-  }, []);
-
   if (!videoUrl) {
     return null;
   }
@@ -84,7 +99,7 @@ const ReelCard: React.FC<ReelItemProps> = ({
   };
 
   const handleSubmitComment = () => {
-    console.log(postComment);
+    if (!postComment.trim()) return;
     onComments(postComment);
     setPostComment('');
     setInputKey(prev => prev + 1);
@@ -178,6 +193,7 @@ const ReelCard: React.FC<ReelItemProps> = ({
           ref={bottomSheetRef}
           index={-1}
           snapPoints={snapPoints}
+          backdropComponent={renderBackdrop}
           enablePanDownToClose
           backgroundStyle={{backgroundColor: theme.colors.background}}
           handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
@@ -195,18 +211,20 @@ const ReelCard: React.FC<ReelItemProps> = ({
               color="#555"
               style={{marginRight: 12}}
             />
-            <BottomSheetTextInput
-              key={`comment-input-${inputKey}`}
-              style={styles.input}
-              defaultValue={postComment}
+            <TextInput
               placeholder="Add a comment..."
+              defaultValue={postComment}
+              key={`comment-input-${inputKey}`}
               onChangeText={setPostComment}
-            />
-
-            <IconButton
-              icon="send"
-              onPress={handleSubmitComment}
-              disabled={!postComment.trim()}
+              right={
+                <TextInput.Icon
+                  icon="send"
+                  onPress={handleSubmitComment}
+                  disabled={!postComment.trim()}
+                />
+              }
+              style={{flex: 1, backgroundColor: 'transparent'}}
+              underlineStyle={{display: 'none'}}
             />
           </View>
         </BottomSheet>

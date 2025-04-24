@@ -18,6 +18,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {photoStore} from '../../store/photoStore';
 import {useUserStore} from '../../store/userStore';
 import BottomSheet, {
+  BottomSheetBackdrop,
   BottomSheetScrollView,
   BottomSheetTextInput,
 } from '@gorhom/bottom-sheet';
@@ -28,10 +29,10 @@ import {KeyboardAvoidingView} from 'react-native';
 import {Platform} from 'react-native';
 
 export function ProfileSinglePost() {
-  const route = useRoute();
   const theme = useTheme();
+  const route = useRoute();
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['50%'], []);
+  const snapPoints = useMemo(() => ['50%', '70%'], []);
   const [postComment, setPostComment] = useState('');
   const {userData} = useUserStore();
   const {photoLikeStatus, addLikesPhoto, updatePhotoLikeStatus} = photoStore();
@@ -41,6 +42,24 @@ export function ProfileSinglePost() {
 
   const {postId} = route.params as {postId?: string};
   const {data, error, isLoading} = useSinglePhoto(postId || '');
+
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        opacity={0.5}
+        pressBehavior="close"
+        style={{backgroundColor: theme.colors.backdrop}}
+      />
+    ),
+    [theme.colors.backdrop],
+  );
+
+  const openCommentSheet = useCallback(() => {
+    bottomSheetRef.current?.expand();
+  }, []);
 
   if (!postId) {
     return (
@@ -60,10 +79,6 @@ export function ProfileSinglePost() {
     updatePhotoLikeStatus(postId);
     likePhotoMutation.mutate({photoId: postId});
   };
-
-  const openCommentSheet = useCallback(() => {
-    bottomSheetRef.current?.expand();
-  }, []);
 
   const handleCommentSubmit = () => {
     if (!postComment.trim()) return;
@@ -161,6 +176,7 @@ export function ProfileSinglePost() {
           index={-1}
           snapPoints={snapPoints}
           enablePanDownToClose
+          backdropComponent={renderBackdrop}
           backgroundStyle={{backgroundColor: theme.colors.background}}
           handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
           <BottomSheetScrollView

@@ -50,6 +50,28 @@ export const useVideo = (id: string) => {
   });
 };
 
+export const videoById = async (id: string) => {
+  try {
+    const response = await api(`/api/video/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return await response;
+  } catch (error) {
+    console.log('Get Video Error', error);
+    throw new Error(error instanceof Error ? error.message : 'Video Failed');
+  }
+};
+
+export const useVideoById = (id: string) => {
+  return useQuery({
+    queryKey: ['video', id],
+    queryFn: () => videoById(id),
+  });
+};
+
 export const likeVideo = async (videoId: string) => {
   try {
     const response = await api(`/api/video/like/${videoId}`, {
@@ -186,80 +208,28 @@ export const useCommentVideo = () => {
   return useMutation({
     mutationFn: ({videoId, text}: {videoId: string; text: string}) =>
       commentVideo(videoId, text),
-    onMutate: async ({videoId}) => {
-      await queryClient.cancelQueries({queryKey: ['videos']});
+    onMutate: async ({videoId, text}) => {
+      await queryClient.cancelQueries({queryKey: ['video', videoId]});
 
-      const previousList = queryClient.getQueryData(['videos']);
-      await Promise.all([
-        queryClient.cancelQueries({queryKey: ['video', videoId]}),
-        queryClient.cancelQueries({queryKey: ['videos']}),
-      ]);
-
-      const previousSingle = queryClient.getQueryData(['video', videoId]);
+      const previous = queryClient.getQueryData(['video', videoId]);
 
       queryClient.setQueryData(['video', videoId], (oldData: any) => {
-        if (!oldData) {
-          return oldData;
-        }
-
-        const hasComments = oldData.comments?.some(
-          (comments: any) => comments.userId === oldData.currentUserId,
-        );
-
-        const updatedComments = hasComments
-          ? oldData.comments.filter(
-              (comments: any) => comments.userId !== oldData.currentUserId,
-            )
-          : [
-              ...oldData.comments,
-              {
-                id: 'temp-like-id',
-                userId: oldData.currentUserId,
-                user: oldData.currentUser,
-              },
-            ];
-
-        return {...oldData, comments: updatedComments};
-      });
-
-      queryClient.setQueryData(['videos'], (oldData: any) => {
-        if (!oldData) {
-          return oldData;
-        }
-
+        if (!oldData) return oldData;
         return {
           ...oldData,
-          pages: oldData.pages.map((page: any) => ({
-            ...page,
-            videos: page.videos.map((video: any) => {
-              if (video.id !== videoId) {
-                return video;
-              }
-
-              const hasComments = video.comments?.some(
-                (comments: any) => comments.userId === video.currentUserId,
-              );
-
-              const updatedComments = hasComments
-                ? video.comments.filter(
-                    (comments: any) => comments.userId !== video.currentUserId,
-                  )
-                : [
-                    ...video.likes,
-                    {
-                      id: 'temp-like-id',
-                      userId: video.currentUserId,
-                      user: video.currentUser,
-                    },
-                  ];
-
-              return {...video, comments: updatedComments};
-            }),
-          })),
+          comments: [
+            ...(oldData.comments || []),
+            {
+              id: 'temp-id',
+              text,
+              userId: oldData.currentUserId,
+              user: oldData.currentUser,
+            },
+          ],
         };
       });
 
-      return {previousSingle, previousList};
+      return {previous};
     },
 
     onError: (err, {videoId}, context: any) => {
@@ -276,27 +246,5 @@ export const useCommentVideo = () => {
       queryClient.invalidateQueries({queryKey: ['video', videoId]});
       queryClient.invalidateQueries({queryKey: ['videos']});
     },
-  });
-};
-
-export const videoById = async (id: string) => {
-  try {
-    const response = await api(`/api/video/${id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    return await response;
-  } catch (error) {
-    console.log('Get Video Error', error);
-    throw new Error(error instanceof Error ? error.message : 'Video Failed');
-  }
-};
-
-export const useVideoById = (id: string) => {
-  return useQuery({
-    queryKey: ['video', id],
-    queryFn: () => videoById(id),
   });
 };
