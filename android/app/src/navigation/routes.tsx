@@ -16,7 +16,8 @@ import {SettingScreen} from '../screens/SettingScreen';
 import {useTheme} from 'react-native-paper';
 import ChatList from '../screens/ChatList';
 import ChatScreen from '../screens/ChatScreen';
-import ReelList from '../components/ReelList';
+
+import UserProfile from '../components/UserProfile';
 
 const Stack = createStackNavigator();
 
@@ -114,6 +115,15 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               options={{
                 title: 'Chats',
                 animation: 'slide_from_right',
+              }}
+            />
+            <Stack.Screen
+              name="UserProfile"
+              component={UserProfile}
+              options={{
+                title: 'User Profile',
+                animation: 'slide_from_right',
+                headerShown: true,
               }}
             />
 

@@ -45,6 +45,7 @@ const UserCard: React.FC<Props> = ({
       entering={FadeInUp.duration(300)}
       style={{marginVertical: 8}}>
       <Card
+        onPress={isChatting && onPress}
         mode="elevated"
         style={{
           backgroundColor: '#1a1a1a',
@@ -121,28 +122,7 @@ const UserCard: React.FC<Props> = ({
             </View>
           </View>
 
-          {isChatting ? (
-            <View>
-              <IconButton
-                icon="android-messages"
-                size={30}
-                onPress={onPress}
-                style={{position: 'relative'}}
-              />
-              {messageCount !== 0 && (
-                <Badge
-                  style={{
-                    position: 'absolute',
-                    top: 5,
-                    right: 5,
-                    backgroundColor: theme.colors.primary,
-                  }}
-                  size={18}>
-                  {messageCount}
-                </Badge>
-              )}
-            </View>
-          ) : (
+          {!isChatting && (
             <View>
               <RequestButton id={user.id} onRequest={onRequest} />
             </View>

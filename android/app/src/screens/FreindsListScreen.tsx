@@ -97,59 +97,63 @@ export function FreindsListScreen() {
         onRefresh={onRefresh}
         contentContainerStyle={{paddingHorizontal: 16}}
         renderItem={({item}) => (
-          <View className="flex-row items-center justify-between py-3">
-            <View className="flex-row items-center gap-4">
-              {item.profile_pic ? (
-                <View style={{position: 'relative'}}>
-                  <Image
-                    source={{uri: item.profile_pic}}
-                    className="w-12 h-12 rounded-full "
-                    resizeMode="cover"
-                  />
-                </View>
-              ) : (
-                <View style={{position: 'relative'}}>
-                  <Avatar.Text
-                    style={{backgroundColor: theme.colors.secondary}}
-                    size={42}
-                    label={item?.name?.slice(0, 2).toUpperCase() ?? ''}
-                  />
-                </View>
-              )}
-
-              <Text className="text-white text-md font-medium">
-                {item.name}
-              </Text>
-            </View>
-            <View className="flex-row items-center space-x-2">
-              <TouchableOpacity
-                className="bg-gray-700 px-3 py-1 rounded-md justify-center items-center"
-                onPress={() => {
-                  setDeletingId(item.id);
-                  deleteRequestMutation(item.friendRequestId, {
-                    onSettled: () => setDeletingId(null),
-                  });
-                }}
-                disabled={declinePending}
-                style={{minHeight: 28, minWidth: 70}}>
-                {deletingId === item.id ? (
-                  <ActivityIndicator size="small" color="white" />
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => navigation.navigate('UserProfile', {id: item.id})}>
+            <View className="flex-row items-center justify-between py-3">
+              <View className="flex-row items-center gap-4">
+                {item.profile_pic ? (
+                  <View style={{position: 'relative'}}>
+                    <Image
+                      source={{uri: item.profile_pic}}
+                      className="w-12 h-12 rounded-full "
+                      resizeMode="cover"
+                    />
+                  </View>
                 ) : (
-                  <Text className="text-white text-xs font-semibold">
-                    Remove
-                  </Text>
+                  <View style={{position: 'relative'}}>
+                    <Avatar.Text
+                      style={{backgroundColor: theme.colors.secondary}}
+                      size={42}
+                      label={item?.name?.slice(0, 2).toUpperCase() ?? ''}
+                    />
+                  </View>
                 )}
-              </TouchableOpacity>
-              <IconButton
-                icon="message"
-                size={18}
-                iconColor="white"
-                onPress={() =>
-                  handleNavigation(item.id, item.profile_pic, item.name)
-                }
-              />
+
+                <Text className="text-white text-md font-medium">
+                  {item.name}
+                </Text>
+              </View>
+              <View className="flex-row items-center space-x-2">
+                <TouchableOpacity
+                  className="bg-gray-700 px-3 py-1 rounded-md justify-center items-center"
+                  onPress={() => {
+                    setDeletingId(item.id);
+                    deleteRequestMutation(item.friendRequestId, {
+                      onSettled: () => setDeletingId(null),
+                    });
+                  }}
+                  disabled={declinePending}
+                  style={{minHeight: 28, minWidth: 70}}>
+                  {deletingId === item.id ? (
+                    <ActivityIndicator size="small" color="white" />
+                  ) : (
+                    <Text className="text-white text-xs font-semibold">
+                      Remove
+                    </Text>
+                  )}
+                </TouchableOpacity>
+                <IconButton
+                  icon="message"
+                  size={18}
+                  iconColor="white"
+                  onPress={() =>
+                    handleNavigation(item.id, item.profile_pic, item.name)
+                  }
+                />
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
       />
     </SafeAreaView>
