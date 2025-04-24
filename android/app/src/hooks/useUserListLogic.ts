@@ -54,9 +54,17 @@ export const useUserListLogic = () => {
     setupChannel();
 
     const unsubscribe = messaging().onMessage(async remoteMessage => {
+      const title =
+        remoteMessage.notification?.title ||
+        remoteMessage.data?.title ||
+        '📣 Notification';
+      const body =
+        remoteMessage.notification?.body ||
+        remoteMessage.data?.body ||
+        'You have a new message.';
       await notifee.displayNotification({
-        title: remoteMessage.notification?.title || '📣 Notification',
-        body: remoteMessage.notification?.body || 'You have a new message.',
+        title: title,
+        body: body,
         android: {
           channelId: 'default',
           pressAction: {id: 'default'},

@@ -1,33 +1,20 @@
-import React, {useRef, useMemo, useCallback, useState, useEffect} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
-import Video from 'react-native-video';
-import {
-  Avatar,
-  IconButton,
-  Portal,
-  TextInput,
-  useTheme,
-} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
+} from '@gorhom/bottom-sheet';
+import {useNavigation} from '@react-navigation/native';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {
   GestureHandlerRootView,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetScrollView,
-  BottomSheetTextInput,
-} from '@gorhom/bottom-sheet';
-import {ReelItemProps} from '../types/video';
+import {Avatar, Portal, useTheme} from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Video from 'react-native-video';
 import {useUserStore} from '../store/userStore';
 import {videoStore} from '../store/videoStore';
-import {useNavigation} from '@react-navigation/native';
+import {ReelItemProps} from '../types/video';
 import CommentSheet from './CommentSheet';
 
 const ReelCard: React.FC<ReelItemProps> = ({
@@ -74,12 +61,6 @@ const ReelCard: React.FC<ReelItemProps> = ({
   const openCommentSheet = useCallback(() => {
     bottomSheetRef.current?.expand();
   }, []);
-
-  // item.likes.forEach(i => {
-  //   if (userData?.id === i.userId) {
-  //     addLikesReels(i.id);
-  //   }
-  // });
 
   useEffect(() => {
     if (!item || !userData?.id) return;
@@ -133,12 +114,6 @@ const ReelCard: React.FC<ReelItemProps> = ({
             playInBackground={false}
             ignoreSilentSwitch="obey"
           />
-
-          {/* {isLoading && (
-            <View style={styles.loaderOverlay}>
-            <ActivityIndicator size="large" color="white" />
-            </View>
-            )} */}
 
           <View style={styles.rightActions}>
             <TouchableOpacity
@@ -273,7 +248,7 @@ const styles = StyleSheet.create({
   },
   bottomInfo: {
     position: 'absolute',
-    bottom: '5%',
+    bottom: '16%',
     marginHorizontal: 20,
   },
   userRow: {
