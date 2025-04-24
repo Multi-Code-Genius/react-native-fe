@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   ImageBackground,
@@ -8,17 +8,17 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import {Text, TextInput, View} from 'react-native';
-import {Animated} from 'react-native';
-import {useUserSignup} from '../api/auth/auth';
-import {useNavigation} from '@react-navigation/native';
-import {useAuthStore} from '../store/authStore';
-import {ActivityIndicator} from 'react-native-paper';
+import { Text, TextInput, View } from 'react-native';
+import { Animated } from 'react-native';
+import { useUserSignup } from '../api/auth/auth';
+import { useNavigation } from '@react-navigation/native';
+import { useAuthStore } from '../store/authStore';
+import { ActivityIndicator } from 'react-native-paper';
 
 export function SignUpFormScreen() {
   const navigation = useNavigation();
-  const [data, setData] = useState({name: '', email: '', password: ''});
-  const {mutate: signup, isSuccess, isPending} = useUserSignup();
+  const [data, setData] = useState({ name: '', email: '', password: '' });
+  const { mutate: signup, isSuccess, isPending } = useUserSignup();
   const saveToken = useAuthStore(state => state.saveToken);
   const slideAnim = useRef(new Animated.Value(500)).current;
 
@@ -32,18 +32,18 @@ export function SignUpFormScreen() {
   }, []);
 
   const handleChange = (field: keyof typeof data, value: string) => {
-    setData(prev => ({...prev, [field]: value}));
+    setData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSignup = async () => {
-    const {name, email, password} = data;
+    const { name, email, password } = data;
 
     if (!name || !email || !password) {
       Alert.alert('Validation', 'All fields are required.');
       return;
     }
     signup(data, {
-      onSuccess: async ({token}) => {
+      onSuccess: async ({ token }) => {
         if (!token) {
           Alert.alert('Error', 'No token received.');
           return;
@@ -59,7 +59,7 @@ export function SignUpFormScreen() {
   return (
     <ImageBackground
       source={require('../assets/image/backgroundimage1.png')}
-      style={{flex: 1, backgroundColor: '#4754ccef'}}
+      style={{ flex: 1, backgroundColor: '#4754ccef' }}
       resizeMode="cover">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -68,7 +68,7 @@ export function SignUpFormScreen() {
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled">
           <Animated.View
-            style={[styles.content, {transform: [{translateY: slideAnim}]}]}>
+            style={[styles.content, { transform: [{ translateY: slideAnim }] }]}>
             <View className="flex justify-center items-center h-fit w-full">
               <View className="flex-row gap-5 items-center">
                 <Text style={styles.loginTitle}>👤 Signup</Text>
@@ -126,15 +126,12 @@ export function SignUpFormScreen() {
                 </TouchableOpacity>
 
                 <Text style={styles.signupText}>
-                  Already have an account?
-                  <TouchableOpacity>
-                    <Text
-                      style={styles.signupLink}
-                      onPress={() => (navigation as any).navigate('Login')}>
-                      {' '}
-                      Log In
-                    </Text>
-                  </TouchableOpacity>
+                  Already have an account ?
+                  <Text
+                    style={styles.signupLink}
+                    onPress={() => (navigation as any).navigate('Login')}>
+                    Log In
+                  </Text>
                 </Text>
               </View>
             </View>
