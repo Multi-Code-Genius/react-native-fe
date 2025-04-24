@@ -12,6 +12,7 @@ import {useSendRequest} from '../api/request/request';
 import UserCard from '../components/UserCard';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 import {Message} from '../types/messageTypes';
+import {call} from '../constant/script';
 const UserListScreen = () => {
   const navigation = useNavigation();
   const {
@@ -39,6 +40,10 @@ const UserListScreen = () => {
       profileRefetch();
     }, [refetch, profileRefetch]),
   );
+
+  const handleClick = () => {
+    call();
+  };
 
   const messagesReceived: Message[] = data?.user?.messagesReceived ?? [];
 
@@ -80,6 +85,12 @@ const UserListScreen = () => {
             </Badge>
           )}
         </View>
+        <IconButton
+          icon="chat"
+          iconColor="white"
+          onPress={handleClick}
+          style={{position: 'relative'}}
+        />
       </View>
 
       <FlatList

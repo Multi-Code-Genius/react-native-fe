@@ -1,6 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {api} from '../../hooks/api';
 import {useAuthStore} from '../../store/authStore';
+import {callApi} from '../../constant/script';
 
 export const userInfoData = async () => {
   try {
@@ -155,7 +156,7 @@ export const requestRoom = async (data: any) => {
 export const useRequestRoom = () => {
   return useMutation({
     mutationKey: ['room'],
-    mutationFn: (data: any) => requestRoom(data),
+    mutationFn: (data: any) => callApi(data),
     onSuccess: () => {},
   });
 };
