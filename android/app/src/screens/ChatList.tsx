@@ -7,7 +7,7 @@ import {
   useIsFocused,
   useNavigation,
 } from '@react-navigation/native';
-import {useTheme} from 'react-native-paper';
+import {Divider, useTheme} from 'react-native-paper';
 
 const ChatList = () => {
   const theme = useTheme();
@@ -19,7 +19,6 @@ const ChatList = () => {
     container: {
       backgroundColor: theme.colors.background,
       flex: 1,
-      padding: 10,
     },
   });
 
@@ -75,7 +74,6 @@ const ChatList = () => {
             </View>
           );
         }}
-        contentContainerStyle={{paddingVertical: 10}}
         showsVerticalScrollIndicator={false}
       />
     </View>

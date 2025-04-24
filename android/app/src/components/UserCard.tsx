@@ -41,16 +41,14 @@ const UserCard: React.FC<Props> = ({
   const avatarSource = user.profile_pic ? {uri: user.profile_pic} : undefined;
 
   return (
-    <Animated.View
-      entering={FadeInUp.duration(300)}
-      style={{marginVertical: 8}}>
+    <Animated.View entering={FadeInUp.duration(300)}>
       <Card
         onPress={isChatting && onPress}
-        mode="elevated"
+        mode="contained"
         style={{
-          backgroundColor: '#1a1a1a',
+          backgroundColor: 'transparent',
           borderRadius: 12,
-          marginVertical: 8,
+          marginVertical: 1,
         }}>
         <Card.Content
           style={{

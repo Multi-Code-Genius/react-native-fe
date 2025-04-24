@@ -34,7 +34,7 @@ const ReelCard: React.FC<ReelItemProps> = ({
   const [postComment, setPostComment] = useState('');
 
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['50%', '70%'], []);
+  const snapPoints = useMemo(() => ['70%'], []);
 
   const videoUrl = item?.videoUrl;
   const likeCount = item.likes?.length || 0;
@@ -170,6 +170,11 @@ const ReelCard: React.FC<ReelItemProps> = ({
           snapPoints={snapPoints}
           backdropComponent={renderBackdrop}
           enablePanDownToClose
+          enableBlurKeyboardOnGesture
+          enableContentPanningGesture
+          enableHandlePanningGesture
+          enableOverDrag
+          enableDynamicSizing
           backgroundStyle={{backgroundColor: theme.colors.background}}
           handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
           <BottomSheetScrollView
