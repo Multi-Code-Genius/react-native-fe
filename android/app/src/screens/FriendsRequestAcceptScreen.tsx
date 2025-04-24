@@ -147,16 +147,33 @@ export function FriendsRequestAcceptScreen() {
           </View>
         )}
         {type === 'sentrequest' && (
-          <Button
-            style={{
-              borderColor: 'white',
-              backgroundColor: '#374151',
-              borderRadius: 6,
-              minHeight: 28,
-              minWidth: 70,
-            }}>
-            <Text className="text-white text-xs font-semibold">Pending</Text>
-          </Button>
+          <View className="flex-row gap-2">
+            <TouchableOpacity
+              className="bg-orange-400 px-3 py-1 rounded-md justify-center items-center"
+              style={{minHeight: 28, minWidth: 70}}>
+              <Text className="text-white text-xs font-semibold">Pending</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="bg-gray-700 px-3 py-1 rounded-md justify-center items-center"
+              onPress={() => {
+                setDeletingId(item.id);
+                deleteRequestMutation(item.id, {
+                  onSettled: () => setDeletingId(null),
+                });
+              }}
+              disabled={declinePending}
+              style={{minHeight: 28, minWidth: 70}}>
+              <Text className="text-white text-xs font-semibold">
+                {deletingId === item.id ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text className="text-white text-xs font-semibold">
+                    Delete
+                  </Text>
+                )}
+              </Text>
+            </TouchableOpacity>
+          </View>
         )}
       </View>
     );
