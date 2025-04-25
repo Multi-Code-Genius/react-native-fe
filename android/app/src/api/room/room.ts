@@ -70,3 +70,25 @@ export const useGetRooms = () => {
     enabled: true,
   });
 };
+
+export const joinRoom = async (id: string) => {
+  try {
+    const response = await api(`/api/room/join/${id}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      cache: 'no-store',
+    });
+    const resp = await response;
+    return resp;
+  } catch (error) {
+    console.error('Room Response:', error);
+    throw new Error(error instanceof Error ? error.message : 'Data Not Found');
+  }
+};
+
+export const useJoinRoom = () => {
+  return useMutation({
+    mutationKey: ['joinRoom'],
+    mutationFn: (id: string) => joinRoom(id),
+  });
+};
