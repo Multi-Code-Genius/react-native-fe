@@ -1,7 +1,8 @@
 import {useRoute} from '@react-navigation/native';
-import React from 'react';
-import {Dimensions, ScrollView} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Dimensions, ScrollView, FlatList, View} from 'react-native';
 import {ProfileSinglePost} from './ProfileSinglePost';
+import {ActivityIndicator} from 'react-native-paper';
 
 export function FullPostViewer() {
   const route = useRoute();
@@ -11,7 +12,29 @@ export function FullPostViewer() {
   };
 
   const screenHeight = Dimensions.get('window').height;
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'white',
+        }}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
   return (
     <ScrollView
       contentOffset={{y: initialIndex * screenHeight, x: 0}}

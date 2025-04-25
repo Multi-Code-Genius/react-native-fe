@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {
   ActivityIndicator,
   Avatar,
@@ -7,19 +7,34 @@ import {
   Card,
   Chip,
   DataTable,
+  List,
   Text,
   useTheme,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useRejectRoom, useRequestRoom} from '../api/room/room';
 import {useRoute} from '@react-navigation/native';
 import RoomTable from './a';
+import {
+  getRoomById,
+  useJoinRoom,
+  useRejectRoom,
+  useRequestRoom,
+} from '../api/room/room';
+import {useGetRooms} from '../api/room/room';
 
 const RoomScreen = () => {
   const {data, isPending, mutate} = useRequestRoom();
   const route = useRoute();
   const {isInRoom} = route.params;
   const {mutate: rejectRoom, isPending: rejectingRoom} = useRejectRoom();
+
+  const {data: Alldata} = useGetRooms();
+
+  const {mutate: joinRoomById} = useJoinRoom();
+
+  // const {data : roomByIdData} = getRoomById()
+  console.log('Alldata', Alldata);
+
   const theme = useTheme();
 
   const handleOnPress = () => {
@@ -27,6 +42,15 @@ const RoomScreen = () => {
       latitude: 21.1702,
       longitude: 72.8311,
       platform: 'Android',
+    });
+  };
+
+  const handleOnRoomId = (roomId: number) => {
+    console.log('roomId=====', roomId);
+    joinRoomById(roomId.toString(), {
+      onSuccess: () => {
+        setIsLeft(false);
+      },
     });
   };
 
@@ -65,6 +89,58 @@ const RoomScreen = () => {
             icon="account-plus">
             Find a Room
           </Button>
+          <Text variant="titleMedium" style={styles.joinTitle}>
+            Room Details
+          </Text>
+
+          {Alldata?.room?.map((room, index) => (
+            <List.Item
+              key={room.id}
+              title={`Room ${index + 1}`}
+              description={() => (
+                <Text
+                  style={{
+                    color:
+                      room.status === 'full'
+                        ? theme.colors.error
+                        : theme.colors.primary,
+                  }}>
+                  {room.status === 'full' ? 'Full' : 'Open'}
+                </Text>
+              )}
+              left={props =>
+                room.status === 'open' ? (
+                  <Icon
+                    {...props}
+                    name="door-open"
+                    size={24}
+                    color={theme.colors.primary}
+                  />
+                ) : (
+                  <Icon
+                    {...props}
+                    name="door-closed"
+                    size={24}
+                    color={theme.colors.primary}
+                  />
+                )
+              }
+              right={props => (
+                <TouchableOpacity onPress={() => handleOnRoomId(room.id)}>
+                  <Icon
+                    name="account-plus"
+                    size={24}
+                    color={
+                      room.status === 'full'
+                        ? theme.colors.secondary
+                        : theme.colors.primary
+                    }
+                    style={{marginTop: 10}}
+                  />
+                </TouchableOpacity>
+              )}
+            />
+          ))}
         </View>
       ) : (
         <RoomTable />
@@ -234,7 +310,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    padding: 16,
     gap: 16,
   },
   joinIcon: {
