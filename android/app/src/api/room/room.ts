@@ -92,3 +92,25 @@ export const useJoinRoom = () => {
     mutationFn: (id: string) => joinRoom(id),
   });
 };
+
+export const getRoomById = async (id: string) => {
+  try {
+    const response = await api(`/api/room/fetch/${id}`, {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'},
+      cache: 'no-store',
+    });
+    return response;
+  } catch (error) {
+    console.error('Room Response:', error);
+    throw new Error(error instanceof Error ? error.message : 'Data Not Found');
+  }
+};
+
+export const useGetRoomById = (id: string) => {
+  return useQuery({
+    queryKey: ['getRoomById', id],
+    queryFn: () => getRoomById(id),
+    enabled: !!id,
+  });
+};
