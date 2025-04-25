@@ -84,12 +84,7 @@ const UserListScreen = () => {
         <IconButton
           icon="chat"
           iconColor="white"
-          onPress={() => {
-            const isUserInRoom = data?.user?.RoomUser?.length > 0;
-            navigation.navigate('Rooms', {
-              isInRoom: isUserInRoom,
-            });
-          }}
+          onPress={() => navigation.navigate('Rooms')}
           style={{position: 'relative'}}
         />
       </View>

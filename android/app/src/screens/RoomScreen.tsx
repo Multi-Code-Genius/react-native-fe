@@ -30,9 +30,9 @@ const RoomScreen = () => {
     });
   };
 
-  useEffect(() => {
-    !profileLoading && profileRefetch();
-  }, [isSuccess, profileRefetch, profileLoading]);
+  // useEffect(() => {
+  //   !profileLoading && profileRefetch();
+  // }, [isSuccess, profileRefetch, profileLoading]);
 
   if (user?.user?.RoomUser[0]?.roomId) {
     console.log('trigger');
