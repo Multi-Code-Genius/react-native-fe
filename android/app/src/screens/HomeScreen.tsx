@@ -1,6 +1,6 @@
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import React, {useCallback} from 'react';
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
+import {FlatList, RefreshControl, StyleSheet, View, Text} from 'react-native';
 import {
   ActivityIndicator,
   Badge,
@@ -84,7 +84,12 @@ const UserListScreen = () => {
         <IconButton
           icon="chat"
           iconColor="white"
-          onPress={() => navigation.navigate('Rooms')}
+          onPress={() => {
+            const isUserInRoom = data?.user?.RoomUser?.length > 0;
+            navigation.navigate('Rooms', {
+              isInRoom: isUserInRoom,
+            });
+          }}
           style={{position: 'relative'}}
         />
       </View>

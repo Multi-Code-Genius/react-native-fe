@@ -12,34 +12,26 @@ import {
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useRejectRoom, useRequestRoom} from '../api/room/room';
+import {useRoute} from '@react-navigation/native';
+import RoomTable from './a';
 
 const RoomScreen = () => {
   const {data, isPending, mutate} = useRequestRoom();
-  const [isLeft, setIsLeft] = useState(true);
+  const route = useRoute();
+  const {isInRoom} = route.params;
   const {mutate: rejectRoom, isPending: rejectingRoom} = useRejectRoom();
   const theme = useTheme();
 
   const handleOnPress = () => {
-    mutate(
-      {
-        latitude: 21.1702,
-        longitude: 72.8311,
-        platform: 'Android',
-      },
-      {
-        onSuccess: () => {
-          setIsLeft(false);
-        },
-      },
-    );
+    mutate({
+      latitude: 21.1702,
+      longitude: 72.8311,
+      platform: 'Android',
+    });
   };
 
   const handleLeaveRoom = (roomId: number) => {
-    rejectRoom(roomId, {
-      onSuccess: () => {
-        setIsLeft(true);
-      },
-    });
+    rejectRoom(roomId, {});
   };
 
   console.log(data);
@@ -50,7 +42,7 @@ const RoomScreen = () => {
         styles.container,
         {backgroundColor: theme.colors.background},
       ]}>
-      {!data?.room || isLeft ? (
+      {!data?.room || isInRoom ? (
         <View style={styles.joinContainer}>
           <Icon
             name="account-group"
@@ -75,152 +67,153 @@ const RoomScreen = () => {
           </Button>
         </View>
       ) : (
-        <>
-          <Card style={[styles.card, {backgroundColor: theme.colors.surface}]}>
-            <Card.Title
-              title={`Room Details`}
-              titleVariant="titleLarge"
-              left={props => (
-                <Icon
-                  {...props}
-                  name="door-open"
-                  size={24}
-                  color={theme.colors.primary}
-                />
-              )}
-            />
-            <Card.Content>
-              <View style={styles.detailRow}>
-                <Icon
-                  name="home-group"
-                  size={20}
-                  color={theme.colors.onSurface}
-                />
-                <Text variant="bodyMedium" style={styles.detailText}>
-                  Platform: {data.room.platform}
-                </Text>
-              </View>
+        <RoomTable />
+        // <>
+        //   <Card style={[styles.card, {backgroundColor: theme.colors.surface}]}>
+        //     <Card.Title
+        //       title={`Room Details`}
+        //       titleVariant="titleLarge"
+        //       left={props => (
+        //         <Icon
+        //           {...props}
+        //           name="door-open"
+        //           size={24}
+        //           color={theme.colors.primary}
+        //         />
+        //       )}
+        //     />
+        //     <Card.Content>
+        //       <View style={styles.detailRow}>
+        //         <Icon
+        //           name="home-group"
+        //           size={20}
+        //           color={theme.colors.onSurface}
+        //         />
+        //         <Text variant="bodyMedium" style={styles.detailText}>
+        //           Platform: {data.room.platform}
+        //         </Text>
+        //       </View>
 
-              <View style={styles.detailRow}>
-                <Icon
-                  name="account-multiple"
-                  size={20}
-                  color={theme.colors.onSurface}
-                />
-                <Text variant="bodyMedium" style={styles.detailText}>
-                  Users: {data.room.RoomUser?.length} / {data.room.capacity}
-                </Text>
-              </View>
+        //       <View style={styles.detailRow}>
+        //         <Icon
+        //           name="account-multiple"
+        //           size={20}
+        //           color={theme.colors.onSurface}
+        //         />
+        //         <Text variant="bodyMedium" style={styles.detailText}>
+        //           Users: {data.room.RoomUser?.length} / {data.room.capacity}
+        //         </Text>
+        //       </View>
 
-              <View style={styles.statusContainer}>
-                <Chip
-                  mode="outlined"
-                  icon={
-                    data.room.status === 'open'
-                      ? 'check-circle-outline'
-                      : data.room.status === 'full'
-                      ? 'account-alert'
-                      : 'close-circle-outline'
-                  }
-                  textStyle={{
-                    color:
-                      data.room.status === 'open'
-                        ? theme.colors.primary
-                        : theme.colors.error,
-                  }}>
-                  {data.room.status}
-                </Chip>
-                <Button
-                  labelStyle={{color: theme.colors.error}}
-                  icon="logout"
-                  loading={rejectingRoom}
-                  onPress={() => handleLeaveRoom(data.room.id)}>
-                  Leave Room
-                </Button>
-              </View>
-            </Card.Content>
-          </Card>
+        //       <View style={styles.statusContainer}>
+        //         <Chip
+        //           mode="outlined"
+        //           icon={
+        //             data.room.status === 'open'
+        //               ? 'check-circle-outline'
+        //               : data.room.status === 'full'
+        //               ? 'account-alert'
+        //               : 'close-circle-outline'
+        //           }
+        //           textStyle={{
+        //             color:
+        //               data.room.status === 'open'
+        //                 ? theme.colors.primary
+        //                 : theme.colors.error,
+        //           }}>
+        //           {data.room.status}
+        //         </Chip>
+        //         <Button
+        //           labelStyle={{color: theme.colors.error}}
+        //           icon="logout"
+        //           loading={rejectingRoom}
+        //           onPress={() => handleLeaveRoom(data.room.id)}>
+        //           Leave Room
+        //         </Button>
+        //       </View>
+        //     </Card.Content>
+        //   </Card>
 
-          {data?.room?.RoomUser?.length > 0 && (
-            <Card
-              style={[
-                styles.tableCard,
-                {backgroundColor: theme.colors.surface},
-              ]}>
-              <Card.Title
-                title="Participants"
-                titleVariant="titleLarge"
-                left={props => (
-                  <Icon
-                    {...props}
-                    name="account-group"
-                    size={24}
-                    color={theme.colors.primary}
-                  />
-                )}
-              />
+        //   {data?.room?.RoomUser?.length > 0 && (
+        //     <Card
+        //       style={[
+        //         styles.tableCard,
+        //         {backgroundColor: theme.colors.surface},
+        //       ]}>
+        //       <Card.Title
+        //         title="Participants"
+        //         titleVariant="titleLarge"
+        //         left={props => (
+        //           <Icon
+        //             {...props}
+        //             name="account-group"
+        //             size={24}
+        //             color={theme.colors.primary}
+        //           />
+        //         )}
+        //       />
 
-              <DataTable>
-                <DataTable.Header>
-                  <DataTable.Title style={styles.tableHeader}>
-                    Profile
-                  </DataTable.Title>
-                  <DataTable.Title style={styles.tableHeader}>
-                    Name
-                  </DataTable.Title>
-                  <DataTable.Title style={styles.tableHeader}>
-                    Email
-                  </DataTable.Title>
-                </DataTable.Header>
+        //       <DataTable>
+        //         <DataTable.Header>
+        //           <DataTable.Title style={styles.tableHeader}>
+        //             Profile
+        //           </DataTable.Title>
+        //           <DataTable.Title style={styles.tableHeader}>
+        //             Name
+        //           </DataTable.Title>
+        //           <DataTable.Title style={styles.tableHeader}>
+        //             Email
+        //           </DataTable.Title>
+        //         </DataTable.Header>
 
-                {data.room.RoomUser.map((user, index) => (
-                  <React.Fragment key={user.id}>
-                    <DataTable.Row style={{padding: 10}}>
-                      <DataTable.Cell>
-                        <View style={styles.avatarContainer}>
-                          {user.User.profile_pic ? (
-                            <Avatar.Image
-                              size={40}
-                              source={
-                                typeof user.User.profile_pic === 'string' && {
-                                  uri: user.User.profile_pic,
-                                }
-                              }
-                            />
-                          ) : (
-                            <Avatar.Text
-                              size={24}
-                              label={user.User.name.slice(0, 2)}
-                            />
-                          )}
+        //         {data.room.RoomUser.map((user, index) => (
+        //           <React.Fragment key={user.id}>
+        //             <DataTable.Row style={{padding: 10}}>
+        //               <DataTable.Cell>
+        //                 <View style={styles.avatarContainer}>
+        //                   {user.User.profile_pic ? (
+        //                     <Avatar.Image
+        //                       size={40}
+        //                       source={
+        //                         typeof user.User.profile_pic === 'string' && {
+        //                           uri: user.User.profile_pic,
+        //                         }
+        //                       }
+        //                     />
+        //                   ) : (
+        //                     <Avatar.Text
+        //                       size={24}
+        //                       label={user.User.name.slice(0, 2)}
+        //                     />
+        //                   )}
 
-                          {index === 0 && (
-                            <Icon
-                              name="crown"
-                              size={16}
-                              color={theme.colors.primary}
-                              style={styles.crownIcon}
-                            />
-                          )}
-                        </View>
-                      </DataTable.Cell>
-                      <DataTable.Cell>
-                        <Text variant="bodyMedium" style={styles.userName}>
-                          {user.User.name}
-                        </Text>
-                      </DataTable.Cell>
-                      <DataTable.Cell>
-                        <Text variant="bodyMedium" style={styles.userEmail}>
-                          {user.User.email}
-                        </Text>
-                      </DataTable.Cell>
-                    </DataTable.Row>
-                  </React.Fragment>
-                ))}
-              </DataTable>
-            </Card>
-          )}
-        </>
+        //                   {index === 0 && (
+        //                     <Icon
+        //                       name="crown"
+        //                       size={16}
+        //                       color={theme.colors.primary}
+        //                       style={styles.crownIcon}
+        //                     />
+        //                   )}
+        //                 </View>
+        //               </DataTable.Cell>
+        //               <DataTable.Cell>
+        //                 <Text variant="bodyMedium" style={styles.userName}>
+        //                   {user.User.name}
+        //                 </Text>
+        //               </DataTable.Cell>
+        //               <DataTable.Cell>
+        //                 <Text variant="bodyMedium" style={styles.userEmail}>
+        //                   {user.User.email}
+        //                 </Text>
+        //               </DataTable.Cell>
+        //             </DataTable.Row>
+        //           </React.Fragment>
+        //         ))}
+        //       </DataTable>
+        //     </Card>
+        //   )}
+        // </>
       )}
     </ScrollView>
   );

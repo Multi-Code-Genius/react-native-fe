@@ -25,7 +25,6 @@ export const userLogin = async (data: LoginParams): Promise<LoginResponse> => {
     const resp = await response;
     return resp;
   } catch (error) {
-    console.error('Login Error:', error);
     throw new Error(error instanceof Error ? error.message : 'Login failed');
   }
 };

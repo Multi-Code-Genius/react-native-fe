@@ -13,7 +13,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useGetRoomById, useRejectRoom} from '../api/room/room';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 
-const RoomScreen = () => {
+const RoomTable = () => {
   const {mutate: rejectRoom, isPending: rejectingRoom} = useRejectRoom();
   const theme = useTheme();
   const {data: user} = useUserListLogic();
@@ -180,6 +180,8 @@ const RoomScreen = () => {
   );
 };
 
+export default RoomTable;
+
 const styles = StyleSheet.create({
   container: {
     padding: 16,
@@ -270,5 +272,3 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
 });
-
-export default RoomScreen;
