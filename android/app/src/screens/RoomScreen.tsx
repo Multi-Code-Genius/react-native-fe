@@ -1,6 +1,7 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {
+  ActivityIndicator,
   Avatar,
   Button,
   Card,
@@ -8,11 +9,9 @@ import {
   DataTable,
   Text,
   useTheme,
-  Divider,
-  ActivityIndicator,
 } from 'react-native-paper';
-import {useRequestRoom} from '../api/user/user';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useRequestRoom} from '../api/room/room';
 
 const RoomScreen = () => {
   const {data, isPending, mutate} = useRequestRoom();

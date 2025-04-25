@@ -136,27 +136,3 @@ export const useUserByIdMutation = () => {
     mutationFn: (id: string) => getUserById(id),
   });
 };
-
-export const requestRoom = async (data: any) => {
-  try {
-    const response = await api('/api/room/find-or-create', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      cache: 'no-store',
-      body: JSON.stringify(data),
-    });
-    const resp = await response;
-    return resp;
-  } catch (error) {
-    console.error('Room Response:', error);
-    throw new Error(error instanceof Error ? error.message : 'Data Not Found');
-  }
-};
-
-export const useRequestRoom = () => {
-  return useMutation({
-    mutationKey: ['room'],
-    mutationFn: (data: any) => requestRoom(data),
-    onSuccess: () => {},
-  });
-};
