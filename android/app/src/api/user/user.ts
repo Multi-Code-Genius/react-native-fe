@@ -156,7 +156,7 @@ export const requestRoom = async (data: any) => {
 export const useRequestRoom = () => {
   return useMutation({
     mutationKey: ['room'],
-    mutationFn: (data: any) => callApi(data),
+    mutationFn: (data: any) => requestRoom(data),
     onSuccess: () => {},
   });
 };

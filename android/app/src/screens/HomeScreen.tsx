@@ -41,10 +41,6 @@ const UserListScreen = () => {
     }, [refetch, profileRefetch]),
   );
 
-  const handleClick = () => {
-    call();
-  };
-
   const messagesReceived: Message[] = data?.user?.messagesReceived ?? [];
 
   if (isLoading) {
@@ -88,7 +84,7 @@ const UserListScreen = () => {
         <IconButton
           icon="chat"
           iconColor="white"
-          onPress={handleClick}
+          onPress={() => navigation.navigate('Rooms')}
           style={{position: 'relative'}}
         />
       </View>

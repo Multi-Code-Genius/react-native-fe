@@ -19,6 +19,7 @@ import ChatScreen from '../screens/ChatScreen';
 
 import UserProfile from '../components/UserProfile';
 import {FullPostViewer} from '../components/ProfilePosts/FullPostViewer';
+import RoomScreen from '../screens/RoomScreen';
 
 const Stack = createStackNavigator();
 
@@ -116,6 +117,20 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               options={{
                 title: 'Chats',
                 animation: 'slide_from_right',
+              }}
+            />
+            <Stack.Screen
+              name="Rooms"
+              component={RoomScreen}
+              options={{
+                title: 'Rooms',
+                animation: 'slide_from_right',
+                headerShown: true,
+                headerStyle: {
+                  backgroundColor: theme.colors.background,
+                },
+                headerTintColor: theme.colors.onPrimary,
+                headerShadowVisible: false,
               }}
             />
             <Stack.Screen
