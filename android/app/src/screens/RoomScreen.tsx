@@ -42,7 +42,7 @@ const RoomScreen = () => {
         styles.container,
         {backgroundColor: theme.colors.background},
       ]}>
-      {!data?.room || isInRoom ? (
+      {isInRoom ? (
         <View style={styles.joinContainer}>
           <Icon
             name="account-group"

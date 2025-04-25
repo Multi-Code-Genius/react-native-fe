@@ -184,9 +184,10 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               }}
             />
             <Stack.Screen
-              name="fullPostViewer"
+              name="Posts"
               component={FullPostViewer}
               options={{
+                headerShown: true,
                 transitionSpec: {
                   open: configSlow,
                   close: configSlow,

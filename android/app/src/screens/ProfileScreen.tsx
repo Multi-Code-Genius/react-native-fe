@@ -119,7 +119,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
             const index = data?.user?.posts.findIndex(p => p.id === item.id);
 
             // (navigation as any).navigate('SinglePostPhoto', {postId: item.id});
-            (navigation as any).navigate('fullPostViewer', {
+            (navigation as any).navigate('Posts', {
               posts: data?.user?.posts,
               initialIndex: index,
             });

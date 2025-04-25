@@ -110,7 +110,6 @@ export function ProfileSinglePost({postData, isFirst}: ProfileSinglePostProps) {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {isFirst && <Header data={data} />}
       <View className="w-full h-full p-4">
         <View className="flex-row items-center gap-2 mb-2">
           <View className=" h-[45px] w-[45px] rounded-full border-4 border-gray-100 overflow-hidden">
