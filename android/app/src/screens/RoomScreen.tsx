@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {
   ActivityIndicator,
@@ -17,7 +17,6 @@ const RoomScreen = () => {
   const {data, isPending, mutate} = useRequestRoom();
   const [isLeft, setIsLeft] = useState(true);
   const {mutate: rejectRoom, isPending: rejectingRoom} = useRejectRoom();
-
   const theme = useTheme();
 
   const handleOnPress = () => {
@@ -42,18 +41,6 @@ const RoomScreen = () => {
       },
     });
   };
-
-  if (isPending) {
-    return (
-      <View
-        style={[
-          styles.loadingContainer,
-          {backgroundColor: theme.colors.background},
-        ]}>
-        <ActivityIndicator animating={true} size="large" />
-      </View>
-    );
-  }
 
   console.log(data);
 
@@ -82,6 +69,7 @@ const RoomScreen = () => {
             onPress={handleOnPress}
             style={styles.button}
             labelStyle={styles.buttonLabel}
+            loading={isPending}
             icon="account-plus">
             Find a Room
           </Button>
