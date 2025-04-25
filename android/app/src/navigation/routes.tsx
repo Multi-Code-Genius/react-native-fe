@@ -20,6 +20,7 @@ import ChatScreen from '../screens/ChatScreen';
 import UserProfile from '../components/UserProfile';
 import {FullPostViewer} from '../components/ProfilePosts/FullPostViewer';
 import RoomScreen from '../screens/RoomScreen';
+import RoomWrapper from '../screens/RoomWrapper';
 
 const Stack = createStackNavigator();
 
@@ -121,7 +122,7 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
             />
             <Stack.Screen
               name="Rooms"
-              component={RoomScreen}
+              component={RoomWrapper}
               options={{
                 title: 'Rooms',
                 animation: 'slide_from_right',
