@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 
-import {Appbar, Avatar, Button, Searchbar, useTheme} from 'react-native-paper';
+import {Appbar, Avatar, Searchbar, useTheme} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native';
 import {useAcceptRequest, useDeclineRequest} from '../api/request/request';
 import {useNavigation} from '@react-navigation/native';
@@ -105,7 +105,6 @@ export function FriendsRequestAcceptScreen() {
           <View className="flex-row gap-2">
             <TouchableOpacity
               className="bg-blue-500 px-3 py-1 rounded-md justify-center items-center"
-              // onPress={() => acceptRequestMutation.mutate(item.id)}
               onPress={() => {
                 setLoadingId(item.id);
                 acceptRequestMutation(item.id, {
@@ -125,7 +124,6 @@ export function FriendsRequestAcceptScreen() {
 
             <TouchableOpacity
               className="bg-gray-700 px-3 py-1 rounded-md justify-center items-center"
-              // onPress={() => deleteRequestMutation.mutate(item.id)}
               onPress={() => {
                 setDeletingId(item.id);
                 deleteRequestMutation(item.id, {

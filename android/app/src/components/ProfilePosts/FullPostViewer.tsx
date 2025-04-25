@@ -1,12 +1,10 @@
 import {useRoute} from '@react-navigation/native';
-import React, {useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, Dimensions, FlatList, View} from 'react-native';
+import React, {useRef} from 'react';
+import {Dimensions, FlatList} from 'react-native';
 import {ProfileSinglePost} from './ProfileSinglePost';
-import {Header} from './Header';
 
 export function FullPostViewer() {
   const route = useRoute();
-  const [loading, setLoading] = useState(true);
   const {posts, initialIndex} = route.params as {
     posts: any[];
     initialIndex: number;

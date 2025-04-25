@@ -1,6 +1,6 @@
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import React, {useCallback} from 'react';
-import {FlatList, RefreshControl, StyleSheet, View, Text} from 'react-native';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {
   ActivityIndicator,
   Badge,
@@ -12,7 +12,7 @@ import {useSendRequest} from '../api/request/request';
 import UserCard from '../components/UserCard';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 import {Message} from '../types/messageTypes';
-import {call} from '../constant/script';
+
 const UserListScreen = () => {
   const navigation = useNavigation();
   const {

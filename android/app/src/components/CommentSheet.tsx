@@ -1,6 +1,6 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {Avatar, Divider, Text} from 'react-native-paper';
+import {StyleSheet, View} from 'react-native';
+import {Avatar, Text} from 'react-native-paper';
 import {CommentsTypes} from '../types/video';
 
 const CommentSheet = ({comments}: {comments: CommentsTypes[] | []}) => {

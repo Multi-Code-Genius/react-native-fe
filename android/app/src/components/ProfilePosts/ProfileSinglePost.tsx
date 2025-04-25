@@ -1,33 +1,28 @@
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
+} from '@gorhom/bottom-sheet';
 import {useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
-  SafeAreaView,
-  View,
   Image,
+  SafeAreaView,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  StyleSheet,
+  View,
 } from 'react-native';
+import {Portal, TextInput, useTheme} from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   useCommentPhoto,
   useLikePhoto,
   useSinglePhoto,
 } from '../../api/photo/photo';
-import {Header} from './Header';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {photoStore} from '../../store/photoStore';
 import {useUserStore} from '../../store/userStore';
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetScrollView,
-} from '@gorhom/bottom-sheet';
-import {
-  ActivityIndicator,
-  Portal,
-  TextInput,
-  useTheme,
-} from 'react-native-paper';
 import CommentSheet from '../CommentSheet';
+import {Header} from './Header';
 
 type ProfileSinglePostProps = {
   postData?: any;
@@ -49,7 +44,7 @@ export function ProfileSinglePost({postData, isFirst}: ProfileSinglePostProps) {
 
   const postId = postData?.id || (route.params as {postId?: string})?.postId;
 
-  const {data, error, isLoading} = useSinglePhoto(postId || '');
+  const {data, error} = useSinglePhoto(postId || '');
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -73,7 +68,7 @@ export function ProfileSinglePost({postData, isFirst}: ProfileSinglePostProps) {
     if (data?.video?.likes?.some((like: any) => like.userId === userData?.id)) {
       addLikesPhoto(postId);
     }
-  }, [data?.video?.likes, userData?.id, postId]);
+  }, [data?.video?.likes, userData?.id, postId, addLikesPhoto]);
 
   const handleLikeToggle = () => {
     updatePhotoLikeStatus(postId);
@@ -108,14 +103,6 @@ export function ProfileSinglePost({postData, isFirst}: ProfileSinglePostProps) {
       </View>
     );
   }
-
-  // if (isLoading || !data) {
-  //   return (
-  //     <View style={styles.centered}>
-  //       <ActivityIndicator size={'small'} className="item-center" />
-  //     </View>
-  //   );
-  // }
 
   const imageUrl = data?.video?.post;
   const likeCount = data?.video?.likes?.length || 0;
@@ -171,7 +158,7 @@ export function ProfileSinglePost({postData, isFirst}: ProfileSinglePostProps) {
         </View>
 
         <View className="flex-row gap-2">
-          <Text className="text-[14px] font-bold italic ">
+          <Text className="text-[14px] font-bold italic  ">
             {data?.video?.user?.name}
           </Text>
           <Text className="text-[14px]">{data?.video?.description}</Text>

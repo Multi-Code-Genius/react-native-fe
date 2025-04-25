@@ -1,14 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
-import {
-  Card,
-  Text,
-  Avatar,
-  Badge,
-  useTheme,
-  IconButton,
-  MD3Colors,
-} from 'react-native-paper';
+import {Card, Text, Avatar, Badge, useTheme} from 'react-native-paper';
 import Animated, {FadeInUp} from 'react-native-reanimated';
 import RequestButton from './RequestButton';
 import moment from 'moment';
@@ -26,8 +18,8 @@ interface Props {
   user: User;
   onRequest: (id: string) => void;
   isChatting?: boolean;
-  onPress: any;
-  messageCount: number;
+  onPress?: any;
+  messageCount?: number;
 }
 
 const UserCard: React.FC<Props> = ({
@@ -122,7 +114,7 @@ const UserCard: React.FC<Props> = ({
 
           {isChatting ? (
             <View>
-              {messageCount > 0 && (
+              {messageCount && messageCount > 0 && (
                 <Badge style={{backgroundColor: theme.colors.primary}}>
                   {messageCount}
                 </Badge>
