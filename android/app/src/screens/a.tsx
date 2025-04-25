@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {
+  ActivityIndicator,
   Avatar,
   Button,
   Card,
@@ -12,12 +13,15 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useGetRoomById, useRejectRoom} from '../api/room/room';
 import {useUserListLogic} from '../hooks/useUserListLogic';
+import RoomScreen from './RoomScreen';
 
 const RoomTable = () => {
   const {mutate: rejectRoom, isPending: rejectingRoom} = useRejectRoom();
   const theme = useTheme();
-  const {data: user} = useUserListLogic();
-  const {data} = useGetRoomById(user.RoomUser[0].roomId);
+  const {data: user, profileLoading, profileRefetch} = useUserListLogic();
+  const {data, isLoading, isSuccess} = useGetRoomById(
+    user?.user?.RoomUser[0].roomId,
+  );
 
   const handleLeaveRoom = (roomId: string) => {
     rejectRoom(roomId, {
@@ -25,7 +29,21 @@ const RoomTable = () => {
     });
   };
 
-  console.log(data);
+  // useEffect(() => {
+  //   !profileLoading && profileRefetch();
+  // }, [profileLoading, isSuccess, profileRefetch]);
+
+  if (user?.user?.RoomUser[0]?.roomId) {
+    return <RoomScreen />;
+  }
+
+  if (isLoading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -55,7 +73,7 @@ const RoomTable = () => {
                 color={theme.colors.onSurface}
               />
               <Text variant="bodyMedium" style={styles.detailText}>
-                Platform: {data.room.platform}
+                Platform: {data?.room?.platform}
               </Text>
             </View>
 
@@ -66,7 +84,7 @@ const RoomTable = () => {
                 color={theme.colors.onSurface}
               />
               <Text variant="bodyMedium" style={styles.detailText}>
-                Users: {data.room.RoomUser?.length} / {data.room.capacity}
+                Users: {data?.room?.RoomUser?.length} / {data?.room?.capacity}
               </Text>
             </View>
 
@@ -74,25 +92,25 @@ const RoomTable = () => {
               <Chip
                 mode="outlined"
                 icon={
-                  data.room.status === 'open'
+                  data?.room?.status === 'open'
                     ? 'check-circle-outline'
-                    : data.room.status === 'full'
+                    : data?.room?.status === 'full'
                     ? 'account-alert'
                     : 'close-circle-outline'
                 }
                 textStyle={{
                   color:
-                    data.room.status === 'open'
+                    data?.room?.status === 'open'
                       ? theme.colors.primary
                       : theme.colors.error,
                 }}>
-                {data.room.status}
+                {data?.room?.status}
               </Chip>
               <Button
                 labelStyle={{color: theme.colors.error}}
                 icon="logout"
                 loading={rejectingRoom}
-                onPress={() => handleLeaveRoom(data.room.id)}>
+                onPress={() => handleLeaveRoom(data?.room.id)}>
                 Leave Room
               </Button>
             </View>
@@ -128,50 +146,51 @@ const RoomTable = () => {
                 </DataTable.Title>
               </DataTable.Header>
 
-              {data.room.RoomUser.map((user: any, index: number) => (
-                <React.Fragment key={user.id}>
-                  <DataTable.Row style={{padding: 10}}>
-                    <DataTable.Cell>
-                      <View style={styles.avatarContainer}>
-                        {user.User.profile_pic ? (
-                          <Avatar.Image
-                            size={40}
-                            source={
-                              typeof user.User.profile_pic === 'string' && {
-                                uri: user.User.profile_pic,
+              {data &&
+                data.room.RoomUser.map((user: any, index: number) => (
+                  <React.Fragment key={user.id}>
+                    <DataTable.Row style={{padding: 10}}>
+                      <DataTable.Cell>
+                        <View style={styles.avatarContainer}>
+                          {user.User.profile_pic ? (
+                            <Avatar.Image
+                              size={40}
+                              source={
+                                typeof user.User.profile_pic === 'string' && {
+                                  uri: user.User.profile_pic,
+                                }
                               }
-                            }
-                          />
-                        ) : (
-                          <Avatar.Text
-                            size={24}
-                            label={user.User.name.slice(0, 2)}
-                          />
-                        )}
+                            />
+                          ) : (
+                            <Avatar.Text
+                              size={24}
+                              label={user.User.name.slice(0, 2)}
+                            />
+                          )}
 
-                        {index === 0 && (
-                          <Icon
-                            name="crown"
-                            size={16}
-                            color={theme.colors.primary}
-                            style={styles.crownIcon}
-                          />
-                        )}
-                      </View>
-                    </DataTable.Cell>
-                    <DataTable.Cell>
-                      <Text variant="bodyMedium" style={styles.userName}>
-                        {user.User.name}
-                      </Text>
-                    </DataTable.Cell>
-                    <DataTable.Cell>
-                      <Text variant="bodyMedium" style={styles.userEmail}>
-                        {user.User.email}
-                      </Text>
-                    </DataTable.Cell>
-                  </DataTable.Row>
-                </React.Fragment>
-              ))}
+                          {index === 0 && (
+                            <Icon
+                              name="crown"
+                              size={16}
+                              color={theme.colors.primary}
+                              style={styles.crownIcon}
+                            />
+                          )}
+                        </View>
+                      </DataTable.Cell>
+                      <DataTable.Cell>
+                        <Text variant="bodyMedium" style={styles.userName}>
+                          {user.User.name}
+                        </Text>
+                      </DataTable.Cell>
+                      <DataTable.Cell>
+                        <Text variant="bodyMedium" style={styles.userEmail}>
+                          {user.User.email}
+                        </Text>
+                      </DataTable.Cell>
+                    </DataTable.Row>
+                  </React.Fragment>
+                ))}
             </DataTable>
           </Card>
         )}
@@ -270,5 +289,11 @@ const styles = StyleSheet.create({
   userEmail: {
     fontSize: 12,
     opacity: 0.8,
+  },
+  loaderContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
