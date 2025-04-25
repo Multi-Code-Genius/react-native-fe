@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {
   ActivityIndicator,
@@ -11,18 +11,35 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useRequestRoom} from '../api/room/room';
+import {useRejectRoom, useRequestRoom} from '../api/room/room';
 
 const RoomScreen = () => {
   const {data, isPending, mutate} = useRequestRoom();
+  const [isLeft, setIsLeft] = useState(true);
+  const {mutate: rejectRoom, isPending: rejectingRoom} = useRejectRoom();
 
   const theme = useTheme();
 
   const handleOnPress = () => {
-    mutate({
-      latitude: 21.1702,
-      longitude: 72.8311,
-      platform: 'Android',
+    mutate(
+      {
+        latitude: 21.1702,
+        longitude: 72.8311,
+        platform: 'Android',
+      },
+      {
+        onSuccess: () => {
+          setIsLeft(false);
+        },
+      },
+    );
+  };
+
+  const handleLeaveRoom = (roomId: number) => {
+    rejectRoom(roomId, {
+      onSuccess: () => {
+        setIsLeft(true);
+      },
     });
   };
 
@@ -38,13 +55,15 @@ const RoomScreen = () => {
     );
   }
 
+  console.log(data);
+
   return (
     <ScrollView
       contentContainerStyle={[
         styles.container,
         {backgroundColor: theme.colors.background},
       ]}>
-      {!data?.room ? (
+      {!data?.room || isLeft ? (
         <View style={styles.joinContainer}>
           <Icon
             name="account-group"
@@ -110,17 +129,26 @@ const RoomScreen = () => {
                   mode="outlined"
                   icon={
                     data.room.status === 'open'
-                      ? 'check-circle'
-                      : 'close-circle'
+                      ? 'check-circle-outline'
+                      : data.room.status === 'full'
+                      ? 'account-alert'
+                      : 'close-circle-outline'
                   }
                   textStyle={{
                     color:
-                      data.room.status === 'full'
+                      data.room.status === 'open'
                         ? theme.colors.primary
                         : theme.colors.error,
                   }}>
-                  {data.room.status === 'open' ? 'Active' : 'Closed'}
+                  {data.room.status}
                 </Chip>
+                <Button
+                  labelStyle={{color: theme.colors.error}}
+                  icon="logout"
+                  loading={rejectingRoom}
+                  onPress={() => handleLeaveRoom(data.room.id)}>
+                  Leave Room
+                </Button>
               </View>
             </Card.Content>
           </Card>
@@ -273,7 +301,10 @@ const styles = StyleSheet.create({
   },
   statusContainer: {
     marginTop: 16,
-    alignSelf: 'flex-start',
+    flex: 1,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   tableHeader: {
     justifyContent: 'center',
