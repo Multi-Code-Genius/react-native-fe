@@ -1,6 +1,6 @@
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import React, {useCallback} from 'react';
-import {FlatList, RefreshControl, StyleSheet, View, Text} from 'react-native';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {
   ActivityIndicator,
   Badge,

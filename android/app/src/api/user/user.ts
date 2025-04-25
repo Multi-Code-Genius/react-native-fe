@@ -135,3 +135,49 @@ export const useUserByIdMutation = () => {
     mutationFn: (id: string) => getUserById(id),
   });
 };
+
+export const updateLocation = async (location: any) => {
+  try {
+    const response = await api('/api/user/locations', {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      cache: 'no-store',
+      body: JSON.stringify(location),
+    });
+    const resp = await response;
+    return resp;
+  } catch (error) {
+    console.error('User Response:', error);
+    throw new Error(error instanceof Error ? error.message : 'Data Not Found');
+  }
+};
+
+export const useUpdateLocation = () => {
+  return useMutation({
+    mutationKey: ['updateLocations'],
+    mutationFn: (locations: any) => getUserById(locations),
+  });
+};
+
+export const getAllLocations = async (location: any) => {
+  try {
+    const response = await api('/api/room/location', {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'},
+      cache: 'no-store',
+      body: JSON.stringify(location),
+    });
+    const resp = await response;
+    return resp;
+  } catch (error) {
+    console.error('User Response:', error);
+    throw new Error(error instanceof Error ? error.message : 'Data Not Found');
+  }
+};
+
+export const useGetAllLocations = () => {
+  return useQuery({
+    queryKey: ['updateLocations'],
+    queryFn: getAllLocations,
+  });
+};
