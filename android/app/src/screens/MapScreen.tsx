@@ -16,7 +16,7 @@ import {
   Icon,
 } from 'react-native-paper';
 import {requestLocation} from '../hooks/requestLocation';
-import {useUpdateLocation} from '../api/user/user';
+import {useGetAllLocations, useUpdateLocation} from '../api/user/user';
 
 const LOCATION_TIMEOUT = 10000;
 
@@ -30,6 +30,8 @@ const MapScreen: React.FC = () => {
   const mapRef = useRef<MapView>(null);
   const theme = useTheme();
   const {mutate} = useUpdateLocation();
+  const data = useGetAllLocations();
+  console.log('data================>>>>>>>', data);
 
   const getLocationWithTimeout = async () => {
     let timeoutId: NodeJS.Timeout;
@@ -42,6 +44,7 @@ const MapScreen: React.FC = () => {
 
     try {
       const location = await Promise.race([requestLocation(), timeoutPromise]);
+      console.log('location', location);
       clearTimeout(timeoutId);
       return location;
     } catch (error) {
@@ -78,6 +81,7 @@ const MapScreen: React.FC = () => {
 
   useEffect(() => {
     if (userLocation) {
+      console.log('trig');
       mutate(userLocation);
     }
   }, [userLocation, mutate]);

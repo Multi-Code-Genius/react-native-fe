@@ -136,21 +136,33 @@ export const useUserByIdMutation = () => {
   });
 };
 
-export const updateLocation = async (location: any) => {
+export const updateLocation = async (location: {lat: number; lng: number}) => {
   try {
-    console.log(
-      'trigger879999999999999999999999999999999999999999999999999999999999999999',
-    );
-    const response = await api('/api/user/locations', {
+    const payload = {
+      location: {
+        latitude: location.lat,
+        longitude: location.lng,
+      },
+    };
+
+    const response = await api('/api/user/location', {
       method: 'PATCH',
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
       cache: 'no-store',
-      body: JSON.stringify(location),
+      body: JSON.stringify(payload),
     });
-    const resp = await response;
-    return resp;
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(errText || `Server error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error('User Response:', error);
+    console.error('User Response Error:', error);
     throw new Error(error instanceof Error ? error.message : 'Data Not Found');
   }
 };
@@ -158,19 +170,21 @@ export const updateLocation = async (location: any) => {
 export const useUpdateLocation = () => {
   return useMutation({
     mutationKey: ['updateLocations'],
-    mutationFn: (locations: any) => getUserById(locations),
+    mutationFn: (locations: any) => updateLocation(locations),
   });
 };
 
-export const getAllLocations = async (location: any) => {
+export const getAllLocations = async () => {
+  console.log('oppppppppppppppp');
+
   try {
-    const response = await api('/api/room/location', {
+    const response = await api('/api/room/locations', {
       method: 'GET',
       headers: {'Content-Type': 'application/json'},
       cache: 'no-store',
-      body: JSON.stringify(location),
     });
     const resp = await response;
+    console.log('resp', resp);
     return resp;
   } catch (error) {
     console.error('User Response:', error);
@@ -179,6 +193,7 @@ export const getAllLocations = async (location: any) => {
 };
 
 export const useGetAllLocations = () => {
+  console.log('oppppppppppppppp');
   return useQuery({
     queryKey: ['updateLocations'],
     queryFn: getAllLocations,
