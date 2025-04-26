@@ -175,8 +175,6 @@ export const useUpdateLocation = () => {
 };
 
 export const getAllLocations = async () => {
-  console.log('oppppppppppppppp');
-
   try {
     const response = await api('/api/room/locations', {
       method: 'GET',
@@ -193,7 +191,6 @@ export const getAllLocations = async () => {
 };
 
 export const useGetAllLocations = () => {
-  console.log('oppppppppppppppp');
   return useQuery({
     queryKey: ['updateLocations'],
     queryFn: getAllLocations,

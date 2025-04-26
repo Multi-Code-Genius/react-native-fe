@@ -30,7 +30,7 @@ const MapScreen: React.FC = () => {
   const mapRef = useRef<MapView>(null);
   const theme = useTheme();
   const {mutate} = useUpdateLocation();
-  const data = useGetAllLocations();
+  const {data} = useGetAllLocations();
   console.log('data================>>>>>>>', data);
 
   const getLocationWithTimeout = async () => {
