@@ -1,4 +1,4 @@
-import React, {useRef, useState, useEffect, useCallback} from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import {
   View,
   FlatList,
@@ -10,17 +10,18 @@ import {
   ActivityIndicator,
   Text,
   Dimensions,
+  SafeAreaView,
 } from 'react-native';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   useCommentVideo,
   useInfiniteVideos,
   useLikeVideo,
 } from '../api/video/video';
-import {ReelItem, ReelsScreenProps} from '../types/video';
+import { ReelItem, ReelsScreenProps } from '../types/video';
 import ReelCard from '../components/ReelCard';
-import {videoStore} from '../store/videoStore';
-import {useIsFocused} from '@react-navigation/native';
+import { videoStore } from '../store/videoStore';
+import { useIsFocused } from '@react-navigation/native';
 
 const ReelList: React.FC<ReelsScreenProps> = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -37,9 +38,9 @@ const ReelList: React.FC<ReelsScreenProps> = () => {
     error,
   } = useInfiniteVideos();
   const insets = useSafeAreaInsets();
-  const {mutate} = useLikeVideo();
-  const {mutate: commentMutate} = useCommentVideo();
-  const {updateVideoLikeStatus} = videoStore();
+  const { mutate } = useLikeVideo();
+  const { mutate: commentMutate } = useCommentVideo();
+  const { updateVideoLikeStatus } = videoStore();
 
   const videos = data?.pages.flatMap(page => page.videos) ?? [];
 
@@ -56,7 +57,7 @@ const ReelList: React.FC<ReelsScreenProps> = () => {
   }, []);
 
   const onViewableItemsChanged = useRef(
-    ({viewableItems}: {viewableItems: Array<{index: number | null}>}) => {
+    ({ viewableItems }: { viewableItems: Array<{ index: number | null }> }) => {
       if (viewableItems.length > 0 && viewableItems[0].index !== null) {
         setCurrentIndex(viewableItems[0].index);
       }
@@ -81,7 +82,7 @@ const ReelList: React.FC<ReelsScreenProps> = () => {
     [currentIndex, usableHeight, videos.length],
   );
 
-  const renderItem: ListRenderItem<ReelItem> = ({item, index}) => {
+  const renderItem: ListRenderItem<ReelItem> = ({ item, index }) => {
     return (
       <ReelCard
         item={item}
@@ -93,11 +94,11 @@ const ReelList: React.FC<ReelsScreenProps> = () => {
         onDoubleTap={(isNotDisabled: boolean) => {
           if (!isNotDisabled) {
             updateVideoLikeStatus(item.id);
-            mutate({videoId: item.id});
+            mutate({ videoId: item.id });
           }
         }}
         onComments={(text: string) => {
-          commentMutate({text, videoId: item.id});
+          commentMutate({ text, videoId: item.id });
         }}
       />
     );
@@ -114,7 +115,7 @@ const ReelList: React.FC<ReelsScreenProps> = () => {
   if (error) {
     return (
       <View style={styles.loaderContainer}>
-        <Text style={{color: 'white'}}>Failed to load videos</Text>
+        <Text style={{ color: 'white' }}>Failed to load videos</Text>
       </View>
     );
   }
@@ -153,12 +154,12 @@ const ReelList: React.FC<ReelsScreenProps> = () => {
           offset: usableHeight * index,
           index,
         })}
-        contentContainerStyle={{paddingBottom: 60}}
-        // getItemLayout={(_, index) => ({
-        //   length: usableHeight,
-        //   offset: usableHeight * index,
-        //   index,
-        // })}
+        contentContainerStyle={{ paddingBottom: 60 }}
+      // getItemLayout={(_, index) => ({
+      //   length: usableHeight,
+      //   offset: usableHeight * index,
+      //   index,
+      // })}
       />
     </SafeAreaView>
   );
