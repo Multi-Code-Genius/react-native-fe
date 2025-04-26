@@ -16,6 +16,7 @@ import {
   Icon,
 } from 'react-native-paper';
 import {requestLocation} from '../hooks/requestLocation';
+import {useUpdateLocation} from '../api/user/user';
 
 const LOCATION_TIMEOUT = 10000;
 
@@ -28,6 +29,7 @@ const MapScreen: React.FC = () => {
   const [locationError, setLocationError] = useState<string | null>(null);
   const mapRef = useRef<MapView>(null);
   const theme = useTheme();
+  const {mutate} = useUpdateLocation();
 
   const getLocationWithTimeout = async () => {
     let timeoutId: NodeJS.Timeout;
@@ -73,6 +75,12 @@ const MapScreen: React.FC = () => {
   useEffect(() => {
     fetchCurrentLocation();
   }, []);
+
+  useEffect(() => {
+    if (userLocation) {
+      mutate(userLocation);
+    }
+  }, [userLocation, mutate]);
 
   const flyToUserLocation = async () => {
     setLoading(true);

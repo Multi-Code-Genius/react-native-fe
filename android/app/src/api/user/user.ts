@@ -138,6 +138,9 @@ export const useUserByIdMutation = () => {
 
 export const updateLocation = async (location: any) => {
   try {
+    console.log(
+      'trigger879999999999999999999999999999999999999999999999999999999999999999',
+    );
     const response = await api('/api/user/locations', {
       method: 'PATCH',
       headers: {'Content-Type': 'application/json'},

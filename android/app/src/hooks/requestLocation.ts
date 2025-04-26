@@ -34,6 +34,7 @@ const getCurrentPosition = (): Promise<Location> => {
   return new Promise((resolve, reject) => {
     Geolocation.getCurrentPosition(
       position => {
+        console.log('position', position);
         resolve({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
