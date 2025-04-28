@@ -47,6 +47,7 @@ const ReelList: React.FC<ReelsScreenProps> = () => {
   const usableHeight =
     Dimensions.get('window').height - insets.top - insets.bottom;
 
+
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
       setAppState(nextAppState);
@@ -145,9 +146,9 @@ const ReelList: React.FC<ReelsScreenProps> = () => {
         onMomentumScrollEnd={handleScrollEnd}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={onViewableItemsChanged}
-        initialNumToRender={3}
-        maxToRenderPerBatch={5}
-        windowSize={3}
+        initialNumToRender={2}
+        maxToRenderPerBatch={2}
+        windowSize={5}
         removeClippedSubviews={true}
         getItemLayout={(_, index) => ({
           length: usableHeight,
