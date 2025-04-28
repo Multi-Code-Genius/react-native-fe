@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import {api} from '../../hooks/api';
+import {videoStore} from '../../store/videoStore';
 
 export const fetchPaginatedVideos = async (page: number) => {
   try {
@@ -208,6 +209,7 @@ export const useCommentVideo = () => {
   return useMutation({
     mutationFn: ({videoId, text}: {videoId: string; text: string}) =>
       commentVideo(videoId, text),
+
     onMutate: async ({videoId, text}) => {
       await queryClient.cancelQueries({queryKey: ['video', videoId]});
 
@@ -221,12 +223,19 @@ export const useCommentVideo = () => {
             ...(oldData.comments || []),
             {
               id: 'temp-id',
-              text,
+              text: 'Sending...',
               userId: oldData.currentUserId,
               user: oldData.currentUser,
             },
           ],
         };
+      });
+
+      videoStore.getState().addVideoComment(videoId, {
+        id: 'temp-id',
+        text,
+        userId: (previous as any)?.currentUserId,
+        user: (previous as any)?.currentUser,
       });
 
       return {previous};
@@ -239,7 +248,7 @@ export const useCommentVideo = () => {
       if (context?.previousList) {
         queryClient.setQueryData(['videos'], context.previousList);
       }
-      return console.error('Like Video Error:', err);
+      return console.error('Comment Video Error:', err);
     },
 
     onSuccess: (_data, {videoId}) => {

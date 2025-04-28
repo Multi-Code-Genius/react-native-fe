@@ -1,9 +1,9 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
-import {Avatar, Text} from 'react-native-paper';
-import {CommentsTypes} from '../types/video';
+import { StyleSheet, View } from 'react-native';
+import { Avatar, Text } from 'react-native-paper';
+import { CommentsTypes } from '../types/video';
 
-const CommentSheet = ({comments}: {comments: CommentsTypes[] | []}) => {
+const CommentSheet = ({ comments }: { comments: CommentsTypes[] | [] }) => {
   return (
     <View style={styles.container}>
       {comments.map(comment => (
@@ -11,7 +11,7 @@ const CommentSheet = ({comments}: {comments: CommentsTypes[] | []}) => {
           <View style={styles.avatarPlaceholder}>
             <Avatar.Image
               size={24}
-              source={{uri: comment?.user?.profile_pic}}
+              source={{ uri: comment?.user?.profile_pic }}
             />
           </View>
           <View style={styles.commentContent}>

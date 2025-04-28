@@ -8,13 +8,15 @@ import {
   Dimensions,
 } from 'react-native';
 import {useRoute} from '@react-navigation/native';
-import {useVideoById} from '../api/video/video';
+import {useCommentVideo, useVideoById} from '../api/video/video';
 import ReelCard from '../components/ReelCard';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 
 export function ProfileReelList() {
   const {params} = useRoute();
   const {videoId} = params as {videoId: string};
+  const {mutate: commentMutate} = useCommentVideo();
+
   const {data, error} = useVideoById(videoId);
   const insets = useSafeAreaInsets();
   const usableHeight =
@@ -52,7 +54,9 @@ export function ProfileReelList() {
             appState="active"
             usableHeight={usableHeight}
             onDoubleTap={() => {}}
-            onComments={() => {}}
+            onComments={(text: string) => {
+              commentMutate({text, videoId: item.id});
+            }}
           />
         )}
         getItemLayout={(_, index) => ({
