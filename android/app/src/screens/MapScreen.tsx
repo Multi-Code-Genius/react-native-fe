@@ -33,7 +33,6 @@ const MapScreen: React.FC = () => {
   const theme = useTheme();
   const {mutate} = useUpdateLocation();
   const {data} = useGetAllLocations();
-  console.log('data================>>>>>>>', data);
 
   const getLocationWithTimeout = async () => {
     let timeoutId: NodeJS.Timeout;

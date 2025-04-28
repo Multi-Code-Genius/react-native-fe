@@ -1,23 +1,25 @@
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {View, Image, Text, Alert, FlatList, StyleSheet} from 'react-native';
-import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
+import {
+  Alert,
+  Dimensions,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import ImagePicker from 'react-native-image-crop-picker';
 import {
   ActivityIndicator,
   Divider,
   IconButton,
   useTheme,
 } from 'react-native-paper';
-import {launchImageLibrary} from 'react-native-image-picker';
-import {useUploadImage} from '../api/image/image';
-import {TouchableOpacity} from 'react-native';
-import {Dimensions} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {useFocusEffect} from '@react-navigation/native';
-import {PhotoPostUploader} from '../components/PhotoPostUploader';
 import {SceneMap, TabView} from 'react-native-tab-view';
+import {useUploadImage} from '../api/image/image';
 import {useUserListLogic} from '../hooks/useUserListLogic';
-import ImagePicker from 'react-native-image-crop-picker';
-import {ScrollView} from 'react-native-gesture-handler';
 
 type ProfileScreenProps = {
   setIndex: (index: number) => void;

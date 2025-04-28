@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect} from 'react';
-import {ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Button, List, Text, useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -9,7 +9,7 @@ import {useUserListLogic} from '../hooks/useUserListLogic';
 const RoomScreen = () => {
   const theme = useTheme();
   const {profileRefetch, profileLoading} = useUserListLogic();
-  const {data: roomData} = useGetRooms();
+  const {data: roomData, refetch: refetchRooms, isFetching} = useGetRooms();
   const {mutate: joinRoom} = useJoinRoom();
   const {mutate: requestRoom, isPending, isSuccess} = useRequestRoom();
 
@@ -34,83 +34,86 @@ const RoomScreen = () => {
     [joinRoom],
   );
 
+  const renderRoomItem = ({item, index}: {item: any; index: number}) => {
+    const isRoomFull = item.status === 'full';
+    return (
+      <List.Item
+        key={item.id}
+        title={item.platform}
+        description={
+          <Text
+            style={{
+              color: isRoomFull ? theme.colors.error : theme.colors.primary,
+            }}>
+            {isRoomFull ? 'Full' : 'Open'}
+          </Text>
+        }
+        left={props => (
+          <Icon
+            {...props}
+            name={isRoomFull ? 'door-closed' : 'door-open'}
+            size={24}
+            color={theme.colors.primary}
+          />
+        )}
+        right={() => (
+          <TouchableOpacity
+            onPress={() => handleJoinRoom(item.id)}
+            disabled={isRoomFull}>
+            <Icon
+              name="account-plus"
+              size={24}
+              color={isRoomFull ? theme.colors.secondary : theme.colors.primary}
+              style={styles.joinIconRight}
+            />
+          </TouchableOpacity>
+        )}
+      />
+    );
+  };
+
   return (
-    <ScrollView
+    <FlatList
       contentContainerStyle={[
         styles.container,
         {backgroundColor: theme.colors.background},
-      ]}>
-      <View style={styles.joinContainer}>
-        <Icon
-          name="account-group"
-          size={80}
-          color={theme.colors.primary}
-          style={styles.joinIcon}
-        />
-        <Text variant="titleLarge" style={styles.joinTitle}>
-          Join a Room
-        </Text>
-        <Text variant="bodyMedium" style={styles.joinSubtitle}>
-          Connect with users nearby to collaborate
-        </Text>
+      ]}
+      data={roomData?.rooms || []}
+      keyExtractor={item => item.id.toString()}
+      ListHeaderComponent={
+        <View style={styles.joinContainer}>
+          <Icon
+            name="account-group"
+            size={80}
+            color={theme.colors.primary}
+            style={styles.joinIcon}
+          />
+          <Text variant="titleLarge" style={styles.joinTitle}>
+            Join a Room
+          </Text>
+          <Text variant="bodyMedium" style={styles.joinSubtitle}>
+            Connect with users nearby to collaborate
+          </Text>
 
-        <Button
-          mode="contained"
-          onPress={handleRequestRoom}
-          style={styles.button}
-          labelStyle={styles.buttonLabel}
-          loading={isPending}
-          icon="account-plus">
-          Find a Room
-        </Button>
+          <Button
+            mode="contained"
+            onPress={handleRequestRoom}
+            style={styles.button}
+            labelStyle={styles.buttonLabel}
+            loading={isPending}
+            icon="account-plus">
+            Find a Room
+          </Button>
 
-        <Text variant="titleMedium" style={styles.roomTitle}>
-          Available Rooms
-        </Text>
-
-        {roomData?.room?.map((room, index) => {
-          const isRoomFull = room.status === 'full';
-          return (
-            <List.Item
-              key={room.id}
-              title={`Room ${index + 1}`}
-              description={
-                <Text
-                  style={{
-                    color: isRoomFull
-                      ? theme.colors.error
-                      : theme.colors.primary,
-                  }}>
-                  {isRoomFull ? 'Full' : 'Open'}
-                </Text>
-              }
-              left={props => (
-                <Icon
-                  {...props}
-                  name={isRoomFull ? 'door-closed' : 'door-open'}
-                  size={24}
-                  color={theme.colors.primary}
-                />
-              )}
-              right={() => (
-                <TouchableOpacity
-                  onPress={() => handleJoinRoom(room.id)}
-                  disabled={isRoomFull}>
-                  <Icon
-                    name="account-plus"
-                    size={24}
-                    color={
-                      isRoomFull ? theme.colors.secondary : theme.colors.primary
-                    }
-                    style={styles.joinIconRight}
-                  />
-                </TouchableOpacity>
-              )}
-            />
-          );
-        })}
-      </View>
-    </ScrollView>
+          <Text variant="titleMedium" style={styles.roomTitle}>
+            Available Rooms
+          </Text>
+        </View>
+      }
+      renderItem={renderRoomItem}
+      refreshing={isFetching}
+      onRefresh={refetchRooms}
+    />
   );
 };
 
