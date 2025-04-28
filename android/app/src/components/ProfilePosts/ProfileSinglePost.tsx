@@ -109,22 +109,25 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
   const commentCount = data?.video?.comments?.length || 0;
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView
+      className="flex-1 bg-white"
+      style={{ backgroundColor: theme.colors.background }}>
       <View className="w-full h-full p-4">
         <View className="flex-row items-center gap-2 mb-2">
-          <View className=" h-[45px] w-[45px] rounded-full border-4 border-gray-100 overflow-hidden">
+          <View className=" h-[45px] w-[45px] rounded-full border-2 border-gray-400 overflow-hidden">
             <Image
               source={{ uri: data?.video?.user?.profile_pic }}
               className="w-full h-full"
               resizeMode="cover"
             />
           </View>
-          <Text className="font-semibold">{data?.video?.user?.name}</Text>
+          <Text className="font-semibold text-white">
+            {data?.video?.user?.name}
+          </Text>
         </View>
-
         <Image
           source={{ uri: imageUrl }}
-          className="w-full h-[300px] rounded-xl mb-4"
+          className="w-full h-[300px] rounded-xl mb-4 "
         />
 
         <View className="flex-row items-center gap-2 mb-1">
@@ -144,25 +147,29 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
                   : 'grey'
               }
             />
-            <Text style={{ marginLeft: 4 }}>{likeCount}</Text>
-          </TouchableOpacity>
+            <Text style={{ marginLeft: 4 }} className="text-white">
+              {likeCount}
+            </Text>
+          </TouchableOpacity >
           <TouchableOpacity
             className="flex-row items-center gap-2"
             onPress={openCommentSheet}>
-            <Icon name="comment-outline" size={24} color="black" />
-            <Text className="text-black text-base font-bold">
+            <Icon name="comment-outline" size={24} color="white" />
+            <Text className="text-white text-base font-bold">
               {commentCount}
             </Text>
           </TouchableOpacity>
-        </View>
+        </View >
 
         <View className="flex-row gap-2">
-          <Text className="text-[14px] font-bold italic  ">
+          <Text className="text-[14px] font-bold italic text-white ">
             {data?.video?.user?.name}
           </Text>
-          <Text className="text-[14px]">{data?.video?.description}</Text>
+          <Text className="text-[14px] text-white">
+            {data?.video?.description}
+          </Text>
         </View>
-      </View>
+      </View >
 
       <Portal>
         <BottomSheet
@@ -204,7 +211,7 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
           </View>
         </BottomSheet>
       </Portal>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
 

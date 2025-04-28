@@ -13,8 +13,10 @@ import {
   ActivityIndicator,
   IconButton,
   useTheme,
-  Icon,
+  Badge,
 } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import {requestLocation} from '../hooks/requestLocation';
 import {useGetAllLocations, useUpdateLocation} from '../api/user/user';
 
@@ -30,7 +32,7 @@ const MapScreen: React.FC = () => {
   const mapRef = useRef<MapView>(null);
   const theme = useTheme();
   const {mutate} = useUpdateLocation();
-  const data = useGetAllLocations();
+  const {data} = useGetAllLocations();
   console.log('data================>>>>>>>', data);
 
   const getLocationWithTimeout = async () => {
@@ -110,6 +112,26 @@ const MapScreen: React.FC = () => {
     }
   };
 
+  // Utility function to group users by location
+  const groupLocations = (users: any[]) => {
+    const groups: Record<string, any[]> = {};
+
+    users.forEach(user => {
+      if (!user.location?.latitude || !user.location?.longitude) return;
+
+      const key = `${user.location.latitude.toFixed(
+        4,
+      )},${user.location.longitude.toFixed(4)}`;
+
+      if (!groups[key]) {
+        groups[key] = [];
+      }
+      groups[key].push(user);
+    });
+
+    return groups;
+  };
+
   if (loading) {
     return (
       <View
@@ -145,7 +167,7 @@ const MapScreen: React.FC = () => {
       <MapView
         ref={mapRef}
         style={StyleSheet.absoluteFillObject}
-        mapStyle="https://api.maptiler.com/maps/streets-v2/style.json?key=6R1qeXkgDjyItDGLuc5M"
+        mapStyle="https://api.maptiler.com/maps/outdoor-v2/style.json?key=6R1qeXkgDjyItDGLuc5M"
         scrollEnabled
         zoomEnabled>
         {userLocation && (
@@ -181,6 +203,52 @@ const MapScreen: React.FC = () => {
             </Callout>
           </PointAnnotation>
         )}
+        {data?.usersWithLocations &&
+          Object.entries(groupLocations(data.usersWithLocations)).map(
+            ([key, users]) => {
+              const [latStr, lngStr] = key.split(',');
+              const lat = parseFloat(latStr);
+              const lng = parseFloat(lngStr);
+
+              return (
+                <PointAnnotation
+                  key={key}
+                  id={`group-${key}`}
+                  coordinate={[lng, lat]}>
+                  <View style={styles.markerContainer}>
+                    {users.length > 1 ? (
+                      <Badge size={20}>{users.length}</Badge>
+                    ) : (
+                      <Text style={{fontSize: 30}}>📍</Text>
+                    )}
+                  </View>
+
+                  <Callout style={styles.callout}>
+                    <Card style={styles.card}>
+                      <Card.Content>
+                        {users.map(user => (
+                          <View key={user.id} style={{marginBottom: 8}}>
+                            <Text variant="titleSmall" style={styles.cardTitle}>
+                              {user.name}
+                            </Text>
+                            <Text
+                              variant="bodySmall"
+                              style={styles.cardDescription}>
+                              {user.isOnline
+                                ? '🟢 Online'
+                                : `Last seen: ${new Date(
+                                    user.lastSeen,
+                                  ).toLocaleString()}`}
+                            </Text>
+                          </View>
+                        ))}
+                      </Card.Content>
+                    </Card>
+                  </Callout>
+                </PointAnnotation>
+              );
+            },
+          )}
       </MapView>
 
       <IconButton
@@ -236,11 +304,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   markerContainer: {
-    height: 48,
-    width: 48,
+    height: 40,
+    width: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   callout: {
     borderRadius: 8,
     padding: 3,
@@ -279,6 +348,45 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  profileContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: 'white',
+  },
+
+  profileName: {
+    marginTop: 2,
+    fontSize: 10,
+    color: 'black',
+    backgroundColor: 'white',
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+
+  markerView: {
+    alignItems: 'center',
+  },
+  clusterMarker: {
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  clusterText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 
