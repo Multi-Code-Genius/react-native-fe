@@ -13,8 +13,9 @@ import {
   ActivityIndicator,
   IconButton,
   useTheme,
-  Icon,
 } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import {requestLocation} from '../hooks/requestLocation';
 import {useGetAllLocations, useUpdateLocation} from '../api/user/user';
 
@@ -181,6 +182,45 @@ const MapScreen: React.FC = () => {
             </Callout>
           </PointAnnotation>
         )}
+        {data?.usersWithLocations?.map((user, index) => {
+          if (
+            !user.location ||
+            !user.location.latitude ||
+            !user.location.longitude
+          ) {
+            return null;
+          }
+
+          return (
+            <MarkerView
+              key={user.id}
+              coordinate={[user.location.longitude, user.location.latitude]}>
+              <TouchableOpacity
+                style={styles.markerView}
+                onPress={() => {
+                  Alert.alert(
+                    user.name,
+                    user.isOnline
+                      ? 'Online'
+                      : `Last seen: ${new Date(
+                          user.lastSeen,
+                        ).toLocaleString()}`,
+                  );
+                }}>
+                <View style={styles.profileContainer}>
+                  <Icon
+                    name={'map-marker'}
+                    size={30}
+                    style={styles.profileImage}
+                  />
+                  <Text style={styles.profileName} numberOfLines={1}>
+                    {user.name.split(' ')[0]}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </MarkerView>
+          );
+        })}
       </MapView>
 
       <IconButton
@@ -278,6 +318,33 @@ const styles = StyleSheet.create({
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: 'white',
+  },
+
+  profileName: {
+    marginTop: 2,
+    fontSize: 10,
+    color: 'black',
+    backgroundColor: 'white',
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+
+  markerView: {
     alignItems: 'center',
   },
 });
