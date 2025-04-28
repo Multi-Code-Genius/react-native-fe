@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, View, StyleSheet, SafeAreaView } from 'react-native';
-import { userInfoData, useUpdateUserInfo } from '../api/user/user';
+import React, {useEffect, useState} from 'react';
+import {ScrollView, View, StyleSheet, SafeAreaView} from 'react-native';
+import {userInfoData, useUpdateUserInfo} from '../api/user/user';
 import {
   Button,
   TextInput,
@@ -12,9 +12,9 @@ import {
   Dialog,
 } from 'react-native-paper';
 import isEqual from 'lodash/isEqual';
-import { pickBy } from 'lodash';
-import { useAuthStore } from '../store/authStore';
-import { useNavigation } from '@react-navigation/native';
+import {pickBy} from 'lodash';
+import {useAuthStore} from '../store/authStore';
+import {useNavigation} from '@react-navigation/native';
 
 const LabelBox = ({
   label,
@@ -34,7 +34,7 @@ const LabelBox = ({
   return (
     <Card mode="contained" style={styles.labelBoxCard}>
       <Card.Content style={styles.cardContent}>
-        <Text variant="labelLarge" style={{ color: theme.colors.secondary }}>
+        <Text variant="labelLarge" style={{color: theme.colors.secondary}}>
           {label}
         </Text>
         {isEditing ? (
@@ -63,13 +63,13 @@ type SettingScreenProps = {
   setShowSettings: (show: boolean) => void;
 };
 
-export function SettingScreen({ setIndex, setShowSettings }: SettingScreenProps) {
+export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
   const theme = useTheme();
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const [userData, setUserData] = useState<any>();
   const [isEditing, setIsEditing] = useState(false);
   const [editableUserData, setEditableUserData] = useState<any>({});
-  const { logout } = useAuthStore();
+  const {logout} = useAuthStore();
   const [dialogVisible, setDialogVisible] = useState(false);
   const navigation = useNavigation();
 
@@ -100,7 +100,7 @@ export function SettingScreen({ setIndex, setShowSettings }: SettingScreenProps)
       [key]: text,
     }));
   };
-  const { mutate: updateUser } = useUpdateUserInfo();
+  const {mutate: updateUser} = useUpdateUserInfo();
 
   const handleSave = () => {
     const changedData = pickBy(editableUserData, (value, key) => {
@@ -108,7 +108,7 @@ export function SettingScreen({ setIndex, setShowSettings }: SettingScreenProps)
     });
     if (Object.keys(changedData).length > 0) {
       updateUser(changedData);
-      setUserData((prev: any) => ({ ...prev, ...changedData }));
+      setUserData((prev: any) => ({...prev, ...changedData}));
     }
 
     setIsEditing(false);
@@ -121,10 +121,9 @@ export function SettingScreen({ setIndex, setShowSettings }: SettingScreenProps)
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-    >
+      style={[styles.container, {backgroundColor: theme.colors.background}]}>
       <Appbar.Header
-        style={{ backgroundColor: theme.colors.background }}
+        style={{backgroundColor: theme.colors.background}}
         mode="center-aligned">
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Settings" />
@@ -136,7 +135,7 @@ export function SettingScreen({ setIndex, setShowSettings }: SettingScreenProps)
             color={theme.colors.primary}
           />
         ) : (
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{flexDirection: 'row'}}>
             <Appbar.Action
               mode="contained"
               icon="content-save-check"
@@ -155,7 +154,7 @@ export function SettingScreen({ setIndex, setShowSettings }: SettingScreenProps)
         <Button
           mode="elevated"
           icon="logout"
-          contentStyle={{ flexDirection: 'row-reverse' }}
+          contentStyle={{flexDirection: 'row-reverse'}}
           onPress={() => setDialogVisible(true)}>
           Logout
         </Button>
@@ -163,7 +162,7 @@ export function SettingScreen({ setIndex, setShowSettings }: SettingScreenProps)
 
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
-        style={{ backgroundColor: theme.colors.background }}>
+        style={{backgroundColor: theme.colors.background}}>
         <Card mode="contained" style={styles.mainCard}>
           <Card.Content style={styles.mainCardContent}>
             <LabelBox
@@ -187,13 +186,13 @@ export function SettingScreen({ setIndex, setShowSettings }: SettingScreenProps)
               isEditing={isEditing}
               onChange={handleChange}
             />
-            <LabelBox
+            {/* <LabelBox
               label="Location"
               field="location"
               value={editableUserData?.location}
               isEditing={isEditing}
               onChange={handleChange}
-            />
+            /> */}
             <LabelBox label="Status" field="status" value={userData?.status} />
             <LabelBox
               label="Date of Birth"
