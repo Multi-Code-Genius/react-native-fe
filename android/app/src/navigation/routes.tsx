@@ -16,7 +16,6 @@ import {SettingScreen} from '../screens/SettingScreen';
 import {useTheme} from 'react-native-paper';
 import ChatList from '../screens/ChatList';
 import ChatScreen from '../screens/ChatScreen';
-
 import UserProfile from '../components/UserProfile';
 import {FullPostViewer} from '../components/ProfilePosts/FullPostViewer';
 import RoomScreen from '../screens/RoomScreen';
