@@ -192,6 +192,11 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
                   open: configSlow,
                   close: configSlow,
                 },
+                headerStyle: {
+                  backgroundColor: theme.colors.onBackground,
+                },
+                headerTintColor: theme.colors.onPrimary,
+                headerShadowVisible: false,
               }}
             />
           </>
