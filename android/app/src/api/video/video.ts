@@ -223,7 +223,7 @@ export const useCommentVideo = () => {
             ...(oldData.comments || []),
             {
               id: 'temp-id',
-              text,
+              text: 'Sending...',
               userId: oldData.currentUserId,
               user: oldData.currentUser,
             },
