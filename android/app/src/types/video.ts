@@ -19,8 +19,19 @@ export type ReelsScreenProps = {
 export interface VideoState {
   videoData: VideoType | null;
   videoLikeStatus: string[];
+  videoComments: {
+    videoId: string;
+    id: string;
+    text: string;
+    userId: string;
+    user: any;
+  }[];
   updateVideoLikeStatus: (id: string) => void;
   addLikesReels: (id: string) => void;
+  addVideoComment: (
+    videoId: string,
+    comment: {id: string; text: string; userId: string; user: any},
+  ) => void;
 }
 
 export interface ReelItemProps {
