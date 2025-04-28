@@ -1,7 +1,12 @@
 import React, {useCallback, useState} from 'react';
 import {View, Image, Text, Alert, FlatList, StyleSheet} from 'react-native';
 import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
-import {ActivityIndicator, Divider, IconButton} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Divider,
+  IconButton,
+  useTheme,
+} from 'react-native-paper';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useUploadImage} from '../api/image/image';
 import {TouchableOpacity} from 'react-native';
@@ -12,6 +17,7 @@ import {PhotoPostUploader} from '../components/PhotoPostUploader';
 import {SceneMap, TabView} from 'react-native-tab-view';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 import ImagePicker from 'react-native-image-crop-picker';
+import {ScrollView} from 'react-native-gesture-handler';
 
 type ProfileScreenProps = {
   setIndex: (index: number) => void;
@@ -20,6 +26,7 @@ type ProfileScreenProps = {
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
   const navigation = useNavigation();
+  const theme = useTheme();
   const {
     data,
     profileRefetch: refetch,
@@ -107,7 +114,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
         style={{
           width: boxSize,
           height: boxSizeHeight,
-          backgroundColor: '#e5e7eb',
+          backgroundColor: '#1f2937',
           justifyContent: 'center',
           alignItems: 'center',
           borderRadius: 8,
@@ -117,8 +124,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
             (navigation as any).navigate('ProfileList', {videoId: item.id});
           } else {
             const index = data?.user?.posts.findIndex(p => p.id === item.id);
-
-            // (navigation as any).navigate('SinglePostPhoto', {postId: item.id});
             (navigation as any).navigate('Posts', {
               posts: data?.user?.posts,
               initialIndex: index,
@@ -132,7 +137,13 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
             resizeMode="cover"
           />
         ) : (
-          <Text className="text-sm text-gray-600 px-2 text-center">
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 14,
+              padding: 8,
+              textAlign: 'center',
+            }}>
             {item.title}
           </Text>
         )}
@@ -151,7 +162,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
       showsVerticalScrollIndicator={false}
       columnWrapperStyle={{
         justifyContent: 'flex-start',
-        gap: 3,
+        gap: 8,
         marginBottom: 10,
       }}
       renderItem={({item}) => renderItem(item, 'post')}
@@ -169,7 +180,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
       showsVerticalScrollIndicator={false}
       columnWrapperStyle={{
         justifyContent: 'flex-start',
-        gap: 3,
+        gap: 8,
         marginBottom: 10,
       }}
       renderItem={({item}) => renderItem(item, 'reel')}
@@ -199,53 +210,58 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
 
   return (
     <>
-      <View className="flex-1 p-6 bg-white">
+      <View
+        style={{
+          flex: 1,
+          padding: 16,
+          backgroundColor: theme.colors.background,
+        }}>
         <View className="flex w-full flex-col">
           <View className="w-full flex-row justify-end">
             <IconButton
               icon="cog"
               size={24}
               onPress={() => navigation.navigate('Settings')}
-              iconColor="#000"
-              containerColor="#fff"
+              iconColor="#fff"
             />
           </View>
           <View className="flex-row gap-5 w-full">
             <View className="relative w-32 h-32">
-              <View className="w-full h-full rounded-full border-4 border-gray-100 overflow-hidden">
+              <View className="w-full h-full rounded-full border-4 border-gray-800 overflow-hidden">
                 <Image
                   source={{uri: data?.user?.profile_pic}}
                   className="w-full h-full"
                   resizeMode="cover"
                 />
               </View>
-              <View className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-md">
+
+              <View className="absolute bottom-0 right-0 bg-black rounded-full p-2 shadow-md">
                 <IconButton
                   icon="plus"
                   size={16}
                   onPress={handleMediaPick}
-                  iconColor="#000"
-                  containerColor="#fff"
+                  iconColor="#fff"
+                  containerColor="#000"
                   style={{margin: 0}}
                 />
               </View>
             </View>
             <View className="justify-center w-full gap-3">
-              <Text className="text-[17px] font-semibold text-gray-800">
+              <Text className="text-[17px] font-semibold text-white">
                 {data?.user?.name || 'Your Name'}
               </Text>
               <View className="flex-row gap-8">
                 <View>
-                  <Text>{postCount}</Text>
-                  <Text className="font-medium">Post</Text>
+                  <Text className="text-white">{postCount}</Text>
+                  <Text className="font-medium text-gray-400">Post</Text>
                 </View>
                 <TouchableOpacity
                   onPress={() => {
                     (navigation as any).navigate('FriendsList');
                   }}>
                   <View>
-                    <Text>{friendsCount}</Text>
-                    <Text className="font-medium">Friends</Text>
+                    <Text className="text-white">{friendsCount}</Text>
+                    <Text className="font-medium text-gray-400">Friends</Text>
                   </View>
                 </TouchableOpacity>
               </View>
@@ -255,7 +271,9 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
             </View>
           </View>
         </View>
-        <Divider style={{marginVertical: 20}} />
+
+        <Divider style={{marginVertical: 20, backgroundColor: '#374151'}} />
+
         <View className="flex-row justify-around">
           {routes.map((route, i) => (
             <TouchableOpacity
@@ -264,12 +282,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
               className="flex-1 items-center pb-2">
               <Text
                 className={`text-base font-semibold ${
-                  tabIndex === i ? 'text-black' : 'text-gray-400'
+                  tabIndex === i ? 'text-white' : 'text-gray-400'
                 }`}>
                 {route.title}
               </Text>
               {tabIndex === i && (
-                <View className="h-[1px] w-[100px] bg-slate-500 mt-1 rounded-full" />
+                <View className="h-[1px] w-[100px] bg-white mt-1 rounded-full" />
               )}
             </TouchableOpacity>
           ))}

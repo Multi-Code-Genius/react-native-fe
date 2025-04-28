@@ -53,98 +53,92 @@ export const PrivateRoutes: React.FC = () => {
   return (
     <GestureHandlerRootView
       style={{flex: 1, backgroundColor: theme.colors.background}}>
-      <Animated.View
-        style={{
-          flex: 1,
-          // transform: [{scale: animatedScale}],
+      <Tab.Navigator
+        screenOptions={{
+          tabBarActiveTintColor: theme.colors.primary,
+          tabBarInactiveTintColor: theme.colors.secondary,
+          tabBarStyle: {
+            backgroundColor: theme.colors.scrim,
+            borderTopWidth: 0,
+            maxHeight: 70,
+            height: '100%',
+          },
+          tabBarItemStyle: {
+            marginVertical: 20,
+          },
+          headerShown: false,
+          tabBarShowLabel: false,
         }}>
-        <Tab.Navigator
-          screenOptions={{
-            tabBarActiveTintColor: theme.colors.primary,
-            tabBarInactiveTintColor: theme.colors.secondary,
-            tabBarStyle: {
-              backgroundColor: theme.colors.scrim,
-              borderTopWidth: 0,
-              maxHeight: 70,
-              height: '100%',
-            },
-            tabBarItemStyle: {
-              marginVertical: 20,
-            },
-            headerShown: false,
-            tabBarShowLabel: false,
-          }}>
-          <Tab.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{
-              tabBarIcon: ({color, size, focused}) => (
-                <IconButton
-                  icon={focused ? 'home' : 'home-outline'}
-                  iconColor={color}
-                  size={size}
-                />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Map"
-            component={MapScreen}
-            options={{
-              tabBarIcon: ({color, size, focused}) => (
-                <IconButton
-                  icon={focused ? 'map' : 'map-outline'}
-                  iconColor={color}
-                  size={size}
-                />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="ActionButton"
-            component={NoScreen}
-            options={{
-              tabBarIcon: ({color, size}) => (
-                <IconButton
-                  icon="plus-circle"
-                  iconColor={theme.colors.primary}
-                  size={40}
-                  onPress={handleOpenSheet}
-                />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Reels"
-            component={ReelList}
-            options={{
-              tabBarIcon: ({color, size, focused}) => (
-                <IconButton
-                  icon={
-                    focused ? 'play-box-multiple' : 'play-box-multiple-outline'
-                  }
-                  iconColor={color}
-                  size={size}
-                />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Profile"
-            component={ProfileScreen}
-            options={{
-              tabBarIcon: ({color, size, focused}) => (
-                <IconButton
-                  icon={focused ? 'account' : 'account-outline'}
-                  iconColor={color}
-                  size={size}
-                />
-              ),
-            }}
-            c
-          />
-        </Tab.Navigator>
-      </Animated.View>
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarIcon: ({color, size, focused}) => (
+              <IconButton
+                icon={focused ? 'home' : 'home-outline'}
+                iconColor={color}
+                size={size}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Map"
+          component={MapScreen}
+          options={{
+            tabBarIcon: ({color, size, focused}) => (
+              <IconButton
+                icon={focused ? 'map' : 'map-outline'}
+                iconColor={color}
+                size={size}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="ActionButton"
+          component={NoScreen}
+          options={{
+            tabBarIcon: ({color, size}) => (
+              <IconButton
+                icon="plus-circle"
+                iconColor={theme.colors.primary}
+                size={40}
+                onPress={handleOpenSheet}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Reels"
+          component={ReelList}
+          options={{
+            tabBarIcon: ({color, size, focused}) => (
+              <IconButton
+                icon={
+                  focused ? 'play-box-multiple' : 'play-box-multiple-outline'
+                }
+                iconColor={color}
+                size={size}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{
+            tabBarIcon: ({color, size, focused}) => (
+              <IconButton
+                icon={focused ? 'account' : 'account-outline'}
+                iconColor={color}
+                size={size}
+              />
+            ),
+          }}
+          c
+        />
+      </Tab.Navigator>
 
       <Portal>
         <BottomSheet
