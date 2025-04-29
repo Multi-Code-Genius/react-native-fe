@@ -10,23 +10,23 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
-import ReelsScreen from '../screens/ReelsScreen';
+// import ReelsScreen from '../screens/ReelsScreen';
 import {ProfileScreen} from '../screens/ProfileScreen';
 import {PhotoPostUploader} from '../components/PhotoPostUploader';
 import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
-import ReelList from '../components/ReelList';
+// import ReelList from '../components/ReelList';
 
 const Tab = createBottomTabNavigator();
-const NoScreen = () => null;
+// const NoScreen = () => null;
 
 export const PrivateRoutes: React.FC = () => {
   const theme = useTheme();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const animatedScale = useRef(new Animated.Value(1)).current;
 
-  const handleOpenSheet = useCallback(() => {
-    bottomSheetRef.current?.expand();
-  }, []);
+  // const handleOpenSheet = useCallback(() => {
+  //   bottomSheetRef.current?.expand();
+  // }, []);
 
   const handleSheetChanges = useCallback((index: number) => {
     Animated.timing(animatedScale, {
@@ -95,7 +95,7 @@ export const PrivateRoutes: React.FC = () => {
             ),
           }}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="ActionButton"
           component={NoScreen}
           options={{
@@ -108,8 +108,8 @@ export const PrivateRoutes: React.FC = () => {
               />
             ),
           }}
-        />
-        <Tab.Screen
+        /> */}
+        {/* <Tab.Screen
           name="Reels"
           component={ReelList}
           options={{
@@ -123,7 +123,7 @@ export const PrivateRoutes: React.FC = () => {
               />
             ),
           }}
-        />
+        /> */}
         <Tab.Screen
           name="Profile"
           component={ProfileScreen}

@@ -10,6 +10,7 @@ import {
   Appbar,
   Portal,
   Dialog,
+  ActivityIndicator,
 } from 'react-native-paper';
 import isEqual from 'lodash/isEqual';
 import {pickBy} from 'lodash';
@@ -58,14 +59,10 @@ const LabelBox = ({
   );
 };
 
-type SettingScreenProps = {
-  setIndex: (index: number) => void;
-  setShowSettings: (show: boolean) => void;
-};
-
-export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
+export function SettingScreen() {
   const theme = useTheme();
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState<any>();
   const [isEditing, setIsEditing] = useState(false);
   const [editableUserData, setEditableUserData] = useState<any>({});
@@ -76,6 +73,7 @@ export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        setIsLoading(true);
         const data = await userInfoData();
         setUserData(data.user);
       } catch (err) {
@@ -84,7 +82,7 @@ export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
     };
 
     if (isAuthenticated) {
-      fetchUserData();
+      fetchUserData().finally(() => setIsLoading(false));
     }
   }, [isAuthenticated]);
 
@@ -118,6 +116,14 @@ export function SettingScreen({setIndex, setShowSettings}: SettingScreenProps) {
     setEditableUserData(userData);
     setIsEditing(false);
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView
@@ -247,7 +253,7 @@ const styles = StyleSheet.create({
   labelBoxCard: {
     marginBottom: 12,
     borderRadius: 4,
-    elevation: 0, // Remove shadow for flat look
+    elevation: 0,
     backgroundColor: 'transparent',
   },
   cardContent: {
@@ -267,5 +273,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 16,
+  },
+  loaderContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
