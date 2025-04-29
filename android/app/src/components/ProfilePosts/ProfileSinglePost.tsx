@@ -26,7 +26,7 @@ import CommentSheet from '../CommentSheet';
 
 type ProfileSinglePostProps = {
   postData?: any;
-  isFirst: boolean;
+  isFirst?: boolean;
 };
 
 export function ProfileSinglePost({postData, isFirst}: ProfileSinglePostProps) {
