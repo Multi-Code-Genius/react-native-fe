@@ -6,18 +6,27 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useGetRooms, useJoinRoom, useRequestRoom} from '../api/room/room';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 
-const RoomScreen = () => {
+const RoomScreen = ({setIsUpdate}: {setIsUpdate: (data: boolean) => void}) => {
   const theme = useTheme();
   const {profileRefetch, profileLoading} = useUserListLogic();
   const {data: roomData, refetch: refetchRooms, isFetching} = useGetRooms();
-  const {mutate: joinRoom, isPending: isJoining} = useJoinRoom();
+  const {
+    mutate: joinRoom,
+    isPending: isJoining,
+    isSuccess: joinSuccess,
+  } = useJoinRoom();
   const {mutate: requestRoom, isPending, isSuccess} = useRequestRoom();
 
   useEffect(() => {
     if (!profileLoading) {
       profileRefetch();
     }
-  }, [isSuccess, profileLoading, profileRefetch]);
+
+    if (joinSuccess) {
+      profileRefetch();
+      setIsUpdate(true);
+    }
+  }, [isSuccess, joinSuccess, profileLoading, profileRefetch, setIsUpdate]);
 
   const handleRequestRoom = () => {
     requestRoom();
@@ -25,6 +34,7 @@ const RoomScreen = () => {
 
   const handleJoinRoom = (roomId: string) => {
     joinRoom(roomId.toString());
+    setIsUpdate(true);
   };
 
   const renderRoomItem = ({item}: {item: any; index: number}) => {

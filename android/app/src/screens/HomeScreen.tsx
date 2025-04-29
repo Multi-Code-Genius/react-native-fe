@@ -46,8 +46,39 @@ const UserListScreen = () => {
 
   if (isLoading) {
     return (
-      <Surface style={styles.loaderContainer}>
-        <ActivityIndicator size="large" />
+      <Surface style={styles.container}>
+        <View style={styles.actionButton}>
+          <IconButton
+            icon="heart"
+            iconColor={'white'}
+            onPress={() =>
+              (navigation as any).navigate('FriendsRequestAcceptScreen')
+            }
+          />
+          <IconButton
+            icon="account-group"
+            iconColor="white"
+            onPress={() => (navigation as any).navigate('Rooms')}
+            style={{position: 'relative'}}
+          />
+          <View>
+            <IconButton
+              icon="chat"
+              iconColor="white"
+              onPress={() => (navigation as any).navigate('ChatList')}
+              style={{position: 'relative'}}
+            />
+          </View>
+        </View>
+        {[...Array(6)].map((_, index) => (
+          <Surface key={index} style={styles.skeletonCard}>
+            <View style={styles.skeletonAvatar} />
+            <View style={styles.skeletonTextContainer}>
+              <View style={styles.skeletonTextLine} />
+              <View style={[styles.skeletonTextLine, {width: '60%'}]} />
+            </View>
+          </Surface>
+        ))}
       </Surface>
     );
   }
@@ -127,5 +158,30 @@ const styles = StyleSheet.create({
     marginTop: 10,
     justifyContent: 'flex-end',
     flexDirection: 'row',
+  },
+  skeletonCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1f1f1f',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+  },
+  skeletonAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#2a2a2a',
+  },
+  skeletonTextContainer: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  skeletonTextLine: {
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#2a2a2a',
+    marginBottom: 6,
+    width: '80%',
   },
 });

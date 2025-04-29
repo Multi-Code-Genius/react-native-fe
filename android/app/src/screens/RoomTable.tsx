@@ -114,7 +114,7 @@ const RoomTable = () => {
             <Button
               labelStyle={{color: theme.colors.error}}
               icon="logout"
-              loading={rejectingRoom || profileLoading}
+              loading={rejectingRoom}
               onPress={() => data?.room?.id && handleLeaveRoom(data.room.id)}>
               Leave Room
             </Button>

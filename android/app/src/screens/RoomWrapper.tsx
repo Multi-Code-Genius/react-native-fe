@@ -1,11 +1,16 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import RoomScreen from './RoomScreen';
 import RoomTable from './RoomTable';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 
 const RoomWrapper = () => {
-  const {data: userData, profileLoading} = useUserListLogic();
+  const {data: userData, profileLoading, profileRefetch} = useUserListLogic();
+  const [isUpdate, setIsUpdate] = useState(false);
+
+  useEffect(() => {
+    profileRefetch();
+  }, [profileRefetch, isUpdate]);
 
   if (profileLoading) {
     return (
@@ -21,7 +26,7 @@ const RoomWrapper = () => {
     return <RoomTable />;
   }
 
-  return <RoomScreen />;
+  return <RoomScreen setIsUpdate={setIsUpdate} />;
 };
 
 export default RoomWrapper;
