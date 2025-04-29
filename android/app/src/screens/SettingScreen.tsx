@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {ScrollView, View, StyleSheet, SafeAreaView} from 'react-native';
-import {userInfoData, useUpdateUserInfo} from '../api/user/user';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, View, StyleSheet, SafeAreaView } from 'react-native';
+import { userInfoData, useUpdateUserInfo } from '../api/user/user';
 import {
   Button,
   TextInput,
@@ -13,9 +13,10 @@ import {
   ActivityIndicator,
 } from 'react-native-paper';
 import isEqual from 'lodash/isEqual';
-import {pickBy} from 'lodash';
-import {useAuthStore} from '../store/authStore';
-import {useNavigation} from '@react-navigation/native';
+import { pickBy } from 'lodash';
+import { useAuthStore } from '../store/authStore';
+import { useNavigation } from '@react-navigation/native';
+import DatePicker from 'react-native-date-picker';
 
 const LabelBox = ({
   label,
@@ -31,11 +32,10 @@ const LabelBox = ({
   field: string;
 }) => {
   const theme = useTheme();
-
   return (
     <Card mode="contained" style={styles.labelBoxCard}>
       <Card.Content style={styles.cardContent}>
-        <Text variant="labelLarge" style={{color: theme.colors.secondary}}>
+        <Text variant="labelLarge" style={{ color: theme.colors.secondary }}>
           {label}
         </Text>
         {isEditing ? (
@@ -62,13 +62,16 @@ const LabelBox = ({
 export function SettingScreen() {
   const theme = useTheme();
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const { logout } = useAuthStore();
+  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState<any>();
   const [isEditing, setIsEditing] = useState(false);
   const [editableUserData, setEditableUserData] = useState<any>({});
-  const {logout} = useAuthStore();
   const [dialogVisible, setDialogVisible] = useState(false);
-  const navigation = useNavigation();
+  const [date, setDate] = useState<Date>(new Date());
+  const [openDatePicker, setOpenDatePicker] = useState(false);
+  const { mutate: updateUser } = useUpdateUserInfo();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -78,27 +81,34 @@ export function SettingScreen() {
         setUserData(data.user);
       } catch (err) {
         console.log('Error fetching user data', err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     if (isAuthenticated) {
-      fetchUserData().finally(() => setIsLoading(false));
+      fetchUserData();
     }
   }, [isAuthenticated]);
 
   useEffect(() => {
     if (userData) {
       setEditableUserData(userData);
+      if (userData.dob) {
+        const parsed = new Date(userData.dob);
+        if (!isNaN(parsed.getTime())) {
+          setDate(parsed);
+        }
+      }
     }
   }, [userData]);
 
-  const handleChange = (key: string, text: string) => {
+  const handleChange = (key: string, value: string) => {
     setEditableUserData((prev: any) => ({
       ...prev,
-      [key]: text,
+      [key]: value,
     }));
   };
-  const {mutate: updateUser} = useUpdateUserInfo();
 
   const handleSave = () => {
     const changedData = pickBy(editableUserData, (value, key) => {
@@ -106,53 +116,47 @@ export function SettingScreen() {
     });
     if (Object.keys(changedData).length > 0) {
       updateUser(changedData);
-      setUserData((prev: any) => ({...prev, ...changedData}));
+      setUserData((prev: any) => ({ ...prev, ...changedData }));
     }
-
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     setEditableUserData(userData);
+    if (userData?.dob) {
+      const parsed = new Date(userData.dob);
+      if (!isNaN(parsed.getTime())) {
+        setDate(parsed);
+      }
+    }
     setIsEditing(false);
   };
 
+  if (isLoading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
+
   return (
-    <SafeAreaView
-      style={[styles.container, {backgroundColor: theme.colors.background}]}>
-      <Appbar.Header
-        style={{backgroundColor: theme.colors.background}}
-        mode="center-aligned">
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <Appbar.Header style={{ backgroundColor: theme.colors.background }} mode="center-aligned">
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Settings" />
         {!isEditing ? (
-          <Appbar.Action
-            mode="contained"
-            icon="content-save-edit"
-            onPress={() => setIsEditing(true)}
-            color={theme.colors.primary}
-          />
+          <Appbar.Action mode="contained" icon="content-save-edit" onPress={() => setIsEditing(true)} color={theme.colors.primary} />
         ) : (
-          <View style={{flexDirection: 'row'}}>
-            <Appbar.Action
-              mode="contained"
-              icon="content-save-check"
-              onPress={handleSave}
-              color={theme.colors.primary}
-            />
-            <Appbar.Action
-              mode="contained"
-              icon="close"
-              onPress={handleCancel}
-              color={theme.colors.error}
-            />
+          <View style={{ flexDirection: 'row' }}>
+            <Appbar.Action mode="contained" icon="content-save-check" onPress={handleSave} color={theme.colors.primary} />
+            <Appbar.Action mode="contained" icon="close" onPress={handleCancel} color={theme.colors.error} />
           </View>
         )}
-
         <Button
           mode="elevated"
           icon="logout"
-          contentStyle={{flexDirection: 'row-reverse'}}
+          contentStyle={{ flexDirection: 'row-reverse' }}
           onPress={() => setDialogVisible(true)}>
           Logout
         </Button>
@@ -160,57 +164,61 @@ export function SettingScreen() {
 
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
-        style={{backgroundColor: theme.colors.background}}>
+        style={{ backgroundColor: theme.colors.background }}>
         <Card mode="contained" style={styles.mainCard}>
           <Card.Content style={styles.mainCardContent}>
-            {isLoading ? (
-              <View style={styles.loaderContainer}>
-                <ActivityIndicator size="small" color={theme.colors.primary} />
-              </View>
-            ) : (
-              <>
-                <LabelBox
-                  label="Name"
-                  field="name"
-                  value={editableUserData?.name}
-                  isEditing={isEditing}
-                  onChange={handleChange}
-                />
-                <LabelBox
-                  label="Email"
-                  field="email"
-                  value={editableUserData?.email}
-                  isEditing={isEditing}
-                  onChange={handleChange}
-                />
-                <LabelBox
-                  label="Mobile Number"
-                  field="mobileNumber"
-                  value={editableUserData?.mobileNumber}
-                  isEditing={isEditing}
-                  onChange={handleChange}
-                />
-                {/* <LabelBox
-              label="Location"
-              field="location"
-              value={editableUserData?.location}
+            <LabelBox
+              label="Name"
+              field="name"
+              value={editableUserData?.name}
               isEditing={isEditing}
               onChange={handleChange}
-            /> */}
-                <LabelBox
-                  label="Status"
-                  field="status"
-                  value={userData?.status}
-                />
-                <LabelBox
-                  label="Date of Birth"
-                  field="dob"
-                  value={editableUserData?.dob}
-                  isEditing={isEditing}
-                  onChange={handleChange}
-                />
-              </>
-            )}
+            />
+            <LabelBox
+              label="Email"
+              field="email"
+              value={editableUserData?.email}
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <LabelBox
+              label="Mobile Number"
+              field="mobileNumber"
+              value={editableUserData?.mobileNumber}
+              isEditing={isEditing}
+              onChange={handleChange}
+            />
+            <LabelBox label="Status" field="status" value={userData?.status} />
+            <Card mode="contained" style={styles.labelBoxCard}>
+              <Card.Content style={styles.cardContent}>
+                <Text variant="labelLarge" style={{ color: theme.colors.secondary }}>
+                  Date of Birth
+                </Text>
+                {isEditing ? (
+                  <>
+                    <Button onPress={() => setOpenDatePicker(true)}>
+                      {date ? date.toDateString() : 'Select Date'}
+                    </Button>
+                    <DatePicker
+                      modal
+                      open={openDatePicker}
+                      date={date}
+                      mode="date"
+                      onConfirm={(selectedDate) => {
+                        setOpenDatePicker(false);
+                        setDate(selectedDate);
+                        handleChange('dob', selectedDate.toISOString());
+                      }}
+                      onCancel={() => setOpenDatePicker(false)}
+                    />
+                  </>
+                ) : (
+                  <Text variant="bodyLarge" style={styles.valueText}>
+                    {editableUserData?.dob ? new Date(editableUserData.dob).toDateString() : 'Not specified'}
+                  </Text>
+                )}
+              </Card.Content>
+            </Card>
           </Card.Content>
         </Card>
       </ScrollView>
@@ -273,14 +281,9 @@ const styles = StyleSheet.create({
     marginTop: 4,
     paddingVertical: 4,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
-  },
   loaderContainer: {
     flex: 1,
-
+    backgroundColor: 'black',
     justifyContent: 'center',
     alignItems: 'center',
   },
