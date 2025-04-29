@@ -33,6 +33,7 @@ const MapScreen: React.FC = () => {
   const theme = useTheme();
   const {mutate} = useUpdateLocation();
   const {data} = useGetAllLocations();
+  console.log('data================>>>>>>>', data);
 
   const getLocationWithTimeout = async () => {
     let timeoutId: NodeJS.Timeout;
@@ -185,7 +186,6 @@ const MapScreen: React.FC = () => {
             <View style={styles.markerContainer}>
               <Text className="text-4xl">🧍🏻‍♂️</Text>
             </View>
-
             <Callout style={styles.callout}>
               <Card style={styles.card}>
                 <Card.Content>
