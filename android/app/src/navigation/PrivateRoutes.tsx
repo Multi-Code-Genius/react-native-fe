@@ -50,25 +50,66 @@ export const PrivateRoutes: React.FC = () => {
     [theme.colors.backdrop],
   );
 
+  const AnimatedTabBarIcon = ({focused, iconName}) => {
+    return (
+      <Animatable.View
+        animation={focused ? 'bounceIn' : 'fadeOut'}
+        duration={500}
+        easing="ease-out">
+        <Ionicons
+          name={iconName}
+          size={24}
+          color={focused ? '#1DB954' : 'gray'}
+        />
+      </Animatable.View>
+    );
+  };
+
   return (
     <GestureHandlerRootView
       style={{flex: 1, backgroundColor: theme.colors.background}}>
       <Tab.Navigator
-        screenOptions={{
+        screenOptions={({route}) => ({
           tabBarActiveTintColor: theme.colors.primary,
           tabBarInactiveTintColor: theme.colors.secondary,
+          tabBarActiveBackgroundColor: 'rgba(29, 185, 84, 0.2)',
+          tabBarInactiveBackgroundColor: 'transparent',
+
           tabBarStyle: {
             backgroundColor: theme.colors.scrim,
             borderTopWidth: 0,
-            maxHeight: 70,
-            height: '100%',
+            height: 70,
+            paddingBottom: 0,
+            elevation: 0,
+            shadowOpacity: 0,
           },
+
           tabBarItemStyle: {
-            marginVertical: 20,
+            marginVertical: 10,
+            borderRadius: 100,
+            marginHorizontal: 6,
+            overflow: 'hidden',
           },
+
+          tabBarShowLabel: true,
+          tabBarLabelPosition: 'beside-icon',
+          tabBarLabel: ({focused, color}) =>
+            focused ? (
+              <Text
+                style={{
+                  color,
+                  marginLeft: 6,
+                  fontWeight: '600',
+                  fontSize: 14,
+                }}>
+                {route.name}
+              </Text>
+            ) : null,
+          animation: 'shift',
+
           headerShown: false,
-          tabBarShowLabel: false,
-        }}>
+          tabBarHideOnKeyboard: true,
+        })}>
         <Tab.Screen
           name="Home"
           component={HomeScreen}

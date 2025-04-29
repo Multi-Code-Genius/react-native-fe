@@ -117,14 +117,6 @@ export function SettingScreen() {
     setIsEditing(false);
   };
 
-  if (isLoading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#fff" />
-      </View>
-    );
-  }
-
   return (
     <SafeAreaView
       style={[styles.container, {backgroundColor: theme.colors.background}]}>
@@ -171,42 +163,54 @@ export function SettingScreen() {
         style={{backgroundColor: theme.colors.background}}>
         <Card mode="contained" style={styles.mainCard}>
           <Card.Content style={styles.mainCardContent}>
-            <LabelBox
-              label="Name"
-              field="name"
-              value={editableUserData?.name}
-              isEditing={isEditing}
-              onChange={handleChange}
-            />
-            <LabelBox
-              label="Email"
-              field="email"
-              value={editableUserData?.email}
-              isEditing={isEditing}
-              onChange={handleChange}
-            />
-            <LabelBox
-              label="Mobile Number"
-              field="mobileNumber"
-              value={editableUserData?.mobileNumber}
-              isEditing={isEditing}
-              onChange={handleChange}
-            />
-            {/* <LabelBox
+            {isLoading ? (
+              <View style={styles.loaderContainer}>
+                <ActivityIndicator size="small" color={theme.colors.primary} />
+              </View>
+            ) : (
+              <>
+                <LabelBox
+                  label="Name"
+                  field="name"
+                  value={editableUserData?.name}
+                  isEditing={isEditing}
+                  onChange={handleChange}
+                />
+                <LabelBox
+                  label="Email"
+                  field="email"
+                  value={editableUserData?.email}
+                  isEditing={isEditing}
+                  onChange={handleChange}
+                />
+                <LabelBox
+                  label="Mobile Number"
+                  field="mobileNumber"
+                  value={editableUserData?.mobileNumber}
+                  isEditing={isEditing}
+                  onChange={handleChange}
+                />
+                {/* <LabelBox
               label="Location"
               field="location"
               value={editableUserData?.location}
               isEditing={isEditing}
               onChange={handleChange}
             /> */}
-            <LabelBox label="Status" field="status" value={userData?.status} />
-            <LabelBox
-              label="Date of Birth"
-              field="dob"
-              value={editableUserData?.dob}
-              isEditing={isEditing}
-              onChange={handleChange}
-            />
+                <LabelBox
+                  label="Status"
+                  field="status"
+                  value={userData?.status}
+                />
+                <LabelBox
+                  label="Date of Birth"
+                  field="dob"
+                  value={editableUserData?.dob}
+                  isEditing={isEditing}
+                  onChange={handleChange}
+                />
+              </>
+            )}
           </Card.Content>
         </Card>
       </ScrollView>
@@ -276,7 +280,7 @@ const styles = StyleSheet.create({
   },
   loaderContainer: {
     flex: 1,
-    backgroundColor: 'black',
+
     justifyContent: 'center',
     alignItems: 'center',
   },

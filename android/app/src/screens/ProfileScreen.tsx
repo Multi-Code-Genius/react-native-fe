@@ -223,7 +223,11 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
             <IconButton
               icon="cog"
               size={24}
-              onPress={() => navigation.navigate('Settings')}
+              onPress={() => {
+                if (navigation && navigation.navigate) {
+                  navigation.navigate('Settings');
+                }
+              }}
               iconColor="#fff"
             />
           </View>

@@ -77,10 +77,14 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
   };
   const theme = useTheme();
   return (
-    <NavigationContainer linking={linking} fallback={fallback}>
+    <NavigationContainer
+      linking={linking}
+      fallback={fallback}
+      theme={{colors: {background: theme.colors.background}}}>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
+          presentation: 'transparentModal',
         }}>
         {isAuthenticated ? (
           <>

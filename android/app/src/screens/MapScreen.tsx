@@ -167,7 +167,7 @@ const MapScreen: React.FC = () => {
       <MapView
         ref={mapRef}
         style={StyleSheet.absoluteFillObject}
-        mapStyle="https://api.maptiler.com/maps/outdoor-v2/style.json?key=6R1qeXkgDjyItDGLuc5M"
+        mapStyle="https://api.maptiler.com/maps/openstreetmap/style.json?key=6R1qeXkgDjyItDGLuc5M"
         scrollEnabled
         zoomEnabled>
         {userLocation && (
