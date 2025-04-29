@@ -202,7 +202,9 @@ export function FriendsRequestAcceptScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-black">
+    <SafeAreaView
+      className="flex-1"
+      style={{backgroundColor: theme.colors.background}}>
       <View className="p-4">
         <View className="flex-row items-center ">
           <Appbar.BackAction onPress={() => navigation.goBack()} />

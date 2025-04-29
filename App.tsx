@@ -3,7 +3,12 @@ import {SafeAreaView, StatusBar, Text} from 'react-native';
 import {SheetProvider} from 'react-native-actions-sheet';
 import 'react-native-gesture-handler';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {DefaultTheme, PaperProvider, configureFonts} from 'react-native-paper';
+import {
+  DefaultTheme,
+  PaperProvider,
+  configureFonts,
+  useTheme,
+} from 'react-native-paper';
 import {MD3Theme} from 'react-native-paper/lib/typescript/types';
 import 'react-native-reanimated';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
@@ -106,19 +111,22 @@ const linking = {
 };
 
 export default function App() {
+  const theme = useTheme();
   return (
     <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView style={{flex: 1}}>
+      <GestureHandlerRootView style={{flex: 1, backgroundColor: '#121212'}}>
         <PaperProvider theme={spotifyTheme}>
-          <SafeAreaProvider>
+          <SafeAreaProvider style={{backgroundColor: '#121212'}}>
             <SheetProvider context="global">
-              <SafeAreaView style={{flex: 1}}>
-                <StatusBar />
-                <AppNavigator
-                  linking={linking}
-                  fallback={<Text>Loading...</Text>}
-                />
-              </SafeAreaView>
+              <StatusBar
+                barStyle="light-content"
+                backgroundColor="#121212"
+                animated
+              />
+              <AppNavigator
+                linking={linking}
+                fallback={<Text style={{color: '#fff'}}>Loading...</Text>}
+              />
             </SheetProvider>
           </SafeAreaProvider>
         </PaperProvider>

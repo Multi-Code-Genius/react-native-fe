@@ -83,8 +83,10 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
       theme={{colors: {background: theme.colors.background}}}>
       <Stack.Navigator
         screenOptions={{
+          animationTypeForReplace: 'push',
           headerShown: false,
-          presentation: 'transparentModal',
+          cardStyle: {backgroundColor: '#121212'},
+          animation: 'slide_from_right',
         }}>
         {isAuthenticated ? (
           <>
@@ -94,10 +96,6 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               component={SettingScreen}
               options={{
                 title: 'Settings',
-                transitionSpec: {
-                  open: configSlow,
-                  close: configSlow,
-                },
               }}
             />
             <Stack.Screen
@@ -111,7 +109,6 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
                 },
                 headerTintColor: theme.colors.onPrimary,
                 headerShadowVisible: false,
-                animation: 'slide_from_right',
               }}
             />
             <Stack.Screen
@@ -119,7 +116,6 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               component={ChatScreen}
               options={{
                 title: 'Chats',
-                animation: 'slide_from_right',
               }}
             />
             <Stack.Screen
@@ -127,7 +123,7 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               component={RoomWrapper}
               options={{
                 title: 'Rooms',
-                animation: 'slide_from_right',
+
                 headerShown: true,
                 headerStyle: {
                   backgroundColor: theme.colors.background,
@@ -141,60 +137,27 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               component={UserProfile}
               options={{
                 title: 'User Profile',
-                animation: 'slide_from_right',
+
                 headerShown: true,
               }}
             />
 
-            <Stack.Screen
-              name="ProfileList"
-              component={ProfileReelList}
-              options={{
-                transitionSpec: {
-                  open: configSlow,
-                  close: configSlow,
-                },
-              }}
-            />
-            <Stack.Screen
-              name="FriendsList"
-              component={FreindsListScreen}
-              options={{
-                transitionSpec: {
-                  open: configSlow,
-                  close: configSlow,
-                },
-              }}
-            />
+            <Stack.Screen name="ProfileList" component={ProfileReelList} />
+            <Stack.Screen name="FriendsList" component={FreindsListScreen} />
             <Stack.Screen
               name="FriendsRequestAcceptScreen"
               component={FriendsRequestAcceptScreen}
-              options={{
-                transitionSpec: {
-                  open: configSlow,
-                  close: configSlow,
-                },
-              }}
             />
             <Stack.Screen
               name="SinglePostPhoto"
               component={ProfileSinglePost}
-              options={{
-                transitionSpec: {
-                  open: configSlow,
-                  close: configSlow,
-                },
-              }}
             />
             <Stack.Screen
               name="Posts"
               component={FullPostViewer}
               options={{
                 headerShown: true,
-                transitionSpec: {
-                  open: configSlow,
-                  close: configSlow,
-                },
+
                 headerStyle: {
                   backgroundColor: theme.colors.onBackground,
                 },
