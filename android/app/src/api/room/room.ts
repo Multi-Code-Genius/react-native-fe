@@ -1,4 +1,4 @@
-import {useMutation, useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {api} from '../../hooks/api';
 
 export const requestRoom = async () => {
@@ -64,8 +64,10 @@ export const getRooms = async () => {
 
 export const useGetRooms = () => {
   return useQuery({
-    queryKey: ['rejectRoom'],
+    queryKey: ['getRooms'],
     queryFn: getRooms,
+    refetchInterval: 5000,
+    refetchOnWindowFocus: false,
     enabled: true,
   });
 };
@@ -86,9 +88,13 @@ export const joinRoom = async (id: string) => {
 };
 
 export const useJoinRoom = () => {
+  const querlyClient = useQueryClient();
   return useMutation({
     mutationKey: ['joinRoom'],
     mutationFn: (id: string) => joinRoom(id),
+    onSuccess: () => {
+      querlyClient.invalidateQueries({queryKey: ['profile']});
+    },
   });
 };
 
@@ -110,6 +116,8 @@ export const useGetRoomById = (id: string) => {
   return useQuery({
     queryKey: ['getRoomById', id],
     queryFn: () => getRoomById(id),
+    refetchInterval: id ? 5000 : false,
+    refetchOnWindowFocus: false,
     enabled: !!id,
   });
 };

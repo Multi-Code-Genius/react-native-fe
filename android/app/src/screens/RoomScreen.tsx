@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Button, List, Text, useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -10,7 +10,7 @@ const RoomScreen = () => {
   const theme = useTheme();
   const {profileRefetch, profileLoading} = useUserListLogic();
   const {data: roomData, refetch: refetchRooms, isFetching} = useGetRooms();
-  const {mutate: joinRoom} = useJoinRoom();
+  const {mutate: joinRoom, isPending: isJoining} = useJoinRoom();
   const {mutate: requestRoom, isPending, isSuccess} = useRequestRoom();
 
   useEffect(() => {
@@ -23,12 +23,9 @@ const RoomScreen = () => {
     requestRoom();
   };
 
-  const handleJoinRoom = useCallback(
-    (roomId: number) => {
-      joinRoom(roomId.toString());
-    },
-    [joinRoom],
-  );
+  const handleJoinRoom = (roomId: string) => {
+    joinRoom(roomId.toString());
+  };
 
   const renderRoomItem = ({item}: {item: any; index: number}) => {
     const isRoomFull = item.status === 'full';
@@ -102,12 +99,14 @@ const RoomScreen = () => {
           </Button>
 
           <Text variant="titleMedium" style={styles.roomTitle}>
-            Available Rooms
+            {!roomData?.rooms
+              ? 'No rooms found near your location'
+              : 'Available Rooms'}
           </Text>
         </View>
       }
       renderItem={renderRoomItem}
-      refreshing={isFetching}
+      refreshing={false}
       onRefresh={refetchRooms}
     />
   );
