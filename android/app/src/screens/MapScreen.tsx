@@ -172,7 +172,7 @@ const MapScreen: React.FC = () => {
         {userLocation && (
           <Camera
             centerCoordinate={[userLocation.lng, userLocation.lat]}
-            zoomLevel={11}
+            zoomLevel={20}
             animationMode="linearTo"
             animationDuration={2000}
           />

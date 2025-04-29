@@ -237,16 +237,22 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
                 />
               </View>
 
-              <View className="absolute bottom-0 right-0 bg-black rounded-full p-2 shadow-md">
-                <IconButton
-                  icon="plus"
-                  size={16}
-                  onPress={handleMediaPick}
-                  iconColor="#fff"
-                  containerColor="#000"
-                  style={{margin: 0}}
-                />
-              </View>
+              <IconButton
+                icon="plus"
+                size={16}
+                onPress={handleMediaPick}
+                iconColor="#fff"
+                containerColor="#000"
+                style={{
+                  margin: 0,
+                  position: 'absolute',
+                  bottom: 0,
+                  right: 0,
+                  backgroundColor: '#000',
+                  borderRadius: '100%',
+                  padding: 2,
+                }}
+              />
             </View>
             <View className="justify-center w-full gap-3">
               <Text className="text-[17px] font-semibold text-white">
