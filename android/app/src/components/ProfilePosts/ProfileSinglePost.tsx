@@ -2,9 +2,10 @@ import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
-import { useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {useRoute} from '@react-navigation/native';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  Dimensions,
   Image,
   SafeAreaView,
   StyleSheet,
@@ -12,24 +13,23 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Portal, TextInput, useTheme } from 'react-native-paper';
+import {Portal, TextInput, useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   useCommentPhoto,
   useLikePhoto,
   useSinglePhoto,
 } from '../../api/photo/photo';
-import { photoStore } from '../../store/photoStore';
-import { useUserStore } from '../../store/userStore';
+import {photoStore} from '../../store/photoStore';
+import {useUserStore} from '../../store/userStore';
 import CommentSheet from '../CommentSheet';
-
 
 type ProfileSinglePostProps = {
   postData?: any;
   isFirst: boolean;
 };
 
-export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps) {
+export function ProfileSinglePost({postData, isFirst}: ProfileSinglePostProps) {
   const theme = useTheme();
   const route = useRoute();
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -37,14 +37,14 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
   const [postComment, setPostComment] = useState('');
   const [inputKey, setInputKey] = useState(0);
 
-  const { userData } = useUserStore();
-  const { photoLikeStatus, addLikesPhoto, updatePhotoLikeStatus } = photoStore();
+  const {userData} = useUserStore();
+  const {photoLikeStatus, addLikesPhoto, updatePhotoLikeStatus} = photoStore();
   const likePhotoMutation = useLikePhoto();
   const commentPhototMutation = useCommentPhoto();
 
-  const postId = postData?.id || (route.params as { postId?: string })?.postId;
+  const postId = postData?.id || (route.params as {postId?: string})?.postId;
 
-  const { data, error } = useSinglePhoto(postId || '');
+  const {data, error} = useSinglePhoto(postId || '');
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -54,7 +54,7 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
         appearsOnIndex={0}
         opacity={0.5}
         pressBehavior="close"
-        style={{ backgroundColor: theme.colors.backdrop }}
+        style={{backgroundColor: theme.colors.backdrop}}
       />
     ),
     [theme.colors.backdrop],
@@ -72,13 +72,13 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
 
   const handleLikeToggle = () => {
     updatePhotoLikeStatus(postId);
-    likePhotoMutation.mutate({ photoId: postId });
+    likePhotoMutation.mutate({photoId: postId});
   };
 
   const handleCommentSubmit = () => {
     if (!postComment.trim()) return;
     commentPhototMutation.mutate(
-      { postId, text: postComment },
+      {postId, text: postComment},
       {
         onSuccess: () => {
           setInputKey(prev => prev + 1);
@@ -107,16 +107,21 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
   const imageUrl = data?.video?.post;
   const likeCount = data?.video?.likes?.length || 0;
   const commentCount = data?.video?.comments?.length || 0;
+  const screenHeight = Dimensions.get('window').height;
 
   return (
     <SafeAreaView
-      className="flex-1 bg-white"
-      style={{ backgroundColor: theme.colors.background }}>
-      <View className="w-full h-full p-4">
+      // className="flex-1 bg-white"
+      style={{
+        flex: 1,
+        // height: screenHeight,
+        backgroundColor: theme.colors.background,
+      }}>
+      <View className="w-full h-[450px] p-4">
         <View className="flex-row items-center gap-2 mb-2">
           <View className=" h-[45px] w-[45px] rounded-full border-2 border-gray-400 overflow-hidden">
             <Image
-              source={{ uri: data?.video?.user?.profile_pic }}
+              source={{uri: data?.video?.user?.profile_pic}}
               className="w-full h-full"
               resizeMode="cover"
             />
@@ -126,7 +131,7 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
           </Text>
         </View>
         <Image
-          source={{ uri: imageUrl }}
+          source={{uri: imageUrl}}
           className="w-full h-[300px] rounded-xl mb-4 "
         />
 
@@ -139,18 +144,18 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
               size={28}
               color={
                 userData?.id &&
-                  (photoLikeStatus.includes(postId) ||
-                    data?.video?.likes?.some(
-                      (like: any) => like.userId === userData.id,
-                    ))
+                (photoLikeStatus.includes(postId) ||
+                  data?.video?.likes?.some(
+                    (like: any) => like.userId === userData.id,
+                  ))
                   ? 'red'
                   : 'grey'
               }
             />
-            <Text style={{ marginLeft: 4 }} className="text-white">
+            <Text style={{marginLeft: 4}} className="text-white">
               {likeCount}
             </Text>
-          </TouchableOpacity >
+          </TouchableOpacity>
           <TouchableOpacity
             className="flex-row items-center gap-2"
             onPress={openCommentSheet}>
@@ -159,7 +164,7 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
               {commentCount}
             </Text>
           </TouchableOpacity>
-        </View >
+        </View>
 
         <View className="flex-row gap-2">
           <Text className="text-[14px] font-bold italic text-white ">
@@ -169,7 +174,7 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
             {data?.video?.description}
           </Text>
         </View>
-      </View >
+      </View>
 
       <Portal>
         <BottomSheet
@@ -178,8 +183,8 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
           snapPoints={snapPoints}
           backdropComponent={renderBackdrop}
           enablePanDownToClose
-          backgroundStyle={{ backgroundColor: theme.colors.background }}
-          handleIndicatorStyle={{ backgroundColor: theme.colors.secondary }}>
+          backgroundStyle={{backgroundColor: theme.colors.background}}
+          handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
           <BottomSheetScrollView
             contentContainerStyle={{
               backgroundColor: theme.colors.background,
@@ -191,7 +196,7 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
               name="account-circle"
               size={32}
               color="#555"
-              style={{ marginRight: 12 }}
+              style={{marginRight: 12}}
             />
             <TextInput
               placeholder="Add a comment..."
@@ -205,20 +210,19 @@ export function ProfileSinglePost({ postData, isFirst }: ProfileSinglePostProps)
                   disabled={!postComment.trim()}
                 />
               }
-              style={{ flex: 1, backgroundColor: 'transparent' }}
-              underlineStyle={{ display: 'none' }}
+              style={{flex: 1, backgroundColor: 'transparent'}}
+              underlineStyle={{display: 'none'}}
             />
           </View>
         </BottomSheet>
       </Portal>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   centered: {
     flex: 1,
-    backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
   },
