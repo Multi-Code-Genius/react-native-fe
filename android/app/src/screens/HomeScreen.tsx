@@ -1,6 +1,6 @@
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useCallback } from 'react';
-import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import React, {useCallback} from 'react';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {
   ActivityIndicator,
   Badge,
@@ -8,10 +8,10 @@ import {
   Surface,
   useTheme,
 } from 'react-native-paper';
-import { useSendRequest } from '../api/request/request';
+import {useSendRequest} from '../api/request/request';
 import UserCard from '../components/UserCard';
-import { useUserListLogic } from '../hooks/useUserListLogic';
-import { Message } from '../types/messageTypes';
+import {useUserListLogic} from '../hooks/useUserListLogic';
+import {Message} from '../types/messageTypes';
 import SwipeWrapper from '../components/swipeWrapper';
 
 const UserListScreen = () => {
@@ -25,7 +25,7 @@ const UserListScreen = () => {
     refetch,
     profileRefetch,
   } = useUserListLogic();
-  const { mutate } = useSendRequest();
+  const {mutate} = useSendRequest();
   const theme = useTheme();
 
   const onSendRequest = (receiverId: string) => {
@@ -63,12 +63,18 @@ const UserListScreen = () => {
               (navigation as any).navigate('FriendsRequestAcceptScreen')
             }
           />
+          <IconButton
+            icon="account-group"
+            iconColor="white"
+            onPress={() => (navigation as any).navigate('Rooms')}
+            style={{position: 'relative'}}
+          />
           <View>
             <IconButton
-              icon="message-outline"
+              icon="chat"
               iconColor="white"
               onPress={() => (navigation as any).navigate('ChatList')}
-              style={{ position: 'relative' }}
+              style={{position: 'relative'}}
             />
             {messagesReceived.length !== 0 && (
               <Badge
@@ -83,12 +89,6 @@ const UserListScreen = () => {
               </Badge>
             )}
           </View>
-          <IconButton
-            icon="chat"
-            iconColor="white"
-            onPress={() => (navigation as any).navigate('Rooms')}
-            style={{ position: 'relative' }}
-          />
         </View>
 
         <FlatList
@@ -97,15 +97,14 @@ const UserListScreen = () => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          renderItem={({ item }) => (
+          renderItem={({item}) => (
             <UserCard user={item} onRequest={onSendRequest} />
           )}
-          contentContainerStyle={{ paddingVertical: 10 }}
+          contentContainerStyle={{paddingVertical: 10}}
           showsVerticalScrollIndicator={false}
         />
       </Surface>
     </SwipeWrapper>
-
   );
 };
 
@@ -122,7 +121,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0f0f0f',
     paddingHorizontal: 12,
-    paddingTop: 8,
+    paddingTop: 20,
   },
   actionButton: {
     marginTop: 10,

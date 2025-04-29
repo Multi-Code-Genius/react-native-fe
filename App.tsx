@@ -1,16 +1,15 @@
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {QueryClientProvider} from '@tanstack/react-query';
+import {SafeAreaView, StatusBar, Text} from 'react-native';
+import {SheetProvider} from 'react-native-actions-sheet';
+import 'react-native-gesture-handler';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {DefaultTheme, PaperProvider, configureFonts} from 'react-native-paper';
+import {MD3Theme} from 'react-native-paper/lib/typescript/types';
+import 'react-native-reanimated';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import queryClient from './android/app/src/config/queryClient';
 import AppNavigator from './android/app/src/navigation/routes';
 import './global.css';
-import { StatusBar, Text, StyleSheet, SafeAreaView } from 'react-native';
-import { PaperProvider, DefaultTheme, configureFonts } from 'react-native-paper';
-import 'react-native-gesture-handler';
-import 'react-native-reanimated';
-import { MD3Theme } from 'react-native-paper/lib/typescript/types';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { MenuProvider } from 'react-native-popup-menu';
-import { SheetProvider } from 'react-native-actions-sheet';
-import { QueryClientProvider } from '@tanstack/react-query';
-import queryClient from './android/app/src/config/queryClient';
 
 const fontConfig = {
   android: {
@@ -44,19 +43,19 @@ const fontConfig = {
       fontWeight: '500',
       fontSize: 18,
     },
-    titleLarge: { fontFamily: 'Gilroy-Medium', fontWeight: '500', fontSize: 22 },
-    titleMedium: { fontFamily: 'Gilroy-Medium', fontWeight: '500', fontSize: 18 },
-    titleSmall: { fontFamily: 'Gilroy-Medium', fontWeight: '500', fontSize: 16 },
-    labelLarge: { fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 14 },
+    titleLarge: {fontFamily: 'Gilroy-Medium', fontWeight: '500', fontSize: 22},
+    titleMedium: {fontFamily: 'Gilroy-Medium', fontWeight: '500', fontSize: 18},
+    titleSmall: {fontFamily: 'Gilroy-Medium', fontWeight: '500', fontSize: 16},
+    labelLarge: {fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 14},
     labelMedium: {
       fontFamily: 'Gilroy-Regular',
       fontWeight: '400',
       fontSize: 12,
     },
-    labelSmall: { fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 10 },
-    bodyLarge: { fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 16 },
-    bodyMedium: { fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 14 },
-    bodySmall: { fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 12 },
+    labelSmall: {fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 10},
+    bodyLarge: {fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 16},
+    bodyMedium: {fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 14},
+    bodySmall: {fontFamily: 'Gilroy-Regular', fontWeight: '400', fontSize: 12},
   },
 };
 
@@ -90,7 +89,7 @@ const spotifyTheme: MD3Theme = {
       level5: '#2C2C2C',
     },
   },
-  fonts: configureFonts({ config: fontConfig, isV3: false }),
+  fonts: configureFonts({config: fontConfig, isV3: false}),
 };
 
 const linking = {
@@ -109,11 +108,11 @@ const linking = {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={{flex: 1}}>
         <PaperProvider theme={spotifyTheme}>
           <SafeAreaProvider>
             <SheetProvider context="global">
-              <SafeAreaView style={{ flex: 1 }}>
+              <SafeAreaView style={{flex: 1}}>
                 <StatusBar />
                 <AppNavigator
                   linking={linking}
@@ -127,4 +126,3 @@ export default function App() {
     </QueryClientProvider>
   );
 }
-

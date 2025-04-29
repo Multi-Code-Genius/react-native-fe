@@ -1,13 +1,12 @@
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {api} from '../../hooks/api';
 
-export const requestRoom = async (data: any) => {
+export const requestRoom = async () => {
   try {
     const response = await api('/api/room/find-or-create', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       cache: 'no-store',
-      body: JSON.stringify(data),
     });
     const resp = await response;
     return resp;
@@ -20,7 +19,7 @@ export const requestRoom = async (data: any) => {
 export const useRequestRoom = () => {
   return useMutation({
     mutationKey: ['room'],
-    mutationFn: (data: any) => requestRoom(data),
+    mutationFn: requestRoom,
     onSuccess: () => {},
   });
 };

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Button, List, Text, useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,11 +20,7 @@ const RoomScreen = () => {
   }, [isSuccess, profileLoading, profileRefetch]);
 
   const handleRequestRoom = () => {
-    requestRoom({
-      latitude: 21.1702,
-      longitude: 72.8311,
-      platform: 'Android',
-    });
+    requestRoom();
   };
 
   const handleJoinRoom = useCallback(
@@ -34,7 +30,7 @@ const RoomScreen = () => {
     [joinRoom],
   );
 
-  const renderRoomItem = ({item, index}: {item: any; index: number}) => {
+  const renderRoomItem = ({item}: {item: any; index: number}) => {
     const isRoomFull = item.status === 'full';
     return (
       <List.Item
@@ -102,7 +98,7 @@ const RoomScreen = () => {
             labelStyle={styles.buttonLabel}
             loading={isPending}
             icon="account-plus">
-            Find a Room
+            Join Room
           </Button>
 
           <Text variant="titleMedium" style={styles.roomTitle}>
