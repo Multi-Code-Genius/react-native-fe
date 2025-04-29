@@ -8,8 +8,6 @@ import LoginScreen from '../screens/LoginScreen';
 import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import ResetPassword1 from '../screens/ResetPassword1';
 import {ProfileReelList} from '../components/ProfileReelList';
-import {ProfileSinglePost} from '../components/ProfilePosts/ProfileSinglePost';
-import {PrivateRoutes} from './PrivateRoutes';
 import {FreindsListScreen} from '../screens/FreindsListScreen';
 import {FriendsRequestAcceptScreen} from '../screens/FriendsRequestAcceptScreen';
 import {SettingScreen} from '../screens/SettingScreen';
@@ -19,6 +17,8 @@ import ChatScreen from '../screens/ChatScreen';
 import UserProfile from '../components/UserProfile';
 import {FullPostViewer} from '../components/ProfilePosts/FullPostViewer';
 import RoomWrapper from '../screens/RoomWrapper';
+import {ProfileSinglePost} from '../components/ProfilePosts/ProfileSinglePost';
+import {PrivateRoutes} from './PrivateRoutes';
 
 const Stack = createStackNavigator();
 

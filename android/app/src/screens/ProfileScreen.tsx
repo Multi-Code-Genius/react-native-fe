@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
   Divider,
   IconButton,
+  Surface,
   useTheme,
 } from 'react-native-paper';
 import {SceneMap, TabView} from 'react-native-tab-view';
@@ -189,13 +190,13 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
     />
   );
 
-  if (isLoading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#fff" />
-      </View>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View style={styles.loaderContainer}>
+  //       <ActivityIndicator size="large" color="#fff" />
+  //     </View>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -209,6 +210,62 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
     (data?.user?.posts?.length || 0) + (data?.user?.videos?.length || 0);
 
   const friendsCount = data?.user?.friends?.length || 0;
+
+  if (isLoading) {
+    return (
+      <Surface
+        style={{
+          flex: 1,
+          padding: 16,
+          backgroundColor: theme.colors.background,
+        }}>
+        <View className="flex w-full flex-col">
+          <View className="w-full flex-row justify-end">
+            <IconButton icon="cog" size={24} iconColor="#969595" />
+          </View>
+          <View className="flex-row gap-5 w-full">
+            <View className=" w-32 h-32">
+              <View className="w-full h-full rounded-full border-4 border-gray-800 overflow-hidden">
+                <Image className="w-full h-full" resizeMode="cover" />
+              </View>
+            </View>
+
+            <View className="justify-center w-full gap-3">
+              <Text style={[styles.skeletonTextLine, {width: '20%'}]} />
+              <Text style={[styles.skeletonTextLine, {width: '40%'}]} />
+              <Text style={[styles.skeletonTextLine, {width: '60%'}]} />
+            </View>
+          </View>
+
+          <Divider style={{marginVertical: 20, backgroundColor: '#374151'}} />
+          <View className="flex-row justify-around">
+            <Text style={[styles.skeletonTextLine, {width: '20%'}]} />
+            <Text style={[styles.skeletonTextLine, {width: '20%'}]} />
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: 8,
+              marginTop: 6,
+            }}>
+            {[...Array(6)].map((_, index) => (
+              <View
+                key={index}
+                style={{
+                  width: (Dimensions.get('window').width - 48) / 3,
+                  height: 170,
+                  backgroundColor: '#2a2a2a',
+                  borderRadius: 8,
+                  marginBottom: 10,
+                }}
+              />
+            ))}
+          </View>
+        </View>
+      </Surface>
+    );
+  }
 
   return (
     <>
@@ -325,5 +382,24 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  skeletonTextLine: {
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#2a2a2a',
+    marginBottom: 6,
+    width: '80%',
+  },
+  skeletonCard: {
+    flexDirection: 'column',
+    gap: 8,
+    marginBottom: 10,
+    width: 130,
+  },
+  skeletonNormalCard: {
+    height: 150,
+    borderRadius: 6,
+    backgroundColor: '#2a2a2a',
+    marginBottom: 6,
   },
 });

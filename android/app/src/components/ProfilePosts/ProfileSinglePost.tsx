@@ -44,7 +44,7 @@ export function ProfileSinglePost({postData, isFirst}: ProfileSinglePostProps) {
 
   const postId = postData?.id || (route.params as {postId?: string})?.postId;
 
-  const {data, error} = useSinglePhoto(postId || '');
+  const {data, error, isLoading} = useSinglePhoto(postId || '');
 
   const renderBackdrop = useCallback(
     (props: any) => (
