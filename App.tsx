@@ -85,6 +85,7 @@ const spotifyTheme: MD3Theme = {
     outline: '#333333',
     surfaceVariant: '#1E1E1E',
     inversePrimary: '#0F0F0F',
+    secondaryContainer: '#1DB954',
     elevation: {
       level0: 'transparent',
       level1: '#1A1A1A',
