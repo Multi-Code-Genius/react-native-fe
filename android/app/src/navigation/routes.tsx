@@ -19,6 +19,7 @@ import {FullPostViewer} from '../components/ProfilePosts/FullPostViewer';
 import RoomWrapper from '../screens/RoomWrapper';
 import {ProfileSinglePost} from '../components/ProfilePosts/ProfileSinglePost';
 import {PrivateRoutes} from './PrivateRoutes';
+import {Text} from 'react-native';
 
 const Stack = createStackNavigator();
 
@@ -102,8 +103,17 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               name="ChatList"
               component={ChatList}
               options={{
-                title: 'Chat List',
                 headerShown: true,
+                headerTitle: () => (
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      color: theme.colors.onPrimary,
+                      fontSize: 20,
+                    }}>
+                    Chat List
+                  </Text>
+                ),
                 headerStyle: {
                   backgroundColor: theme.colors.background,
                 },
@@ -122,9 +132,17 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               name="Rooms"
               component={RoomWrapper}
               options={{
-                title: 'Rooms',
-
                 headerShown: true,
+                headerTitle: () => (
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      color: theme.colors.onPrimary,
+                      fontSize: 20,
+                    }}>
+                    Rooms
+                  </Text>
+                ),
                 headerStyle: {
                   backgroundColor: theme.colors.background,
                 },
@@ -157,9 +175,19 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               component={FullPostViewer}
               options={{
                 headerShown: true,
+                headerTitle: () => (
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      color: theme.colors.onPrimary,
+                      fontSize: 20,
+                    }}>
+                    Posts
+                  </Text>
+                ),
 
                 headerStyle: {
-                  backgroundColor: theme.colors.onBackground,
+                  backgroundColor: theme.colors.background,
                 },
                 headerTintColor: theme.colors.onPrimary,
                 headerShadowVisible: false,
