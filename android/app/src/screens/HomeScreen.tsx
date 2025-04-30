@@ -1,13 +1,13 @@
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import React, {useCallback} from 'react';
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
-import {Badge, IconButton, Surface, useTheme} from 'react-native-paper';
-import {useSendRequest} from '../api/request/request';
-import {useGames, useGetGameByIde} from '../api/games/useGame';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback } from 'react';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { Badge, IconButton, Surface, useTheme } from 'react-native-paper';
+import { useSendRequest } from '../api/request/request';
+import { useGames, useGetGameByIde } from '../api/games/useGame';
 
 import UserCard from '../components/UserCard';
-import {useUserListLogic} from '../hooks/useUserListLogic';
-import {Message} from '../types/messageTypes';
+import { useUserListLogic } from '../hooks/useUserListLogic';
+import { Message } from '../types/messageTypes';
 
 const UserListScreen = () => {
   const navigation = useNavigation();
@@ -21,17 +21,12 @@ const UserListScreen = () => {
     profileRefetch,
   } = useUserListLogic();
 
-  const {data: gamesData} = useGames();
-  const {data: d, isLoading: gameDataLoading} = useGetGameByIde(
+  const { data: gamesData } = useGames();
+  const { data: d, isLoading: gameDataLoading } = useGetGameByIde(
     '3c3a9170-2b13-443f-a3e3-67d141909b49',
   );
 
-<<<<<<< Updated upstream
-  console.log('gamesData', d, gameDataLoading);
-=======
->>>>>>> Stashed changes
-
-  const {mutate} = useSendRequest();
+  const { mutate } = useSendRequest();
   const theme = useTheme();
 
   const onSendRequest = (receiverId: string) => {
@@ -65,14 +60,14 @@ const UserListScreen = () => {
             icon="account-group"
             iconColor="white"
             onPress={() => (navigation as any).navigate('Rooms')}
-            style={{position: 'relative'}}
+            style={{ position: 'relative' }}
           />
           <View>
             <IconButton
               icon="chat"
               iconColor="white"
               onPress={() => (navigation as any).navigate('ChatList')}
-              style={{position: 'relative'}}
+              style={{ position: 'relative' }}
             />
           </View>
         </View>
@@ -81,7 +76,7 @@ const UserListScreen = () => {
             <View style={styles.skeletonAvatar} />
             <View style={styles.skeletonTextContainer}>
               <View style={styles.skeletonTextLine} />
-              <View style={[styles.skeletonTextLine, {width: '60%'}]} />
+              <View style={[styles.skeletonTextLine, { width: '60%' }]} />
             </View>
           </Surface>
         ))}
@@ -103,14 +98,14 @@ const UserListScreen = () => {
           icon="account-group"
           iconColor="white"
           onPress={() => (navigation as any).navigate('Rooms')}
-          style={{position: 'relative'}}
+          style={{ position: 'relative' }}
         />
         <View>
           <IconButton
             icon="chat"
             iconColor="white"
             onPress={() => (navigation as any).navigate('ChatList')}
-            style={{position: 'relative'}}
+            style={{ position: 'relative' }}
           />
           {messagesReceived.length !== 0 && (
             <Badge
@@ -133,10 +128,10 @@ const UserListScreen = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <UserCard user={item} onRequest={onSendRequest} />
         )}
-        contentContainerStyle={{paddingVertical: 10}}
+        contentContainerStyle={{ paddingVertical: 10 }}
         showsVerticalScrollIndicator={false}
       />
     </Surface>

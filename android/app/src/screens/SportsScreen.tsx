@@ -1,53 +1,60 @@
 import React from 'react'
-import { FlatList, Image, StyleSheet, Text, View } from 'react-native'
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useGames } from '../api/games/useGame';
+import { useNavigation } from '@react-navigation/native';
 
 const SportsScreen = () => {
     const { data: gamesData } = useGames();
-
-    console.log('gamesData???', gamesData);
+    const navigation = useNavigation();
+    const renderItem = (item: any) => {
+        return (
+            <TouchableOpacity
+                onPress={() => {
+                    (navigation as any).navigate('GameCourtDetails', { gameId: item.id });
+                }}>
+                <View className="flex flex-col gap-3 w-full rounded-sm">
+                    <Image
+                        source={{ uri: item.images?.[0] }}
+                        style={{ width: '100%', height: 250, borderRadius: 6 }}
+                        resizeMode="cover"
+                    />
+                    <View className='flex flex-col gap-2'>
+                        <Text className="text-white text-2xl font-medium">{item.name}</Text>
+                        <View className="flex flex-row gap-5 items-center">
+                            <Text className="text-white text-xl font-light">
+                                {item.location.city}
+                            </Text>
+                            <Text className="text-slate-400 text-base  font-normal">
+                                ₹ {item.hourlyPrice}/Hour
+                            </Text>
+                            <Text className="text-black text-base p-1 rounded font-medium bg-slate-300">
+                                {item.category}
+                            </Text>
+                        </View>
+                        <View style={{ width: 30 }}>
+                            <Text className='text-black p-2 rounded w-full bg-slate-300 text-center text-sm font-medium'>{item.capacity}</Text>
+                        </View>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        );
+    };
 
     return (
         <View className='mt-12 w-full'>
             <Text className='w-full text-white flex text-2xl font-bold justify-center text-center'>Sports</Text>
-            <View className='w-[90%] mx-auto'>
+            <View className='w-[90%] mx-auto flex gap-5 mt-5'>
                 <FlatList
                     data={gamesData}
                     keyExtractor={(_, index) => index.toString()}
-                    numColumns={2}
-                    columnWrapperStyle={styles.row}
-                    renderItem={({ item }) => (
-                        <View className="flex flex-col gap-3 w-full rounded-sm">
-                            <Image
-                                source={{ uri: item.images?.[0] }}
-                                style={{ width: '100%', height: 250, borderRadius: 6 }}
-                                resizeMode="cover"
-                            />
-                            <View>
-                                <Text className="text-white text-2xl font-medium">{item.name}</Text>
-                                <View className='flex flex-row gap-5'>
-                                    <Text className="text-white text-xl font-light">{item.location.city}</Text>
-                                    <Text className="text-slate-400 text-lg font-normal">₹ {item.hourlyPrice}/Hour</Text>
-                                    <Text className="text-white text-xl font-light">{item.category}</Text>
-                                </View>
-                            </View>
-
-                        </View>
-                    )}
+                    renderItem={({ item }) => renderItem(item)}
+                    ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+                    contentContainerStyle={{ paddingBottom: 30 }}
                 />
+
             </View>
         </View>
     )
 }
 
 export default SportsScreen;
-
-
-const styles = StyleSheet.create({
-    row: {
-        flex: 1,
-        width: "100%",
-        gap: 10,
-        marginTop: 20,
-    }
-})
