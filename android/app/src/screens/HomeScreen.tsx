@@ -3,7 +3,6 @@ import React, {useCallback} from 'react';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {Badge, IconButton, Surface, useTheme} from 'react-native-paper';
 import {useSendRequest} from '../api/request/request';
-import {useGames, useGetGameByIde} from '../api/games/useGame';
 
 import UserCard from '../components/UserCard';
 import {useUserListLogic} from '../hooks/useUserListLogic';
@@ -20,11 +19,6 @@ const UserListScreen = () => {
     refetch,
     profileRefetch,
   } = useUserListLogic();
-
-  const {data: gamesData} = useGames();
-  const {data: d, isLoading: gameDataLoading} = useGetGameByIde(
-    '3c3a9170-2b13-443f-a3e3-67d141909b49',
-  );
 
   const {mutate} = useSendRequest();
   const theme = useTheme();

@@ -3,7 +3,7 @@ import {api} from '../../hooks/api';
 
 export const bookingGame = async (data: any) => {
   try {
-    const response = await api('/api/game', {
+    const response = await api('/api/booking/create', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       cache: 'no-store',
