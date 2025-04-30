@@ -21,6 +21,7 @@ import {ProfileSinglePost} from '../components/ProfilePosts/ProfileSinglePost';
 import {PrivateRoutes} from './PrivateRoutes';
 import {Text} from 'react-native';
 import {CourtDetailsScreen} from '../screens/CourtDetailsScreen';
+import TestScreen from '../screens/TestScreen';
 
 const Stack = createStackNavigator();
 
@@ -127,6 +128,13 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               component={ChatScreen}
               options={{
                 title: 'Chats',
+              }}
+            />
+            <Stack.Screen
+              name="TestScreen"
+              component={TestScreen}
+              options={{
+                headerShown: false,
               }}
             />
             <Stack.Screen

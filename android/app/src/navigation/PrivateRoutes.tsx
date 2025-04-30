@@ -154,14 +154,12 @@ export const PrivateRoutes: React.FC = () => {
           }}
         /> */}
         {/* <Tab.Screen
-          name="Reels"
-          component={ReelList}
+          name="Test"
+          component={TestScreen}
           options={{
             tabBarIcon: ({color, size, focused}) => (
               <IconButton
-                icon={
-                  focused ? 'play-box-multiple' : 'play-box-multiple-outline'
-                }
+                icon={focused ? 'alien' : 'alien-outline'}
                 iconColor={color}
                 size={size}
               />
