@@ -2,6 +2,7 @@ import React from 'react';
 import {
   FlatList,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -48,20 +49,24 @@ const SportsScreen = () => {
   };
 
   return (
-    <View className="mt-12 w-full mb-12">
-      <Text className="w-full text-white flex text-2xl font-bold justify-center text-center">
-        Sports
-      </Text>
-      <View className="w-[90%] mx-auto flex gap-5 mt-5">
-        <FlatList
-          data={gamesData}
-          keyExtractor={(_, index) => index.toString()}
-          renderItem={({item}) => renderItem(item)}
-          ItemSeparatorComponent={() => <View style={{height: 20}} />}
-          contentContainerStyle={{paddingBottom: 30}}
-        />
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{paddingBottom: 80}}>
+      <View className="mt-12 w-full ">
+        <Text className="w-full text-white flex text-2xl font-bold justify-center text-center">
+          Sports
+        </Text>
+        <View className="w-[90%] mx-auto flex gap-5 mt-5">
+          <FlatList
+            data={gamesData}
+            keyExtractor={(_, index) => index.toString()}
+            renderItem={({item}) => renderItem(item)}
+            ItemSeparatorComponent={() => <View style={{height: 20}} />}
+            contentContainerStyle={{paddingBottom: 30}}
+          />
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

@@ -108,7 +108,7 @@ export function CourtDetailsScreen() {
                 <Text style={styles.gamename}>{gameInfo?.game?.category}</Text>
               </View>
               <Text className="text-white font-semibold">
-                1hr Rates : {gameInfo?.game?.hourlyPrice}
+                1hr Rates : ₹ {gameInfo?.game?.hourlyPrice}
               </Text>
             </View>
 
