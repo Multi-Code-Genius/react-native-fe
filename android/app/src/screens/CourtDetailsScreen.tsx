@@ -14,7 +14,7 @@ import {
 import {ActivityIndicator, Divider} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
-import {useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {useGetGameByIde} from '../api/games/useGame';
 import {BlurView} from '@react-native-community/blur';
 
@@ -23,6 +23,7 @@ const screenWidth = Dimensions.get('window').width;
 export function CourtDetailsScreen() {
   const [currentINdex, setCurrentIndex] = useState(0);
   const route = useRoute();
+  const navigation = useNavigation();
   const gameId = (route.params as {gameId?: any})?.gameId;
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -172,7 +173,11 @@ export function CourtDetailsScreen() {
         </ScrollView>
 
         <View style={styles.stickyButtonContainer}>
-          <TouchableOpacity activeOpacity={0.8}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              (navigation as any).navigate('TestScreen', {gameId});
+            }}>
             <LinearGradient
               colors={['#466fc0', '#142e97']}
               start={{x: 0, y: 0}}

@@ -52,7 +52,7 @@ const SportsScreen = () => {
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{paddingBottom: 15}}>
-      <View className="mt-12 w-full ">
+      <View className="mt-12 w-full">
         <Text className="w-full text-white flex text-2xl font-bold justify-center text-center">
           Sports
         </Text>
