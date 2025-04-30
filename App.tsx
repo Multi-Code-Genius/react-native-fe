@@ -118,15 +118,17 @@ export default function App() {
         <PaperProvider theme={spotifyTheme}>
           <SafeAreaProvider style={{backgroundColor: '#121212'}}>
             <SheetProvider context="global">
-              <StatusBar
-                barStyle="light-content"
-                backgroundColor="#121212"
-                animated
-              />
-              <AppNavigator
-                linking={linking}
-                fallback={<Text style={{color: '#fff'}}>Loading...</Text>}
-              />
+              <SafeAreaView style={{flex: 1}}>
+                <StatusBar
+                  barStyle="light-content"
+                  backgroundColor="#121212"
+                  animated
+                />
+                <AppNavigator
+                  linking={linking}
+                  fallback={<Text style={{color: '#fff'}}>Loading...</Text>}
+                />
+              </SafeAreaView>
             </SheetProvider>
           </SafeAreaProvider>
         </PaperProvider>

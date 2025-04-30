@@ -1,26 +1,13 @@
+
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import {
-  FlatList,
-  Image,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {
-  ActivityIndicator,
-  Badge,
-  IconButton,
-  Surface,
-  useTheme,
-} from 'react-native-paper';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { Badge, IconButton, Surface, useTheme } from 'react-native-paper';
+import { useGames } from '../api/games/useGame';
 import { useSendRequest } from '../api/request/request';
 import UserCard from '../components/UserCard';
 import { useUserListLogic } from '../hooks/useUserListLogic';
 import { Message } from '../types/messageTypes';
-import SwipeWrapper from '../components/swipeWrapper';
 
 const UserListScreen = () => {
   const navigation = useNavigation();
@@ -33,6 +20,11 @@ const UserListScreen = () => {
     refetch,
     profileRefetch,
   } = useUserListLogic();
+
+  const { data: gamesData } = useGames();
+
+  console.log('gamesData', gamesData);
+
   const { mutate } = useSendRequest();
   const theme = useTheme();
 
@@ -160,7 +152,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0f0f0f',
     paddingHorizontal: 12,
-    paddingTop: 20,
   },
   actionButton: {
     marginTop: 10,
