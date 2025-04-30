@@ -48,6 +48,19 @@ const TestScreen = () => {
     setCarouselData(timeSlots[index].carouselData);
   };
 
+  const handleSubmit = () => {
+    console.log('Selected Date:', selectedDate);
+    console.log('Selected Time Slot:', selectedTimeSlot);
+    console.log('Selected Time Ranges:', value);
+
+    // reset to default
+    setSelectedDate(moment().format('D MMM'));
+    setSelectedTimeSlot('Twilight');
+    setCurrentIndex(0);
+    setCarouselData(timeSlots[0].carouselData);
+    setValue([]);
+  };
+
   const renderItem = () => {
     return (
       <View style={{flex: 1, padding: 10}}>
@@ -181,6 +194,11 @@ const TestScreen = () => {
               defaultIndex={currentIndex}
             />
           </View>
+        </View>
+        <View style={{paddingHorizontal: 20, marginBottom: 20}}>
+          <Button mode="contained" onPress={handleSubmit}>
+            Submit
+          </Button>
         </View>
       </View>
     </View>
