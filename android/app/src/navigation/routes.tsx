@@ -20,6 +20,7 @@ import RoomWrapper from '../screens/RoomWrapper';
 import {ProfileSinglePost} from '../components/ProfilePosts/ProfileSinglePost';
 import {PrivateRoutes} from './PrivateRoutes';
 import {Text} from 'react-native';
+import {CourtDetailsScreen} from '../screens/CourtDetailsScreen';
 
 const Stack = createStackNavigator();
 
@@ -169,6 +170,29 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
             <Stack.Screen
               name="SinglePostPhoto"
               component={ProfileSinglePost}
+            />
+            <Stack.Screen
+              name="GameCourtDetails"
+              component={CourtDetailsScreen}
+              options={{
+                headerShown: true,
+                headerTitle: () => (
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      color: theme.colors.onPrimary,
+                      fontSize: 20,
+                    }}>
+                    Court
+                  </Text>
+                ),
+
+                headerStyle: {
+                  backgroundColor: theme.colors.background,
+                },
+                headerTintColor: theme.colors.onPrimary,
+                headerShadowVisible: false,
+              }}
             />
             <Stack.Screen
               name="Posts"
