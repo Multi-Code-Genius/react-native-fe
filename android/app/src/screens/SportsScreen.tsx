@@ -1,34 +1,37 @@
 import React from 'react'
 import { FlatList, Image, StyleSheet, Text, View } from 'react-native'
-
-
-const sportsData = [
-    { image: require('../assets/image/badminton.jpg'), label: 'Badminton' },
-    { image: require('../assets/image/football.jpg'), label: 'Football' },
-    { image: require('../assets/image/bascketball.jpg'), label: 'Basketball' },
-    { image: require('../assets/image/tennis.jpg'), label: 'Tennis' },
-    { image: require('../assets/image/cricket.jpg'), label: 'Cricket' },
-    { image: require('../assets/image/swimming.jpg'), label: 'Swimming' },
-    { image: require('../assets/image/padel.jpg'), label: 'Padel' },
-    { image: require('../assets/image/pickleball.jpg'), label: 'Pickleball' },
-];
-
-
+import { useGames } from '../api/games/useGame';
 
 const SportsScreen = () => {
+    const { data: gamesData } = useGames();
+
+    console.log('gamesData???', gamesData);
+
     return (
         <View className='mt-12 w-full'>
             <Text className='w-full text-white flex text-2xl font-bold justify-center text-center'>Sports</Text>
-            <View>
+            <View className='w-[90%] mx-auto'>
                 <FlatList
-                    data={sportsData}
+                    data={gamesData}
                     keyExtractor={(_, index) => index.toString()}
                     numColumns={2}
                     columnWrapperStyle={styles.row}
                     renderItem={({ item }) => (
-                        <View className='flex flex-col gap-3 w-[50%]'>
-                            <Image source={item.image} style={{ width: '100%', height: 200, borderRadius: 6 }} resizeMode="cover" />
-                            <Text className='text-white text-xl text-center'>{item.label}</Text>
+                        <View className="flex flex-col gap-3 w-full rounded-sm">
+                            <Image
+                                source={{ uri: item.images?.[0] }}
+                                style={{ width: '100%', height: 250, borderRadius: 6 }}
+                                resizeMode="cover"
+                            />
+                            <View>
+                                <Text className="text-white text-2xl font-medium">{item.name}</Text>
+                                <View className='flex flex-row gap-5'>
+                                    <Text className="text-white text-xl font-light">{item.location.city}</Text>
+                                    <Text className="text-slate-400 text-lg font-normal">₹ {item.hourlyPrice}/Hour</Text>
+                                    <Text className="text-white text-xl font-light">{item.category}</Text>
+                                </View>
+                            </View>
+
                         </View>
                     )}
                 />

@@ -8,7 +8,7 @@ export const fetchGames = async () => {
       headers: {'Content-Type': 'application/json'},
       cache: 'no-store',
     });
-    const resp = await response;
+    const resp = await response.games;
     return resp;
   } catch (error) {
     console.error('message Error:', error);

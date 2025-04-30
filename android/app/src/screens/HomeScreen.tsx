@@ -26,7 +26,10 @@ const UserListScreen = () => {
     '3c3a9170-2b13-443f-a3e3-67d141909b49',
   );
 
+<<<<<<< Updated upstream
   console.log('gamesData', d, gameDataLoading);
+=======
+>>>>>>> Stashed changes
 
   const {mutate} = useSendRequest();
   const theme = useTheme();
