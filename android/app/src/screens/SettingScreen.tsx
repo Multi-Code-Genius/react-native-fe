@@ -133,8 +133,7 @@ export function SettingScreen() {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.container, {backgroundColor: theme.colors.background}]}>
+    <>
       <Appbar.Header
         style={{backgroundColor: theme.colors.background}}
         mode="center-aligned">
@@ -178,7 +177,11 @@ export function SettingScreen() {
         <Card mode="contained" style={styles.mainCard}>
           <Card.Content style={styles.mainCardContent}>
             {isLoading ? (
-              <View style={styles.loaderContainer}>
+              <View
+                style={[
+                  styles.loaderContainer,
+                  {backgroundColor: 'transparent'},
+                ]}>
                 <ActivityIndicator size="small" color={theme.colors.primary} />
               </View>
             ) : (
@@ -270,7 +273,7 @@ export function SettingScreen() {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-    </SafeAreaView>
+    </>
   );
 }
 

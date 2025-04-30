@@ -156,7 +156,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0f0f0f',
     paddingHorizontal: 12,
-    paddingTop: 20,
   },
   actionButton: {
     marginTop: 10,
