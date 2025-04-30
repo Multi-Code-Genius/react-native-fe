@@ -1,5 +1,5 @@
-import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
-import React, {useState} from 'react';
+import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
 import {
   Appbar,
   Button,
@@ -10,16 +10,17 @@ import {
   useTheme,
 } from 'react-native-paper';
 import moment from 'moment';
-import Carousel, {Pagination} from 'react-native-reanimated-carousel';
-import {timeSlots} from '../constant/timeSlots';
-import {useRoute} from '@react-navigation/native';
+import Carousel, { Pagination } from 'react-native-reanimated-carousel';
+import { timeSlots } from '../constant/timeSlots';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const TestScreen = () => {
   const theme = useTheme();
   const route = useRoute();
-  const {gameId} = route.params as {gameId: any};
+  const navigation = useNavigation();
+  const { gameId } = route.params as { gameId: any };
   console.log('gameId', gameId);
   const [selectedDate, setSelectedDate] = useState(moment().format('D MMM'));
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('Twilight');
@@ -27,7 +28,7 @@ const TestScreen = () => {
   const [value, setValue] = React.useState([]);
 
   const today = moment();
-  const next30Days = Array.from({length: 31}, (_, i) =>
+  const next30Days = Array.from({ length: 31 }, (_, i) =>
     today.clone().add(i, 'days'),
   );
 
@@ -63,14 +64,14 @@ const TestScreen = () => {
 
   const renderItem = () => {
     return (
-      <View style={{flex: 1, padding: 10}}>
-        <View style={{flex: 1, gap: 20}}>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+      <View style={{ flex: 1, padding: 10 }}>
+        <View style={{ flex: 1, gap: 20 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             {carouselData.map((slot, index) =>
               slot.firstHalf?.map((data, subIndex) => (
                 <Text
                   key={`${index}-${subIndex}`}
-                  style={{flexDirection: 'row'}}>
+                  style={{ flexDirection: 'row' }}>
                   {data}
                 </Text>
               )),
@@ -89,13 +90,13 @@ const TestScreen = () => {
             )}
           />
         </View>
-        <View style={{flex: 1, gap: 20}}>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={{ flex: 1, gap: 20 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             {carouselData.map((slot, index) =>
               slot.secondHalf?.map((data, subIndex) => (
                 <Text
                   key={`${index}-${subIndex}`}
-                  style={{flexDirection: 'row'}}>
+                  style={{ flexDirection: 'row' }}>
                   {data}
                 </Text>
               )),
@@ -120,8 +121,8 @@ const TestScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={{backgroundColor: theme.colors.background}}>
-        <Appbar.BackAction />
+      <Appbar.Header style={{ backgroundColor: theme.colors.background }}>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Double Dribble, Aminjikarai" />
       </Appbar.Header>
 
@@ -142,7 +143,7 @@ const TestScreen = () => {
                         style={
                           isSelected
                             ? undefined
-                            : {color: theme.colors.secondary}
+                            : { color: theme.colors.secondary }
                         }>
                         {date.format('ddd')}
                       </Text>
@@ -151,7 +152,7 @@ const TestScreen = () => {
                         style={
                           isSelected
                             ? undefined
-                            : {color: theme.colors.secondary}
+                            : { color: theme.colors.secondary }
                         }>
                         {date.format('D MMM')}
                       </Text>
@@ -162,8 +163,8 @@ const TestScreen = () => {
             })}
           </ScrollView>
         </View>
-        <Divider leftInset horizontalInset style={{opacity: 0.2}} bold />
-        <View style={{flex: 1, gap: 20}}>
+        <Divider leftInset horizontalInset style={{ opacity: 0.2 }} bold />
+        <View style={{ flex: 1, gap: 20 }}>
           <View style={styles.timeSlotContainer}>
             {timeSlots.map((time, index) => {
               const isTimeSelected = selectedTimeSlot === time.slot;
@@ -171,7 +172,7 @@ const TestScreen = () => {
                 <Button
                   key={time.slot}
                   labelStyle={
-                    !isTimeSelected && {color: theme.colors.secondary}
+                    !isTimeSelected && { color: theme.colors.secondary }
                   }
                   mode={isTimeSelected ? 'contained' : 'text'}
                   icon={isTimeSelected ? time.icon : undefined}
