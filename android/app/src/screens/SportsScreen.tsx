@@ -59,6 +59,7 @@ const SportsScreen = () => {
                 </Text>
                 <View className="w-[90%] mx-auto flex gap-5 mt-5">
                     <FlatList
+                        scrollEnabled={false}
                         data={gamesData}
                         keyExtractor={(_, index) => index.toString()}
                         renderItem={({ item }) => renderItem(item)}
