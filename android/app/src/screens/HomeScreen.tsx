@@ -1,9 +1,11 @@
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import React, {useCallback} from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback } from 'react';
 import {
   FlatList,
+  Image,
   RefreshControl,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -14,10 +16,10 @@ import {
   Surface,
   useTheme,
 } from 'react-native-paper';
-import {useSendRequest} from '../api/request/request';
+import { useSendRequest } from '../api/request/request';
 import UserCard from '../components/UserCard';
-import {useUserListLogic} from '../hooks/useUserListLogic';
-import {Message} from '../types/messageTypes';
+import { useUserListLogic } from '../hooks/useUserListLogic';
+import { Message } from '../types/messageTypes';
 import SwipeWrapper from '../components/swipeWrapper';
 
 const UserListScreen = () => {
@@ -31,7 +33,7 @@ const UserListScreen = () => {
     refetch,
     profileRefetch,
   } = useUserListLogic();
-  const {mutate} = useSendRequest();
+  const { mutate } = useSendRequest();
   const theme = useTheme();
 
   const onSendRequest = (receiverId: string) => {
@@ -65,23 +67,25 @@ const UserListScreen = () => {
             icon="account-group"
             iconColor="white"
             onPress={() => (navigation as any).navigate('Rooms')}
-            style={{position: 'relative'}}
+            style={{ position: 'relative' }}
           />
           <View>
             <IconButton
               icon="chat"
               iconColor="white"
               onPress={() => (navigation as any).navigate('ChatList')}
-              style={{position: 'relative'}}
+              style={{ position: 'relative' }}
             />
           </View>
+
+
         </View>
         {[...Array(6)].map((_, index) => (
           <Surface key={index} style={styles.skeletonCard}>
             <View style={styles.skeletonAvatar} />
             <View style={styles.skeletonTextContainer}>
               <View style={styles.skeletonTextLine} />
-              <View style={[styles.skeletonTextLine, {width: '60%'}]} />
+              <View style={[styles.skeletonTextLine, { width: '60%' }]} />
             </View>
           </Surface>
         ))}
@@ -103,14 +107,14 @@ const UserListScreen = () => {
           icon="account-group"
           iconColor="white"
           onPress={() => (navigation as any).navigate('Rooms')}
-          style={{position: 'relative'}}
+          style={{ position: 'relative' }}
         />
         <View>
           <IconButton
             icon="chat"
             iconColor="white"
             onPress={() => (navigation as any).navigate('ChatList')}
-            style={{position: 'relative'}}
+            style={{ position: 'relative' }}
           />
           {messagesReceived.length !== 0 && (
             <Badge
@@ -133,10 +137,10 @@ const UserListScreen = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <UserCard user={item} onRequest={onSendRequest} />
         )}
-        contentContainerStyle={{paddingVertical: 10}}
+        contentContainerStyle={{ paddingVertical: 10 }}
         showsVerticalScrollIndicator={false}
       />
     </Surface>
