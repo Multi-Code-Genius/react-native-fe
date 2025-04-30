@@ -31,9 +31,7 @@ const SportsScreen = () => {
                                 {item.category}
                             </Text>
                         </View>
-                        <View style={{ width: 30 }}>
-                            <Text className='text-black p-2 rounded w-full bg-slate-300 text-center text-sm font-medium'>{item.capacity}</Text>
-                        </View>
+                        <Text className='text-white w-full text-lg font-light'>capacity: {item.capacity}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -41,7 +39,7 @@ const SportsScreen = () => {
     };
 
     return (
-        <View className='mt-12 w-full'>
+        <View className='mt-12 w-full mb-12'>
             <Text className='w-full text-white flex text-2xl font-bold justify-center text-center'>Sports</Text>
             <View className='w-[90%] mx-auto flex gap-5 mt-5'>
                 <FlatList
@@ -51,7 +49,6 @@ const SportsScreen = () => {
                     ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
                     contentContainerStyle={{ paddingBottom: 30 }}
                 />
-
             </View>
         </View>
     )
