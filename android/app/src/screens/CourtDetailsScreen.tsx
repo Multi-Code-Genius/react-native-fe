@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import React, { useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import {
   Dimensions,
   Image,
@@ -11,29 +11,34 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {ActivityIndicator, Divider, Icon, IconButton} from 'react-native-paper';
+import { ActivityIndicator, Divider, Icon, IconButton } from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
-import {useGetGameByIde} from '../api/games/useGame';
-import {Modal} from 'react-native';
+import { useGetGameByIde } from '../api/games/useGame';
+import { Modal } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const IMAGE_HEIGHT = (width * 9) / 16;
 export function CourtDetailsScreen() {
   const [visible, setVisible] = useState(false);
+  const [isLike, setIsLike] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const route = useRoute();
   const navigation = useNavigation();
-  const gameId = (route.params as {gameId?: any})?.gameId;
+  const gameId = (route.params as { gameId?: any })?.gameId;
 
-  const {data: gameInfo, isLoading: gameDataLoading} = useGetGameByIde(gameId);
+  const { data: gameInfo, isLoading: gameDataLoading } = useGetGameByIde(gameId);
 
-  const renderImage = ({item}: any) => (
+  const renderImage = ({ item }: any) => (
     <TouchableOpacity activeOpacity={1} onPress={() => setVisible(true)}>
-      <Image source={{uri: item}} style={styles.image} />
+      <Image source={{ uri: item }} style={styles.image} />
     </TouchableOpacity>
   );
+
+  const handleLikeButton = () => {
+    setIsLike(!isLike)
+  }
 
   if (gameDataLoading) {
     return (
@@ -48,7 +53,7 @@ export function CourtDetailsScreen() {
   }));
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
       <View>
         <Modal
           visible={visible}
@@ -71,10 +76,10 @@ export function CourtDetailsScreen() {
           />
         </Modal>
       </View>
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{paddingBottom: 80}}>
+          contentContainerStyle={{ paddingBottom: 80 }}>
           <Carousel
             width={width}
             height={IMAGE_HEIGHT}
@@ -84,7 +89,7 @@ export function CourtDetailsScreen() {
             onSnapToItem={index => setCurrentIndex(index)}
           />
 
-          <View style={{padding: 16, marginTop: 16, gap: 24}}>
+          <View style={{ padding: 16, marginTop: 16, gap: 24 }}>
             <View style={styles.headerRow}>
               <View>
                 <Text style={styles.title}>{gameInfo?.game?.name}</Text>
@@ -93,7 +98,21 @@ export function CourtDetailsScreen() {
                   {gameInfo?.game?.location?.city}
                 </Text>
               </View>
-              <Icon source="heart-outline" size={28} color={'white'} />
+              {isLike ?
+                (
+                  <IconButton
+                    icon="heart"
+                    iconColor={'red'}
+                    size={28}
+                    onPress={handleLikeButton}
+                  />
+                ) : (<IconButton
+                  icon="heart-outline"
+                  iconColor={'white'}
+                  size={28}
+                  onPress={handleLikeButton}
+                />)
+              }
             </View>
 
             <View style={styles.rowBetween}>
@@ -108,14 +127,14 @@ export function CourtDetailsScreen() {
 
             <Divider style={styles.divider} />
 
-            <View style={{gap: 16}}>
+            <View style={{ gap: 16 }}>
               <Text style={styles.sectionTitle}>Address</Text>
               <Text style={styles.address}>{gameInfo?.game?.address}</Text>
               <TouchableOpacity activeOpacity={0.8}>
                 <LinearGradient
                   colors={['#b2b7c2', '#35373f']}
-                  start={{x: 0, y: 0}}
-                  end={{x: 1, y: 0}}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
                   style={styles.button}>
                   <Text style={styles.text}>Get Location</Text>
                 </LinearGradient>
@@ -158,7 +177,7 @@ export function CourtDetailsScreen() {
 
             <Divider style={styles.divider} />
 
-            <View style={{gap: 16}}>
+            <View style={{ gap: 16 }}>
               <Text style={styles.sectionTitle}>Description</Text>
               <Text style={styles.address}>{gameInfo?.game?.description}</Text>
             </View>
@@ -169,12 +188,12 @@ export function CourtDetailsScreen() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() =>
-              (navigation as any).navigate('TestScreen', {gameId})
+              (navigation as any).navigate('TestScreen', { gameId })
             }>
             <LinearGradient
               colors={['#466fc0', '#142e97']}
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
               style={styles.bookingButton}>
               <Text style={styles.text}>Book A Game</Text>
             </LinearGradient>
