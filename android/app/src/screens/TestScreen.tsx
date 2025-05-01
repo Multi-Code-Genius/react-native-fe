@@ -33,7 +33,6 @@ const TestScreen = () => {
   useEffect(() => {
     mutate({gameId, date: todayDate});
   }, [mutate, gameId, todayDate]);
-
   const [selectedDate, setSelectedDate] = useState(moment().format('D MMM'));
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('Twilight');
   const [value, setValue] = useState([]);
@@ -104,6 +103,19 @@ const TestScreen = () => {
   };
 
   const renderItem = ({item}: {item: any}) => {
+    if (isPending) {
+      return (
+        <View style={styles.skeletonContainer}>
+          <View style={styles.skeletonBox}>
+            <View style={styles.skeletonTextLine} />
+          </View>
+          <View style={styles.skeletonBox}>
+            <View style={styles.skeletonTextLine} />
+          </View>
+        </View>
+      );
+    }
+
     return (
       <View style={{flex: 1, padding: 10}}>
         <View style={{flex: 1, gap: 20}}>
@@ -205,14 +217,6 @@ const TestScreen = () => {
       </View>
     );
   };
-
-  if (isPending) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#fff" />
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -366,5 +370,19 @@ const styles = StyleSheet.create({
   carouselText: {
     fontSize: 24,
     fontWeight: 'bold',
+  },
+  skeletonContainer: {
+    flex: 1,
+    padding: 10,
+    marginTop: 30,
+  },
+  skeletonTextLine: {
+    height: 40,
+    backgroundColor: '#2a2a2a',
+    borderRadius: 20,
+  },
+  skeletonBox: {
+    flex: 1,
+    gap: 20,
   },
 });
