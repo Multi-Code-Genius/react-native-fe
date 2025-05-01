@@ -1,42 +1,29 @@
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   View,
   Text,
-  FlatList,
   Image,
   Dimensions,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Animated,
 } from 'react-native';
 import {ActivityIndicator, Divider} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useGetGameByIde} from '../api/games/useGame';
+import Carousel from 'react-native-reanimated-carousel';
 
-const screenWidth = Dimensions.get('window').width;
+const {width} = Dimensions.get('window');
 
 export function CourtDetailsScreen() {
-  const [currentINdex, setCurrentIndex] = useState(0);
   const route = useRoute();
   const navigation = useNavigation();
   const gameId = (route.params as {gameId?: any})?.gameId;
-  const scrollY = useRef(new Animated.Value(0)).current;
 
   const {data: gameInfo, isLoading: gameDataLoading} = useGetGameByIde(gameId);
-
-  const imageLength = gameInfo?.game?.images.length;
-
-  const onViewRef = React.useRef(({viewableItems}: any) => {
-    if (viewableItems.length > 0) {
-      setCurrentIndex(viewableItems[0].index);
-    }
-  });
-
-  const viewConfigRef = React.useRef({viewAreaCoveragePercentThreshold: 50});
 
   const renderImage = ({item}: any) => (
     <Image source={{uri: item}} style={styles.image} />
@@ -56,63 +43,38 @@ export function CourtDetailsScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{paddingBottom: 80}}>
-          <View>
-            <FlatList
-              data={gameInfo?.game?.images}
-              renderItem={renderImage}
-              keyExtractor={(_, index) => index.toString()}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              onViewableItemsChanged={onViewRef.current}
-              viewabilityConfig={viewConfigRef.current}
-              snapToInterval={screenWidth}
-              decelerationRate="fast"
-              scrollEventThrottle={16}
-            />
-
-            <View style={styles.imageCounter}>
-              <Text style={styles.imageCounterText}>
-                {currentINdex + 1} / {imageLength}
-              </Text>
-            </View>
-          </View>
+          <Carousel
+            width={width}
+            height={width}
+            autoPlay
+            data={gameInfo?.game?.images}
+            renderItem={renderImage}
+            mode="parallax"
+          />
 
           <View style={{padding: 16, marginTop: 16, gap: 24}}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
+            <View style={styles.headerRow}>
               <View>
                 <Text style={styles.title}>{gameInfo?.game?.name}</Text>
                 <Text style={styles.area}>
-                  {gameInfo?.game?.location?.area}
-                  {' , '}
+                  {gameInfo?.game?.location?.area},{' '}
                   {gameInfo?.game?.location?.city}
                 </Text>
               </View>
               <Icon name="heart-outline" size={28} color={'white'} />
             </View>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <View
-                style={{flexDirection: 'row', gap: 12, alignItems: 'center'}}>
+            <View style={styles.rowBetween}>
+              <View style={styles.row}>
                 <Icon name="gamepad-circle" size={28} color={'white'} />
                 <Text style={styles.gamename}>{gameInfo?.game?.category}</Text>
               </View>
-              <Text className="text-white font-semibold">
+              <Text style={styles.text}>
                 1hr Rates : ₹ {gameInfo?.game?.hourlyPrice}
               </Text>
             </View>
 
-            <Divider style={{backgroundColor: '#343e4e'}} />
+            <Divider style={styles.divider} />
 
             <View style={{gap: 16}}>
               <Text style={styles.sectionTitle}>Address</Text>
@@ -128,7 +90,7 @@ export function CourtDetailsScreen() {
               </TouchableOpacity>
             </View>
 
-            <Divider style={{backgroundColor: '#343e4e'}} />
+            <Divider style={styles.divider} />
 
             <View style={styles.venueInfoContainer}>
               <Text style={styles.sectionTitle}>Venue Info</Text>
@@ -151,6 +113,7 @@ export function CourtDetailsScreen() {
                   </Text>
                 </View>
               </View>
+
               <View style={styles.infoRow}>
                 <Text style={styles.label}>Court:</Text>
                 <View style={styles.infoBox}>
@@ -160,7 +123,8 @@ export function CourtDetailsScreen() {
                 </View>
               </View>
             </View>
-            <Divider style={{backgroundColor: '#343e4e'}} />
+
+            <Divider style={styles.divider} />
 
             <View style={{gap: 16}}>
               <Text style={styles.sectionTitle}>Description</Text>
@@ -172,9 +136,9 @@ export function CourtDetailsScreen() {
         <View style={styles.stickyButtonContainer}>
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => {
-              (navigation as any).navigate('TestScreen', {gameId});
-            }}>
+            onPress={() =>
+              (navigation as any).navigate('TestScreen', {gameId})
+            }>
             <LinearGradient
               colors={['#466fc0', '#142e97']}
               start={{x: 0, y: 0}}
@@ -225,22 +189,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   image: {
-    width: screenWidth,
-    height: 300,
+    width: width,
+    height: width,
     resizeMode: 'cover',
-  },
-  imageCounter: {
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  imageCounterText: {
-    color: 'white',
-    fontSize: 14,
   },
   title: {
     color: 'white',
@@ -255,11 +206,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 17,
   },
-  rating: {
-    color: 'white',
-    fontSize: 14,
-  },
-
   address: {
     color: '#9ca3af',
     fontSize: 17,
@@ -282,14 +228,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
   },
-  capacityContainer: {
-    backgroundColor: 'rgba(44, 43, 43, 0.6)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 20,
-    width: 70,
-    alignItems: 'center',
-  },
   stickyButtonContainer: {
     position: 'absolute',
     bottom: 0,
@@ -305,5 +243,23 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
+  },
+  rowBetween: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  divider: {
+    backgroundColor: '#343e4e',
   },
 });
