@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react';
 import {FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {Button, List, Text, useTheme} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {Button, Icon, List, Text, useTheme} from 'react-native-paper';
 
 import {useGetRooms, useJoinRoom, useRequestRoom} from '../api/room/room';
 import {useUserListLogic} from '../hooks/useUserListLogic';
@@ -54,7 +53,7 @@ const RoomScreen = ({setIsUpdate}: {setIsUpdate: (data: boolean) => void}) => {
         left={props => (
           <Icon
             {...props}
-            name={isRoomFull ? 'door-closed' : 'door-open'}
+            source={isRoomFull ? 'door-closed' : 'door-open'}
             size={24}
             color={theme.colors.primary}
           />
@@ -63,12 +62,15 @@ const RoomScreen = ({setIsUpdate}: {setIsUpdate: (data: boolean) => void}) => {
           <TouchableOpacity
             onPress={() => handleJoinRoom(item.id)}
             disabled={isRoomFull}>
-            <Icon
-              name="account-plus"
-              size={24}
-              color={isRoomFull ? theme.colors.secondary : theme.colors.primary}
-              style={styles.joinIconRight}
-            />
+            <View style={styles.joinIconRight}>
+              <Icon
+                source="account-plus"
+                size={24}
+                color={
+                  isRoomFull ? theme.colors.secondary : theme.colors.primary
+                }
+              />
+            </View>
           </TouchableOpacity>
         )}
       />
@@ -85,12 +87,13 @@ const RoomScreen = ({setIsUpdate}: {setIsUpdate: (data: boolean) => void}) => {
       keyExtractor={item => item.id.toString()}
       ListHeaderComponent={
         <View style={styles.joinContainer}>
-          <Icon
-            name="account-group"
-            size={80}
-            color={theme.colors.primary}
-            style={styles.joinIcon}
-          />
+          <View style={styles.joinIcon}>
+            <Icon
+              source="account-group"
+              size={80}
+              color={theme.colors.primary}
+            />
+          </View>
           <Text variant="titleLarge" style={styles.joinTitle}>
             Join a Room
           </Text>

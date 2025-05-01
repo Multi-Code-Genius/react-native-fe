@@ -2,19 +2,18 @@ import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
-import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {
   GestureHandlerRootView,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import { Avatar, Portal, TextInput, useTheme } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {Avatar, Icon, Portal, TextInput, useTheme} from 'react-native-paper';
 import Video from 'react-native-video';
-import { useUserStore } from '../store/userStore';
-import { videoStore } from '../store/videoStore';
-import { ReelItemProps } from '../types/video';
+import {useUserStore} from '../store/userStore';
+import {videoStore} from '../store/videoStore';
+import {ReelItemProps} from '../types/video';
 import CommentSheet from './CommentSheet';
 
 const ReelCard: React.FC<ReelItemProps> = ({
@@ -40,10 +39,10 @@ const ReelCard: React.FC<ReelItemProps> = ({
   const likeCount = item.likes?.length || 0;
   const commentCount = item.comments?.length || 0;
   const user = item.user;
-  const { videoLikeStatus, addLikesReels } = videoStore();
+  const {videoLikeStatus, addLikesReels} = videoStore();
   const [inputKey, setInputKey] = useState(0);
 
-  const { userData } = useUserStore();
+  const {userData} = useUserStore();
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -53,7 +52,7 @@ const ReelCard: React.FC<ReelItemProps> = ({
         appearsOnIndex={0}
         opacity={0.5}
         pressBehavior="close"
-        style={{ backgroundColor: theme.colors.backdrop }}
+        style={{backgroundColor: theme.colors.backdrop}}
       />
     ),
     [theme.colors.backdrop],
@@ -76,7 +75,7 @@ const ReelCard: React.FC<ReelItemProps> = ({
     return null;
   }
   const handleSubmit = (id: string | undefined) => {
-    (navigation as any).navigate('UserProfile', { id });
+    (navigation as any).navigate('UserProfile', {id});
   };
 
   const handleSubmitComment = () => {
@@ -98,20 +97,20 @@ const ReelCard: React.FC<ReelItemProps> = ({
   const isPaused = index !== currentIndex || appState !== 'active' || !isActive;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{flex: 1}}>
       <TapGestureHandler
         numberOfTaps={2}
         onActivated={() =>
           userData?.id &&
           onDoubleTap(
             videoLikeStatus.includes(item.id) ||
-            (item.likes.length > 0 &&
-              item.likes.some(like => userData.id === like.userId)),
+              (item.likes.length > 0 &&
+                item.likes.some(like => userData.id === like.userId)),
           )
         }>
-        <View style={[styles.videoContainer, { height: usableHeight }]}>
+        <View style={[styles.videoContainer, {height: usableHeight}]}>
           <Video
-            source={{ uri: videoUrl }}
+            source={{uri: videoUrl}}
             resizeMode="cover"
             repeat
             paused={isPaused}
@@ -129,13 +128,13 @@ const ReelCard: React.FC<ReelItemProps> = ({
               onPress={() => onDoubleTap(false)}
               style={styles.iconWrapper}>
               <Icon
-                name="heart"
+                source="heart"
                 size={28}
                 color={
                   userData?.id &&
-                    (videoLikeStatus.includes(item.id) ||
-                      (item.likes.length > 0 &&
-                        item.likes.some(like => like.userId === userData.id)))
+                  (videoLikeStatus.includes(item.id) ||
+                    (item.likes.length > 0 &&
+                      item.likes.some(like => like.userId === userData.id)))
                     ? 'red'
                     : 'white'
                 }
@@ -145,12 +144,12 @@ const ReelCard: React.FC<ReelItemProps> = ({
             <TouchableOpacity
               style={styles.actionButton}
               onPress={openCommentSheet}>
-              <Icon name="comment-outline" size={28} color="white" />
+              <Icon source="comment-outline" size={28} color="white" />
               <Text style={styles.actionText}> {commentCount}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.actionButton}>
-              <Icon name="share" size={28} color="white" />
+              <Icon source="share" size={28} color="white" />
               <Text style={styles.actionText}>Share</Text>
             </TouchableOpacity>
           </View>
@@ -158,7 +157,7 @@ const ReelCard: React.FC<ReelItemProps> = ({
           <View style={styles.bottomInfo}>
             <View style={styles.userRow}>
               {user?.profile_pic ? (
-                <Avatar.Image size={32} source={{ uri: user.profile_pic }} />
+                <Avatar.Image size={32} source={{uri: user.profile_pic}} />
               ) : (
                 <Avatar.Icon size={32} icon="account" />
               )}
@@ -184,8 +183,8 @@ const ReelCard: React.FC<ReelItemProps> = ({
           enableHandlePanningGesture
           enableOverDrag
           enableDynamicSizing
-          backgroundStyle={{ backgroundColor: theme.colors.background }}
-          handleIndicatorStyle={{ backgroundColor: theme.colors.secondary }}>
+          backgroundStyle={{backgroundColor: theme.colors.background}}
+          handleIndicatorStyle={{backgroundColor: theme.colors.secondary}}>
           <BottomSheetScrollView
             contentContainerStyle={{
               backgroundColor: theme.colors.background,
@@ -194,12 +193,10 @@ const ReelCard: React.FC<ReelItemProps> = ({
           </BottomSheetScrollView>
 
           <View style={styles.inputContainer}>
-            <Icon
-              name="account-circle"
-              size={32}
-              color="#555"
-              style={{ marginRight: 12 }}
-            />
+            <View style={{marginRight: 12}}>
+              <Icon source="account-circle" size={32} color="#555" />
+            </View>
+
             <TextInput
               placeholder="Add a comment..."
               defaultValue={postComment}
@@ -212,8 +209,8 @@ const ReelCard: React.FC<ReelItemProps> = ({
                   disabled={!postComment.trim()}
                 />
               }
-              style={{ flex: 1, backgroundColor: 'transparent' }}
-              underlineStyle={{ display: 'none' }}
+              style={{flex: 1, backgroundColor: 'transparent'}}
+              underlineStyle={{display: 'none'}}
             />
           </View>
         </BottomSheet>

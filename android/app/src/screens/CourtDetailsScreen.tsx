@@ -11,9 +11,8 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {ActivityIndicator, Divider, IconButton} from 'react-native-paper';
+import {ActivityIndicator, Divider, Icon, IconButton} from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useGetGameByIde} from '../api/games/useGame';
 import {Modal} from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
@@ -94,12 +93,12 @@ export function CourtDetailsScreen() {
                   {gameInfo?.game?.location?.city}
                 </Text>
               </View>
-              <Icon name="heart-outline" size={28} color={'white'} />
+              <Icon source="heart-outline" size={28} color={'white'} />
             </View>
 
             <View style={styles.rowBetween}>
               <View style={styles.row}>
-                <Icon name="gamepad-circle" size={28} color={'white'} />
+                <Icon source="gamepad-circle" size={28} color={'white'} />
                 <Text style={styles.gamename}>{gameInfo?.game?.category}</Text>
               </View>
               <Text style={styles.text}>

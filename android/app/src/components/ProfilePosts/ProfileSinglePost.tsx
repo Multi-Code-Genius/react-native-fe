@@ -13,8 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Portal, TextInput, useTheme} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {Icon, Portal, TextInput, useTheme} from 'react-native-paper';
 import {
   useCommentPhoto,
   useLikePhoto,
@@ -140,7 +139,7 @@ export function ProfileSinglePost({postData, isFirst}: ProfileSinglePostProps) {
             onPress={handleLikeToggle}
             className="flex-row items-center gap-1">
             <Icon
-              name="heart"
+              source="heart"
               size={28}
               color={
                 userData?.id &&
@@ -159,7 +158,7 @@ export function ProfileSinglePost({postData, isFirst}: ProfileSinglePostProps) {
           <TouchableOpacity
             className="flex-row items-center gap-2"
             onPress={openCommentSheet}>
-            <Icon name="comment-outline" size={24} color="white" />
+            <Icon source="comment-outline" size={24} color="white" />
             <Text className="text-white text-base font-bold">
               {commentCount}
             </Text>
@@ -192,12 +191,7 @@ export function ProfileSinglePost({postData, isFirst}: ProfileSinglePostProps) {
             <CommentSheet comments={data?.video?.comments ?? []} />
           </BottomSheetScrollView>
           <View style={styles.inputContainer}>
-            <Icon
-              name="account-circle"
-              size={32}
-              color="#555"
-              style={{marginRight: 12}}
-            />
+            <Icon source="account-circle" size={32} color="#555" />
             <TextInput
               placeholder="Add a comment..."
               defaultValue={postComment}
