@@ -1,5 +1,4 @@
-import React from 'react';
-
+import React, {useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {
   Dimensions,
@@ -12,14 +11,17 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {ActivityIndicator, Divider} from 'react-native-paper';
+import {ActivityIndicator, Divider, IconButton} from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useGetGameByIde} from '../api/games/useGame';
+import {Modal} from 'react-native';
+import ImageViewer from 'react-native-image-zoom-viewer';
 
 const {width} = Dimensions.get('window');
 
 export function CourtDetailsScreen() {
+  const [visible, setVisible] = useState(false);
   const route = useRoute();
   const navigation = useNavigation();
   const gameId = (route.params as {gameId?: any})?.gameId;
@@ -27,7 +29,9 @@ export function CourtDetailsScreen() {
   const {data: gameInfo, isLoading: gameDataLoading} = useGetGameByIde(gameId);
 
   const renderImage = ({item}: any) => (
-    <Image source={{uri: item}} style={styles.image} />
+    <TouchableOpacity activeOpacity={1} onPress={() => setVisible(true)}>
+      <Image source={{uri: item}} style={styles.image} />
+    </TouchableOpacity>
   );
 
   if (gameDataLoading) {
@@ -38,8 +42,35 @@ export function CourtDetailsScreen() {
     );
   }
 
+  const imageData = gameInfo?.game?.images.map((image: string) => ({
+    url: image as string,
+  }));
+
   return (
     <SafeAreaView style={{flex: 1}}>
+      <View>
+        <Modal
+          visible={visible}
+          transparent={true}
+          onRequestClose={() => setVisible(false)}>
+          <ImageViewer
+            imageUrls={imageData}
+            onSwipeDown={() => setVisible(false)}
+          />
+          <IconButton
+            onPress={() => setVisible(false)}
+            icon="close"
+            style={{
+              position: 'absolute',
+              top: 40,
+              right: 20,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              padding: 10,
+              borderRadius: 20,
+            }}
+          />
+        </Modal>
+      </View>
       <View style={{flex: 1}}>
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -47,10 +78,8 @@ export function CourtDetailsScreen() {
           <Carousel
             width={width}
             height={width}
-            autoPlay
             data={gameInfo?.game?.images}
             renderItem={renderImage}
-            mode="parallax"
           />
 
           <View style={{padding: 16, marginTop: 16, gap: 24}}>
