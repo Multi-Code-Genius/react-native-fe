@@ -12,5 +12,5 @@ export const useAmountCalculator = (
 
   const totalAmount = hourlyPrice * durationInHours * nets;
 
-  return {totalAmount};
+  return totalAmount;
 };

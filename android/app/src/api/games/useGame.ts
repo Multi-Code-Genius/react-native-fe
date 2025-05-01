@@ -1,4 +1,4 @@
-import {useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import {api} from '../../hooks/api';
 
 export const fetchGames = async () => {
@@ -43,5 +43,44 @@ export const useGetGameByIde = (id: string) => {
     queryKey: ['oneGame', id],
     queryFn: () => getGameById(id),
     enabled: !!id,
+  });
+};
+
+export const getGameByIdAndDate = async ({
+  gameId,
+  date,
+}: {
+  gameId: string;
+  date: string;
+}) => {
+  try {
+    const response = await api(`/api/game/gameId/${gameId}/${date}`, {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'},
+      cache: 'no-store',
+    });
+    return response;
+  } catch (error) {
+    console.error('message Error:', error);
+    throw new Error(error instanceof Error ? error.message : 'message failed');
+  }
+};
+
+export const useGetGameByIdeAndDate = () => {
+  return useMutation({
+    mutationKey: ['oneGameBydate'],
+    mutationFn: ({gameId, date}: {gameId: string; date: string}) =>
+      getGameByIdAndDate({gameId, date}),
+  });
+};
+
+export const useGetGameByIdeAndDateForQuery = (
+  gameId: string,
+  date: string,
+) => {
+  return useQuery({
+    queryKey: ['oneGameByDateDefault', gameId, date],
+    queryFn: () => getGameByIdAndDate({gameId, date}),
+    enabled: !!gameId && !!date,
   });
 };

@@ -1,5 +1,3 @@
-import moment from 'moment-timezone';
-
 export const parseTimeRange = (rangeStr: any) => {
   const [startStr, endStr] = rangeStr.split('-');
 
@@ -25,31 +23,24 @@ export const parseTimeRange = (rangeStr: any) => {
 };
 
 export const isOverlapping = (
-  segmentStart: Date,
-  segmentEnd: Date,
-  bookingStart: string,
-  bookingEnd: string,
+  segmentStart: any,
+  segmentEnd: any,
+  bookingStart: any,
+  bookingEnd: any,
 ) => {
-  const toISTDate = (base: Date, timeStr: string) => {
-    const dateStr = moment(base).tz('Asia/Kolkata').format('YYYY-MM-DD');
-    const fullDateTime = moment.tz(
-      `${dateStr} ${timeStr}`,
-      'YYYY-MM-DD h A',
-      'Asia/Kolkata',
-    );
-    return fullDateTime.isValid() ? fullDateTime.toDate() : null;
-  };
+  if (segmentEnd < segmentStart) {
+    segmentEnd.setDate(segmentEnd.getDate() + 1);
+  }
 
-  const bookingStartDate = toISTDate(segmentStart, bookingStart);
-  const bookingEndDate = toISTDate(segmentStart, bookingEnd);
+  const segmentStartDate = new Date(segmentStart);
+  const segmentEndDate = new Date(segmentEnd);
+  const bookingStartDate = new Date(bookingStart);
+  const bookingEndDate = new Date(bookingEnd);
 
-  if (!bookingStartDate || !bookingEndDate) return false;
+  const isWithinBooking =
+    segmentStartDate >= bookingStartDate && segmentEndDate <= bookingEndDate;
 
-  return (
-    (segmentStart >= bookingStartDate && segmentStart < bookingEndDate) ||
-    (segmentEnd > bookingStartDate && segmentEnd <= bookingEndDate) ||
-    (segmentStart <= bookingStartDate && segmentEnd >= bookingEndDate)
-  );
+  return isWithinBooking;
 };
 
 export const parseISTTime = (
