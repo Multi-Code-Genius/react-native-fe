@@ -1,20 +1,21 @@
-import React, {useState} from 'react';
-import {
-  SafeAreaView,
-  View,
-  Text,
-  Image,
-  Dimensions,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
-import {ActivityIndicator, Divider} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import LinearGradient from 'react-native-linear-gradient';
+import React from 'react';
+
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {useGetGameByIde} from '../api/games/useGame';
+import {
+  Dimensions,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import {ActivityIndicator, Divider} from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useGetGameByIde} from '../api/games/useGame';
 
 const {width} = Dimensions.get('window');
 

@@ -1,5 +1,6 @@
 import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import React, {useRef, useState} from 'react';
+
 import {
   Appbar,
   Button,
@@ -8,10 +9,12 @@ import {
   Text,
   useTheme,
 } from 'react-native-paper';
-import moment from 'moment';
+import {useRoute} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
 import {timeSlots} from '../constant/timeSlots';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useGetGameByIde} from '../api/games/useGame';
+import {isOverlapping, parseTimeRange} from '../hooks/helper';
+import moment from 'moment';
 
 const {width} = Dimensions.get('window');
 
@@ -20,13 +23,11 @@ type CarouselRefType = React.ComponentRef<typeof Carousel>;
 const TestScreen = () => {
   const theme = useTheme();
   const route = useRoute();
-  const navigation = useNavigation();
   const {gameId} = route.params as {gameId: any};
-  console.log('gameId', gameId);
 
+  const {data: gameInfo} = useGetGameByIde(gameId);
   const [selectedDate, setSelectedDate] = useState(moment().format('D MMM'));
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('Twilight');
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [value, setValue] = useState([]);
   const carouselRef = useRef<CarouselRefType>(null);
 
@@ -39,7 +40,6 @@ const TestScreen = () => {
 
   const handleTimeSlotSelection = (timeSlot: string, index: number) => {
     setSelectedTimeSlot(timeSlot);
-    setCurrentIndex(index);
     const selected = timeSlots[index];
     if (selected) {
       setCarouselData(selected.carouselData);
@@ -48,7 +48,6 @@ const TestScreen = () => {
   };
 
   const handleCarouselSnap = (index: number) => {
-    setCurrentIndex(index);
     setSelectedTimeSlot(timeSlots[index].slot);
     setCarouselData(timeSlots[index].carouselData);
   };
@@ -61,7 +60,6 @@ const TestScreen = () => {
     // reset to default
     setSelectedDate(moment().format('D MMM'));
     setSelectedTimeSlot('Twilight');
-    setCurrentIndex(0);
     setCarouselData(timeSlots[0].carouselData);
     setValue([]);
     carouselRef.current?.scrollTo({index: 0, animated: false});
@@ -82,12 +80,48 @@ const TestScreen = () => {
             multiSelect
             value={value}
             onValueChange={setValue}
-            buttons={item.carouselData.flatMap(
-              (slot: any) =>
-                slot.firstHalf_timeRange?.map((data: any) => ({
-                  value: data,
-                  label: '',
-                })) || [],
+            buttons={carouselData.flatMap(
+              slot =>
+                slot.firstHalf_timeRange?.map(timeRange => {
+                  const {start: segStart, end: segEnd} =
+                    parseTimeRange(timeRange);
+
+                  const isBooked = gameInfo?.game?.bookings.some(
+                    (booking: any) => {
+                      const utcTimeStart = booking?.startTime;
+                      const utcTimeEnd = booking?.endTime;
+
+                      const hourInIST12Start = moment
+                        .utc(utcTimeStart)
+                        .tz('Asia/Kolkata')
+                        .format('h A');
+
+                      const hourInIST12End = moment
+                        .utc(utcTimeEnd)
+                        .tz('Asia/Kolkata')
+                        .format('h A');
+
+                      const bookStart = hourInIST12Start;
+                      const bookEnd = hourInIST12End;
+
+                      return isOverlapping(
+                        segStart,
+                        segEnd,
+                        bookStart,
+                        bookEnd,
+                      );
+                    },
+                  );
+
+                  return {
+                    value: timeRange,
+                    label: timeRange,
+                    disabled: isBooked,
+                    style: isBooked
+                      ? {backgroundColor: 'red', opacity: 0.5}
+                      : undefined,
+                  };
+                }) || [],
             )}
           />
         </View>
@@ -103,12 +137,41 @@ const TestScreen = () => {
             multiSelect
             value={value}
             onValueChange={setValue}
-            buttons={item.carouselData.flatMap(
-              (slot: any) =>
-                slot.secondHalf_timeRange?.map((data: any) => ({
-                  value: data,
-                  label: '',
-                })) || [],
+            buttons={carouselData.flatMap(
+              slot =>
+                slot.secondHalf_timeRange?.map(timeRange => {
+                  const {start: segStart, end: segEnd} =
+                    parseTimeRange(timeRange);
+
+                  const isBooked = gameInfo?.game?.bookings.some(booking => {
+                    const utcTimeStart = booking?.startTime;
+                    const utcTimeEnd = booking?.endTime;
+
+                    const hourInIST12Start = moment
+                      .utc(utcTimeStart)
+                      .tz('Asia/Kolkata')
+                      .format('h A');
+
+                    const hourInIST12End = moment
+                      .utc(utcTimeEnd)
+                      .tz('Asia/Kolkata')
+                      .format('h A');
+
+                    const bookStart = hourInIST12Start;
+                    const bookEnd = hourInIST12End;
+
+                    return isOverlapping(segStart, segEnd, bookStart, bookEnd);
+                  });
+
+                  return {
+                    value: timeRange,
+                    label: timeRange,
+                    disabled: isBooked,
+                    style: isBooked
+                      ? {backgroundColor: 'red', opacity: 0.5}
+                      : undefined,
+                  };
+                }) || [],
             )}
           />
         </View>
@@ -119,8 +182,8 @@ const TestScreen = () => {
   return (
     <View style={styles.container}>
       <Appbar.Header style={{backgroundColor: theme.colors.background}}>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Double Dribble, Aminjikarai" />
+        <Appbar.BackAction />
+        <Appbar.Content title={gameInfo.game.name} />
       </Appbar.Header>
 
       <View style={styles.content}>
