@@ -63,13 +63,11 @@ export function CourtDetailsScreen() {
           <IconButton
             onPress={() => setVisible(false)}
             icon="close"
+            mode="contained"
             style={{
               position: 'absolute',
-              top: 40,
+              top: 20,
               right: 20,
-              backgroundColor: 'rgba(0,0,0,0.5)',
-              padding: 10,
-              borderRadius: 20,
             }}
           />
         </Modal>
