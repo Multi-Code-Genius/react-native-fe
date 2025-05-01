@@ -1,27 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import moment from 'moment-timezone';
-<<<<<<< HEAD
-import { useNavigation, useRoute } from '@react-navigation/native';
-=======
 import {useNavigation, useRoute} from '@react-navigation/native';
->>>>>>> 000d0af68fa8ce2fa2a5ec7e74f71ec41b8a8210
 import {
   Appbar,
   Button,
+  Chip,
   Divider,
   SegmentedButtons,
   Text,
   useTheme,
 } from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
-import { useGetGameByIdAndDate } from '../api/games/useGame';
-import { timeSlots } from '../constant/timeSlots';
-import { isOverlapping, parseTimeRange } from '../hooks/helper';
-import { useBookingGames } from '../api/booking/useBooking';
-import { useUserStore } from '../store/userStore';
+import {useGetGameByIdAndDate} from '../api/games/useGame';
+import {timeSlots} from '../constant/timeSlots';
+import {isOverlapping, parseTimeRange} from '../hooks/helper';
+import {useBookingGames} from '../api/booking/useBooking';
+import {useUserStore} from '../store/userStore';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 type CarouselRefType = React.ComponentRef<typeof Carousel>;
 
@@ -29,9 +26,11 @@ const TestScreen = () => {
   const theme = useTheme();
   const route = useRoute();
   const navigate = useNavigation();
-  const { gameId } = route.params as { gameId: string };
-  const { mutate, isPending, data: gameInfo } = useGetGameByIdAndDate();
-  const { selectedDate, setSelectedDate } = useUserStore();
+
+  const {gameId} = route.params as {gameId: string};
+  const {mutate, isPending, data: gameInfo} = useGetGameByIdAndDate();
+  const {selectedDate, setSelectedDate} = useUserStore();
+  const [selectedCourt, setSelectedCourt] = useState<number>(1);
 
   const {
     mutate: bookingMutate,
@@ -44,7 +43,7 @@ const TestScreen = () => {
       selectedDate + ' ' + moment().year(),
       'D MMM YYYY',
     ).format('YYYY-MM-DD');
-    mutate({ gameId, date: formattedDate });
+    mutate({gameId, date: formattedDate});
   }, [mutate, gameId, selectedDate, isSuccess]);
 
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('Twilight');
@@ -52,7 +51,7 @@ const TestScreen = () => {
   const carouselRef = useRef<CarouselRefType>(null);
 
   const today = moment();
-  const next30Days = Array.from({ length: 31 }, (_, i) =>
+  const next30Days = Array.from({length: 31}, (_, i) =>
     today.clone().add(i, 'days'),
   );
 
@@ -63,7 +62,7 @@ const TestScreen = () => {
     const selected = timeSlots[index];
     if (selected) {
       setCarouselData(selected.carouselData);
-      carouselRef.current?.scrollTo({ index, animated: true });
+      carouselRef.current?.scrollTo({index, animated: true});
     }
   };
 
@@ -86,7 +85,8 @@ const TestScreen = () => {
     const startTime = `${parseInt(startTimeRaw, 10)}${endPeriod}`;
     const endTime = endTimeRaw.replace(' ', '');
 
-    const nets = 2;
+    const nets = selectedCourt || 1;
+
     const hourlyPrice = gameInfo?.game?.hourlyPrice;
 
     const start = moment(`${formattedDate} ${startTime}`, 'YYYY-MM-DD ha');
@@ -105,15 +105,19 @@ const TestScreen = () => {
       gameId: gameId,
       date: formattedDate,
     };
+    console.log('bookinggg', bookingPayload);
+    bookingMutate(bookingPayload);
 
     bookingMutate(bookingPayload);
     // setSelectedTimeSlot('Twilight');
     // setCarouselData(timeSlots[0].carouselData);
     setValue([]);
-    // carouselRef.current?.scrollTo({index: 0, animated: false});
+    setSelectedCourt(1);
+    carouselRef.current?.scrollTo({index: 0, animated: false});
   };
+  const number = 0;
 
-  const renderItem = ({ item }: { item: any }) => {
+  const renderItem = ({item}: {item: any}) => {
     if (isPending) {
       return (
         <View style={styles.skeletonContainer}>
@@ -128,9 +132,9 @@ const TestScreen = () => {
     }
 
     return (
-      <View style={{ flex: 1, padding: 10 }}>
-        <View style={{ flex: 1, gap: 20 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <View style={{flex: 1, padding: 10}}>
+        <View style={{flex: 1, gap: 20}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             {item.carouselData.map((slot: any, index: any) =>
               slot.firstHalf?.map((data: any, subIndex: any) => (
                 <Text key={`${index}-${subIndex}`}>{data}</Text>
@@ -148,7 +152,7 @@ const TestScreen = () => {
                     `${selectedDate} ${moment().year()}`,
                     'D MMM YYYY',
                   ).format('YYYY-MM-DD');
-                  const { start: segStart, end: segEnd } = parseTimeRange(
+                  const {start: segStart, end: segEnd} = parseTimeRange(
                     timeRange,
                     formattedDate,
                   );
@@ -176,15 +180,15 @@ const TestScreen = () => {
                     label: '',
                     disabled: isBooked,
                     style: isBooked
-                      ? { backgroundColor: 'red', opacity: 0.5 }
+                      ? {backgroundColor: 'red', opacity: 0.5}
                       : undefined,
                   };
                 }) || [],
             )}
           />
         </View>
-        <View style={{ flex: 1, gap: 20 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{flex: 1, gap: 20}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             {item.carouselData.map((slot: any, index: any) =>
               slot.secondHalf?.map((data: any, subIndex: any) => (
                 <Text key={`${index}-${subIndex}`}>{data}</Text>
@@ -202,7 +206,7 @@ const TestScreen = () => {
                     `${selectedDate} ${moment().year()}`,
                     'D MMM YYYY',
                   ).format('YYYY-MM-DD');
-                  const { start: segStart, end: segEnd } = parseTimeRange(
+                  const {start: segStart, end: segEnd} = parseTimeRange(
                     timeRange,
                     formattedDate,
                   );
@@ -230,7 +234,7 @@ const TestScreen = () => {
                     label: '',
                     disabled: isBooked,
                     style: isBooked
-                      ? { backgroundColor: 'red', opacity: 0.5 }
+                      ? {backgroundColor: 'red', opacity: 0.5}
                       : undefined,
                   };
                 }) || [],
@@ -243,12 +247,49 @@ const TestScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={{ backgroundColor: theme.colors.background }}>
+      <Appbar.Header style={{backgroundColor: theme.colors.background}}>
         <Appbar.BackAction onPress={() => navigate.goBack()} />
         <Appbar.Content title={gameInfo?.game?.name} />
       </Appbar.Header>
 
       <View style={styles.content}>
+        <View className="p-4 gap-4">
+          <Text>No of Courts</Text>
+          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+            {Array.from({length: gameInfo?.game?.net || 0}, (_, index) => (
+              <Chip
+                key={index}
+                style={{
+                  display: 'flex',
+                  width: 70,
+                  margin: 4,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+
+                  backgroundColor:
+                    selectedCourt === index + 1
+                      ? theme.colors.primary
+                      : theme.colors.surfaceVariant,
+                }}
+                textStyle={{
+                  color: 'white',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                }}
+                onPress={() => {
+                  if (selectedCourt !== index + 1) {
+                    setSelectedCourt(index + 1);
+                  }
+                }}>
+                <View style={{width: '100%', alignItems: 'center'}}>
+                  <Text style={{color: 'white'}}>{index + 1}</Text>
+                </View>
+              </Chip>
+            ))}
+          </View>
+        </View>
+
+        <Divider leftInset horizontalInset style={{opacity: 0.2}} bold />
         <View style={styles.section}>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             {next30Days.map(date => {
@@ -269,7 +310,7 @@ const TestScreen = () => {
                         style={
                           isSelected
                             ? undefined
-                            : { color: theme.colors.secondary }
+                            : {color: theme.colors.secondary}
                         }>
                         {date.format('ddd')}
                       </Text>
@@ -278,7 +319,7 @@ const TestScreen = () => {
                         style={
                           isSelected
                             ? undefined
-                            : { color: theme.colors.secondary }
+                            : {color: theme.colors.secondary}
                         }>
                         {date.format('D MMM')}
                       </Text>
@@ -289,8 +330,8 @@ const TestScreen = () => {
             })}
           </ScrollView>
         </View>
-        <Divider leftInset horizontalInset style={{ opacity: 0.2 }} bold />
-        <View style={{ flex: 1, gap: 20 }}>
+        <Divider leftInset horizontalInset style={{opacity: 0.2}} bold />
+        <View style={{flex: 1, gap: 20}}>
           <View style={styles.timeSlotContainer}>
             {timeSlots.map((time, index) => {
               const isTimeSelected = selectedTimeSlot === time.slot;
@@ -298,7 +339,7 @@ const TestScreen = () => {
                 <Button
                   key={time.slot}
                   labelStyle={
-                    !isTimeSelected && { color: theme.colors.secondary }
+                    !isTimeSelected && {color: theme.colors.secondary}
                   }
                   mode={isTimeSelected ? 'contained' : 'text'}
                   icon={isTimeSelected ? time.icon : undefined}
@@ -329,7 +370,7 @@ const TestScreen = () => {
             />
           </View>
         </View>
-        <View style={{ paddingHorizontal: 20, marginBottom: 20 }}>
+        <View style={{paddingHorizontal: 20, marginBottom: 20}}>
           <Button
             mode="contained"
             disabled={bookingPending || value.length === 0}
@@ -338,7 +379,7 @@ const TestScreen = () => {
           </Button>
         </View>
       </View>
-    </View >
+    </View>
   );
 };
 
