@@ -167,7 +167,7 @@ export function CourtDetailsScreen() {
 
         <View style={styles.stickyButtonContainer}>
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={1}
             onPress={() =>
               (navigation as any).navigate('TestScreen', {gameId})
             }>

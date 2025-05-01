@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import moment from 'moment-timezone';
-import {useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {
   Appbar,
   Button,
@@ -24,11 +24,16 @@ type CarouselRefType = React.ComponentRef<typeof Carousel>;
 const TestScreen = () => {
   const theme = useTheme();
   const route = useRoute();
+  const navigate = useNavigation();
   const {gameId} = route.params as {gameId: string};
   const {mutate, isPending, data: gameInfo} = useGetGameByIdAndDate();
   const {selectedDate, setSelectedDate} = useUserStore();
 
-  const {mutate: bookingMutate, isSuccess} = useBookingGames();
+  const {
+    mutate: bookingMutate,
+    isSuccess,
+    isPending: bookingPending,
+  } = useBookingGames();
 
   useEffect(() => {
     const formattedDate = moment(
@@ -96,14 +101,12 @@ const TestScreen = () => {
       gameId: gameId,
       date: formattedDate,
     };
-    console.log('object', bookingPayload);
-    bookingMutate(bookingPayload);
 
-    setSelectedDate(moment().format('D MMM'));
-    setSelectedTimeSlot('Twilight');
+    bookingMutate(bookingPayload);
+    // setSelectedTimeSlot('Twilight');
     // setCarouselData(timeSlots[0].carouselData);
     setValue([]);
-    carouselRef.current?.scrollTo({index: 0, animated: false});
+    // carouselRef.current?.scrollTo({index: 0, animated: false});
   };
 
   const renderItem = ({item}: {item: any}) => {
@@ -237,7 +240,7 @@ const TestScreen = () => {
   return (
     <View style={styles.container}>
       <Appbar.Header style={{backgroundColor: theme.colors.background}}>
-        <Appbar.BackAction />
+        <Appbar.BackAction onPress={() => navigate.goBack()} />
         <Appbar.Content title={gameInfo?.game?.name} />
       </Appbar.Header>
 
@@ -253,6 +256,7 @@ const TestScreen = () => {
                     mode={isSelected ? 'contained' : 'text'}
                     onPress={() => {
                       setSelectedDate(dateString);
+                      setValue([]);
                       // mutate({gameId, date: formattedDate});
                     }}>
                     <View style={styles.dateButtonContent}>
@@ -322,7 +326,10 @@ const TestScreen = () => {
           </View>
         </View>
         <View style={{paddingHorizontal: 20, marginBottom: 20}}>
-          <Button mode="contained" onPress={handleSubmit}>
+          <Button
+            mode="contained"
+            disabled={bookingPending || value.length === 0}
+            onPress={handleSubmit}>
             Submit
           </Button>
         </View>
