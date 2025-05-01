@@ -1,7 +1,9 @@
+import React, {useEffect, useRef, useState} from 'react';
 import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
-import React, {useRef, useState} from 'react';
-
+import moment from 'moment-timezone';
+import {useRoute} from '@react-navigation/native';
 import {
+  ActivityIndicator,
   Appbar,
   Button,
   Divider,
@@ -9,12 +11,11 @@ import {
   Text,
   useTheme,
 } from 'react-native-paper';
-import {useRoute} from '@react-navigation/native';
 import Carousel from 'react-native-reanimated-carousel';
+import {useGetGameByIdeAndDate} from '../api/games/useGame';
 import {timeSlots} from '../constant/timeSlots';
-import {useGetGameByIde} from '../api/games/useGame';
 import {isOverlapping, parseTimeRange} from '../hooks/helper';
-import moment from 'moment';
+import {useBookingGames} from '../api/booking/useBooking';
 
 const {width} = Dimensions.get('window');
 
@@ -23,9 +24,16 @@ type CarouselRefType = React.ComponentRef<typeof Carousel>;
 const TestScreen = () => {
   const theme = useTheme();
   const route = useRoute();
-  const {gameId} = route.params as {gameId: any};
+  const {gameId} = route.params as {gameId: string};
+  const todayDate = moment().format('YYYY-MM-DD');
 
-  const {data: gameInfo} = useGetGameByIde(gameId);
+  const {mutate, isPending, data: gameInfo} = useGetGameByIdeAndDate();
+  const {mutate: bookingMutate} = useBookingGames();
+
+  useEffect(() => {
+    mutate({gameId, date: todayDate});
+  }, [mutate, gameId, todayDate]);
+
   const [selectedDate, setSelectedDate] = useState(moment().format('D MMM'));
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('Twilight');
   const [value, setValue] = useState([]);
@@ -53,11 +61,41 @@ const TestScreen = () => {
   };
 
   const handleSubmit = () => {
-    console.log('Selected Date:', selectedDate);
-    console.log('Selected Time Slot:', selectedTimeSlot);
-    console.log('Selected Time Ranges:', value);
+    const formattedDate = moment(
+      `${selectedDate} ${moment().year()}`,
+      'D MMM YYYY',
+    ).format('YYYY-MM-DD');
 
-    // reset to default
+    const startTimeRaw = value[0]?.split('-')[0].trim();
+    const endTimeRaw = value[value.length - 1]?.split('-')[1].trim();
+
+    const endPeriod = endTimeRaw.toLowerCase().includes('pm') ? 'pm' : 'am';
+
+    const startTime = `${parseInt(startTimeRaw, 10)}${endPeriod}`;
+    const endTime = endTimeRaw.replace(' ', '');
+
+    const nets = 2;
+    const hourlyPrice = gameInfo?.game?.hourlyPrice;
+
+    const start = moment(`${formattedDate} ${startTime}`, 'YYYY-MM-DD ha');
+    const end = moment(`${formattedDate} ${endTime}`, 'YYYY-MM-DD ha');
+
+    const durationInMinutes = end.diff(start, 'minutes');
+    const durationInHours = durationInMinutes / 60;
+
+    const totalAmount = hourlyPrice * durationInHours * nets;
+
+    const bookingPayload = {
+      startTime,
+      endTime,
+      nets,
+      totalAmount,
+      gameId: gameId,
+      date: formattedDate,
+    };
+
+    // bookingMutate(bookingPayload);
+
     setSelectedDate(moment().format('D MMM'));
     setSelectedTimeSlot('Twilight');
     setCarouselData(timeSlots[0].carouselData);
@@ -86,36 +124,27 @@ const TestScreen = () => {
                   const {start: segStart, end: segEnd} =
                     parseTimeRange(timeRange);
 
-                  const isBooked = gameInfo?.game?.bookings.some(
-                    (booking: any) => {
-                      const utcTimeStart = booking?.startTime;
-                      const utcTimeEnd = booking?.endTime;
+                  const isBooked = gameInfo?.game?.bookings?.some(booking => {
+                    const bookingStart = moment
+                      .utc(booking?.startTime)
+                      .tz('Asia/Kolkata')
+                      .toDate();
+                    const bookingEnd = moment
+                      .utc(booking?.endTime)
+                      .tz('Asia/Kolkata')
+                      .toDate();
 
-                      const hourInIST12Start = moment
-                        .utc(utcTimeStart)
-                        .tz('Asia/Kolkata')
-                        .format('h A');
-
-                      const hourInIST12End = moment
-                        .utc(utcTimeEnd)
-                        .tz('Asia/Kolkata')
-                        .format('h A');
-
-                      const bookStart = hourInIST12Start;
-                      const bookEnd = hourInIST12End;
-
-                      return isOverlapping(
-                        segStart,
-                        segEnd,
-                        bookStart,
-                        bookEnd,
-                      );
-                    },
-                  );
+                    return isOverlapping(
+                      segStart,
+                      segEnd,
+                      bookingStart,
+                      bookingEnd,
+                    );
+                  });
 
                   return {
                     value: timeRange,
-                    label: timeRange,
+                    label: '',
                     disabled: isBooked,
                     style: isBooked
                       ? {backgroundColor: 'red', opacity: 0.5}
@@ -144,28 +173,26 @@ const TestScreen = () => {
                     parseTimeRange(timeRange);
 
                   const isBooked = gameInfo?.game?.bookings.some(booking => {
-                    const utcTimeStart = booking?.startTime;
-                    const utcTimeEnd = booking?.endTime;
-
-                    const hourInIST12Start = moment
-                      .utc(utcTimeStart)
+                    const bookingStart = moment
+                      .utc(booking?.startTime)
                       .tz('Asia/Kolkata')
-                      .format('h A');
-
-                    const hourInIST12End = moment
-                      .utc(utcTimeEnd)
+                      .toDate();
+                    const bookingEnd = moment
+                      .utc(booking?.endTime)
                       .tz('Asia/Kolkata')
-                      .format('h A');
+                      .toDate();
 
-                    const bookStart = hourInIST12Start;
-                    const bookEnd = hourInIST12End;
-
-                    return isOverlapping(segStart, segEnd, bookStart, bookEnd);
+                    return isOverlapping(
+                      segStart,
+                      segEnd,
+                      bookingStart,
+                      bookingEnd,
+                    );
                   });
 
                   return {
                     value: timeRange,
-                    label: timeRange,
+                    label: '',
                     disabled: isBooked,
                     style: isBooked
                       ? {backgroundColor: 'red', opacity: 0.5}
@@ -179,11 +206,19 @@ const TestScreen = () => {
     );
   };
 
+  if (isPending) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Appbar.Header style={{backgroundColor: theme.colors.background}}>
         <Appbar.BackAction />
-        <Appbar.Content title={gameInfo.game.name} />
+        <Appbar.Content title={gameInfo?.game?.name} />
       </Appbar.Header>
 
       <View style={styles.content}>
@@ -196,7 +231,14 @@ const TestScreen = () => {
                 <View key={dateString} style={styles.dateButtonContainer}>
                   <Button
                     mode={isSelected ? 'contained' : 'text'}
-                    onPress={() => setSelectedDate(dateString)}>
+                    onPress={() => {
+                      const formattedDate = moment(
+                        dateString + ' ' + moment().year(),
+                        'D MMM YYYY',
+                      ).format('YYYY-MM-DD');
+                      setSelectedDate(dateString);
+                      mutate({gameId, date: formattedDate});
+                    }}>
                     <View style={styles.dateButtonContent}>
                       <Text
                         variant="bodyMedium"
@@ -306,6 +348,12 @@ const styles = StyleSheet.create({
   },
   carouselContainer: {
     flex: 1,
+  },
+  loaderContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   carouselItem: {
     flex: 1,
