@@ -20,6 +20,7 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 
 const {width} = Dimensions.get('window');
 
+const IMAGE_HEIGHT = (width * 9) / 16;
 export function CourtDetailsScreen() {
   const [visible, setVisible] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -79,7 +80,7 @@ export function CourtDetailsScreen() {
           contentContainerStyle={{paddingBottom: 80}}>
           <Carousel
             width={width}
-            height={width}
+            height={IMAGE_HEIGHT}
             data={gameInfo?.game?.images}
             renderItem={renderImage}
             defaultIndex={0}
@@ -224,7 +225,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: width,
-    height: width,
+    height: IMAGE_HEIGHT,
     resizeMode: 'cover',
   },
   title: {
