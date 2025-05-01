@@ -16,7 +16,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useGetGameByIde} from '../api/games/useGame';
-import {BlurView} from '@react-native-community/blur';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -148,9 +147,7 @@ export function CourtDetailsScreen() {
                 <View style={styles.infoBox}>
                   <Text style={styles.infoText}>
                     {gameInfo?.game?.gameInfo?.surface || 'Unknown'} •{' '}
-                    {gameInfo?.game?.gameInfo?.indoor === false
-                      ? 'Outdoor'
-                      : 'Indoor'}
+                    {!gameInfo?.game?.gameInfo?.indoor ? 'Outdoor' : 'Indoor'}
                   </Text>
                 </View>
               </View>
