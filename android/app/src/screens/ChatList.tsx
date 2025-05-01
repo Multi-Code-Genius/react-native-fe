@@ -7,7 +7,7 @@ import {
   useIsFocused,
   useNavigation,
 } from '@react-navigation/native';
-import {Divider, useTheme} from 'react-native-paper';
+import {useTheme} from 'react-native-paper';
 
 const ChatList = () => {
   const theme = useTheme();
