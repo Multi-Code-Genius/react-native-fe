@@ -1,4 +1,7 @@
-export const parseTimeRange = (rangeStr: any) => {
+export const parseTimeRange = (
+  rangeStr: string,
+  baseDateInput?: Date | string,
+) => {
   const [startStr, endStr] = rangeStr.split('-');
 
   const to24Hr = (time: string) => {
@@ -12,7 +15,8 @@ export const parseTimeRange = (rangeStr: any) => {
   const startHour = to24Hr(startStr);
   const endHour = to24Hr(endStr);
 
-  const baseDate = new Date();
+  const baseDate = baseDateInput ? new Date(baseDateInput) : new Date();
+
   const start = new Date(baseDate);
   start.setHours(startHour, 0, 0, 0);
 
@@ -36,6 +40,15 @@ export const isOverlapping = (
   const segmentEndDate = new Date(segmentEnd);
   const bookingStartDate = new Date(bookingStart);
   const bookingEndDate = new Date(bookingEnd);
+
+  console.log(
+    'object',
+    segmentStartDate,
+    segmentEndDate,
+    bookingStartDate,
+    bookingEndDate,
+    segmentStartDate >= bookingStartDate && segmentEndDate <= bookingEndDate,
+  );
 
   const isWithinBooking =
     segmentStartDate >= bookingStartDate && segmentEndDate <= bookingEndDate;

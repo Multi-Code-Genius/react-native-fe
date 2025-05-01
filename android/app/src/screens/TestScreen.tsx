@@ -3,7 +3,6 @@ import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import moment from 'moment-timezone';
 import {useRoute} from '@react-navigation/native';
 import {
-  ActivityIndicator,
   Appbar,
   Button,
   Divider,
@@ -12,10 +11,11 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
-import {useGetGameByIdeAndDate} from '../api/games/useGame';
+import {useGetGameByIdAndDate} from '../api/games/useGame';
 import {timeSlots} from '../constant/timeSlots';
 import {isOverlapping, parseTimeRange} from '../hooks/helper';
 import {useBookingGames} from '../api/booking/useBooking';
+import {useUserStore} from '../store/userStore';
 
 const {width} = Dimensions.get('window');
 
@@ -25,15 +25,19 @@ const TestScreen = () => {
   const theme = useTheme();
   const route = useRoute();
   const {gameId} = route.params as {gameId: string};
-  const todayDate = moment().format('YYYY-MM-DD');
+  const {mutate, isPending, data: gameInfo} = useGetGameByIdAndDate();
+  const {selectedDate, setSelectedDate} = useUserStore();
 
-  const {mutate, isPending, data: gameInfo} = useGetGameByIdeAndDate();
-  const {mutate: bookingMutate} = useBookingGames();
+  const {mutate: bookingMutate, isSuccess} = useBookingGames();
 
   useEffect(() => {
-    mutate({gameId, date: todayDate});
-  }, [mutate, gameId, todayDate]);
-  const [selectedDate, setSelectedDate] = useState(moment().format('D MMM'));
+    const formattedDate = moment(
+      selectedDate + ' ' + moment().year(),
+      'D MMM YYYY',
+    ).format('YYYY-MM-DD');
+    mutate({gameId, date: formattedDate});
+  }, [mutate, gameId, selectedDate, isSuccess]);
+
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('Twilight');
   const [value, setValue] = useState([]);
   const carouselRef = useRef<CarouselRefType>(null);
@@ -92,12 +96,12 @@ const TestScreen = () => {
       gameId: gameId,
       date: formattedDate,
     };
-
-    // bookingMutate(bookingPayload);
+    console.log('object', bookingPayload);
+    bookingMutate(bookingPayload);
 
     setSelectedDate(moment().format('D MMM'));
     setSelectedTimeSlot('Twilight');
-    setCarouselData(timeSlots[0].carouselData);
+    // setCarouselData(timeSlots[0].carouselData);
     setValue([]);
     carouselRef.current?.scrollTo({index: 0, animated: false});
   };
@@ -133,8 +137,14 @@ const TestScreen = () => {
             buttons={carouselData.flatMap(
               slot =>
                 slot.firstHalf_timeRange?.map(timeRange => {
-                  const {start: segStart, end: segEnd} =
-                    parseTimeRange(timeRange);
+                  const formattedDate = moment(
+                    `${selectedDate} ${moment().year()}`,
+                    'D MMM YYYY',
+                  ).format('YYYY-MM-DD');
+                  const {start: segStart, end: segEnd} = parseTimeRange(
+                    timeRange,
+                    formattedDate,
+                  );
 
                   const isBooked = gameInfo?.game?.bookings?.some(booking => {
                     const bookingStart = moment
@@ -181,8 +191,14 @@ const TestScreen = () => {
             buttons={carouselData.flatMap(
               slot =>
                 slot.secondHalf_timeRange?.map(timeRange => {
-                  const {start: segStart, end: segEnd} =
-                    parseTimeRange(timeRange);
+                  const formattedDate = moment(
+                    `${selectedDate} ${moment().year()}`,
+                    'D MMM YYYY',
+                  ).format('YYYY-MM-DD');
+                  const {start: segStart, end: segEnd} = parseTimeRange(
+                    timeRange,
+                    formattedDate,
+                  );
 
                   const isBooked = gameInfo?.game?.bookings.some(booking => {
                     const bookingStart = moment
@@ -236,12 +252,8 @@ const TestScreen = () => {
                   <Button
                     mode={isSelected ? 'contained' : 'text'}
                     onPress={() => {
-                      const formattedDate = moment(
-                        dateString + ' ' + moment().year(),
-                        'D MMM YYYY',
-                      ).format('YYYY-MM-DD');
                       setSelectedDate(dateString);
-                      mutate({gameId, date: formattedDate});
+                      // mutate({gameId, date: formattedDate});
                     }}>
                     <View style={styles.dateButtonContent}>
                       <Text
