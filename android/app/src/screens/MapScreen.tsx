@@ -15,7 +15,6 @@ import {
   useTheme,
   Badge,
 } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {requestLocation} from '../hooks/requestLocation';
 import {useGetAllLocations, useUpdateLocation} from '../api/user/user';

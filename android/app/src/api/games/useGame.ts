@@ -66,21 +66,10 @@ export const getGameByIdAndDate = async ({
   }
 };
 
-export const useGetGameByIdeAndDate = () => {
+export const useGetGameByIdAndDate = () => {
   return useMutation({
     mutationKey: ['oneGameBydate'],
     mutationFn: ({gameId, date}: {gameId: string; date: string}) =>
       getGameByIdAndDate({gameId, date}),
-  });
-};
-
-export const useGetGameByIdeAndDateForQuery = (
-  gameId: string,
-  date: string,
-) => {
-  return useQuery({
-    queryKey: ['oneGameByDateDefault', gameId, date],
-    queryFn: () => getGameByIdAndDate({gameId, date}),
-    enabled: !!gameId && !!date,
   });
 };

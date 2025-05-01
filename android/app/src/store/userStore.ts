@@ -1,9 +1,14 @@
 import {create} from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {UserState} from '../types/auth';
+import moment from 'moment-timezone';
 
 export const useUserStore = create<UserState>(set => ({
   userData: null,
+  selectedDate: moment().format('D MMM'),
+  setSelectedDate: date => {
+    set({selectedDate: date});
+  },
 
   setUserData: async data => {
     await AsyncStorage.setItem('userData', JSON.stringify(data));

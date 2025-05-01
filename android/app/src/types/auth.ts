@@ -117,4 +117,6 @@ export interface UserState {
   setUserData: (data: UserType) => void;
   loadUserData: () => Promise<void>;
   clearUserData: () => void;
+  selectedDate: string;
+  setSelectedDate: (date: string) => void;
 }

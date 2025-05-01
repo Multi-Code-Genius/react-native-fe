@@ -7,10 +7,10 @@ import {
   Card,
   Chip,
   DataTable,
+  Icon,
   Text,
   useTheme,
 } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useGetRoomById, useRejectRoom} from '../api/room/room';
 import {useUserListLogic} from '../hooks/useUserListLogic';
 
@@ -66,7 +66,7 @@ const RoomTable = () => {
           left={props => (
             <Icon
               {...props}
-              name="door-open"
+              source="door-open"
               size={24}
               color={theme.colors.primary}
             />
@@ -74,7 +74,11 @@ const RoomTable = () => {
         />
         <Card.Content>
           <View style={styles.detailRow}>
-            <Icon name="home-group" size={20} color={theme.colors.onSurface} />
+            <Icon
+              source="home-group"
+              size={20}
+              color={theme.colors.onSurface}
+            />
             <Text variant="bodyMedium" style={styles.detailText}>
               Platform: {data?.room?.platform ?? 'N/A'}
             </Text>
@@ -82,7 +86,7 @@ const RoomTable = () => {
 
           <View style={styles.detailRow}>
             <Icon
-              name="account-multiple"
+              source="account-multiple"
               size={20}
               color={theme.colors.onSurface}
             />
@@ -131,7 +135,7 @@ const RoomTable = () => {
             left={props => (
               <Icon
                 {...props}
-                name="account-group"
+                source="account-group"
                 size={24}
                 color={theme.colors.primary}
               />
@@ -164,13 +168,15 @@ const RoomTable = () => {
                         label={roomUser.User.name.slice(0, 2).toUpperCase()}
                       />
                     )}
+
                     {index === 0 && (
-                      <Icon
-                        name="crown"
-                        size={16}
-                        color={theme.colors.primary}
-                        style={styles.crownIcon}
-                      />
+                      <View style={styles.crownIcon}>
+                        <Icon
+                          source="crown"
+                          size={16}
+                          color={theme.colors.primary}
+                        />
+                      </View>
                     )}
                   </View>
                 </DataTable.Cell>
