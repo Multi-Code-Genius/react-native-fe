@@ -1,34 +1,37 @@
-import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
+import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
+import React, {useRef, useState} from 'react';
 import {
   Appbar,
   Button,
   Divider,
-  Icon,
   SegmentedButtons,
   Text,
   useTheme,
 } from 'react-native-paper';
 import moment from 'moment';
-import Carousel, { Pagination } from 'react-native-reanimated-carousel';
-import { timeSlots } from '../constant/timeSlots';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import Carousel from 'react-native-reanimated-carousel';
+import {timeSlots} from '../constant/timeSlots';
+import {useNavigation, useRoute} from '@react-navigation/native';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
+
+type CarouselRefType = React.ComponentRef<typeof Carousel>;
 
 const TestScreen = () => {
   const theme = useTheme();
   const route = useRoute();
   const navigation = useNavigation();
-  const { gameId } = route.params as { gameId: any };
+  const {gameId} = route.params as {gameId: any};
   console.log('gameId', gameId);
+
   const [selectedDate, setSelectedDate] = useState(moment().format('D MMM'));
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('Twilight');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [value, setValue] = React.useState([]);
+  const [value, setValue] = useState([]);
+  const carouselRef = useRef<CarouselRefType>(null);
 
   const today = moment();
-  const next30Days = Array.from({ length: 31 }, (_, i) =>
+  const next30Days = Array.from({length: 31}, (_, i) =>
     today.clone().add(i, 'days'),
   );
 
@@ -37,9 +40,10 @@ const TestScreen = () => {
   const handleTimeSlotSelection = (timeSlot: string, index: number) => {
     setSelectedTimeSlot(timeSlot);
     setCurrentIndex(index);
-    const selected = timeSlots.find(slot => slot.slot === timeSlot);
+    const selected = timeSlots[index];
     if (selected) {
       setCarouselData(selected.carouselData);
+      carouselRef.current?.scrollTo({index, animated: true});
     }
   };
 
@@ -60,20 +64,17 @@ const TestScreen = () => {
     setCurrentIndex(0);
     setCarouselData(timeSlots[0].carouselData);
     setValue([]);
+    carouselRef.current?.scrollTo({index: 0, animated: false});
   };
 
-  const renderItem = () => {
+  const renderItem = ({item}: {item: any}) => {
     return (
-      <View style={{ flex: 1, padding: 10 }}>
-        <View style={{ flex: 1, gap: 20 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            {carouselData.map((slot, index) =>
-              slot.firstHalf?.map((data, subIndex) => (
-                <Text
-                  key={`${index}-${subIndex}`}
-                  style={{ flexDirection: 'row' }}>
-                  {data}
-                </Text>
+      <View style={{flex: 1, padding: 10}}>
+        <View style={{flex: 1, gap: 20}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            {item.carouselData.map((slot: any, index: any) =>
+              slot.firstHalf?.map((data: any, subIndex: any) => (
+                <Text key={`${index}-${subIndex}`}>{data}</Text>
               )),
             )}
           </View>
@@ -81,24 +82,20 @@ const TestScreen = () => {
             multiSelect
             value={value}
             onValueChange={setValue}
-            buttons={carouselData.flatMap(
-              slot =>
-                slot.firstHalf_timeRange?.map(data => ({
+            buttons={item.carouselData.flatMap(
+              (slot: any) =>
+                slot.firstHalf_timeRange?.map((data: any) => ({
                   value: data,
                   label: '',
                 })) || [],
             )}
           />
         </View>
-        <View style={{ flex: 1, gap: 20 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            {carouselData.map((slot, index) =>
-              slot.secondHalf?.map((data, subIndex) => (
-                <Text
-                  key={`${index}-${subIndex}`}
-                  style={{ flexDirection: 'row' }}>
-                  {data}
-                </Text>
+        <View style={{flex: 1, gap: 20}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            {item.carouselData.map((slot: any, index: any) =>
+              slot.secondHalf?.map((data: any, subIndex: any) => (
+                <Text key={`${index}-${subIndex}`}>{data}</Text>
               )),
             )}
           </View>
@@ -106,9 +103,9 @@ const TestScreen = () => {
             multiSelect
             value={value}
             onValueChange={setValue}
-            buttons={carouselData.flatMap(
-              slot =>
-                slot.secondHalf_timeRange?.map(data => ({
+            buttons={item.carouselData.flatMap(
+              (slot: any) =>
+                slot.secondHalf_timeRange?.map((data: any) => ({
                   value: data,
                   label: '',
                 })) || [],
@@ -121,7 +118,7 @@ const TestScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={{ backgroundColor: theme.colors.background }}>
+      <Appbar.Header style={{backgroundColor: theme.colors.background}}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Double Dribble, Aminjikarai" />
       </Appbar.Header>
@@ -143,7 +140,7 @@ const TestScreen = () => {
                         style={
                           isSelected
                             ? undefined
-                            : { color: theme.colors.secondary }
+                            : {color: theme.colors.secondary}
                         }>
                         {date.format('ddd')}
                       </Text>
@@ -152,7 +149,7 @@ const TestScreen = () => {
                         style={
                           isSelected
                             ? undefined
-                            : { color: theme.colors.secondary }
+                            : {color: theme.colors.secondary}
                         }>
                         {date.format('D MMM')}
                       </Text>
@@ -163,8 +160,8 @@ const TestScreen = () => {
             })}
           </ScrollView>
         </View>
-        <Divider leftInset horizontalInset style={{ opacity: 0.2 }} bold />
-        <View style={{ flex: 1, gap: 20 }}>
+        <Divider leftInset horizontalInset style={{opacity: 0.2}} bold />
+        <View style={{flex: 1, gap: 20}}>
           <View style={styles.timeSlotContainer}>
             {timeSlots.map((time, index) => {
               const isTimeSelected = selectedTimeSlot === time.slot;
@@ -172,7 +169,7 @@ const TestScreen = () => {
                 <Button
                   key={time.slot}
                   labelStyle={
-                    !isTimeSelected && { color: theme.colors.secondary }
+                    !isTimeSelected && {color: theme.colors.secondary}
                   }
                   mode={isTimeSelected ? 'contained' : 'text'}
                   icon={isTimeSelected ? time.icon : undefined}
@@ -185,14 +182,21 @@ const TestScreen = () => {
 
           <View style={styles.carouselContainer}>
             <Carousel
+              ref={carouselRef}
               width={width}
               height={width / 2}
               autoPlay={false}
               data={timeSlots}
-              scrollAnimationDuration={1000}
+              scrollAnimationDuration={300}
               onSnapToItem={handleCarouselSnap}
               renderItem={renderItem}
-              defaultIndex={currentIndex}
+              shouldOptimizeUpdates
+              mode="parallax"
+              modeConfig={{
+                parallaxScrollingScale: 0.9,
+                parallaxScrollingOffset: 50,
+                parallaxAdjacentItemScale: 0.75,
+              }}
             />
           </View>
         </View>
