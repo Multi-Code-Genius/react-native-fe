@@ -22,6 +22,7 @@ const {width} = Dimensions.get('window');
 
 export function CourtDetailsScreen() {
   const [visible, setVisible] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const route = useRoute();
   const navigation = useNavigation();
   const gameId = (route.params as {gameId?: any})?.gameId;
@@ -56,6 +57,7 @@ export function CourtDetailsScreen() {
           <ImageViewer
             imageUrls={imageData}
             onSwipeDown={() => setVisible(false)}
+            index={currentIndex}
           />
           <IconButton
             onPress={() => setVisible(false)}
@@ -80,6 +82,8 @@ export function CourtDetailsScreen() {
             height={width}
             data={gameInfo?.game?.images}
             renderItem={renderImage}
+            defaultIndex={0}
+            onSnapToItem={index => setCurrentIndex(index)}
           />
 
           <View style={{padding: 16, marginTop: 16, gap: 24}}>
