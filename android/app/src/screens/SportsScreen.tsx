@@ -25,7 +25,7 @@ const SportsScreen = () => {
                 onPress={() => {
                     (navigation as any).navigate('GameCourtDetails', { gameId: item.id });
                 }}>
-                <View className="flex flex-col gap-3 w-full rounded-sm">
+                <View className="flex flex-col gap-3 w-full rounded shadow-md p-3" style={{ backgroundColor: theme.colors.elevation.level2 }}>
                     <Image
                         source={{ uri: item.images?.[0] }}
                         style={{ width: '100%', height: 250, borderRadius: 6 }}
@@ -33,14 +33,19 @@ const SportsScreen = () => {
                     />
                     <View className="flex flex-col gap-2">
                         <Text className="text-2xl font-medium" style={{ color: theme.colors.onSurface }}>{item.name}</Text>
-                        <View className="flex flex-row gap-5 items-center">
-                            <Text className="text-xl font-light" style={{ color: theme.colors.onSurface }}>
+                        <View className="flex flex-row gap-2 items-center flex-wrap">
+                            <Text className="text-lg font-light" style={{ color: theme.colors.onSurface }}>
                                 {item.location.city}
                             </Text>
-                            <Text className="text-base  font-normal" style={{ color: theme.colors.onSurface }}>
+                            <Text style={{ color: theme.colors.secondary }}>•</Text>
+                            <Text className="text-base font-normal" style={{ color: theme.colors.onSurface }}>
                                 ₹ {item.hourlyPrice}/Hour
                             </Text>
-                            <Text className="text-base p-1 rounded font-medium " style={{ color: theme.colors.onSurface, backgroundColor: theme.colors.outline }}>
+                            <Text style={{ color: theme.colors.secondary }}>•</Text>
+                            <Text
+                                className="text-base p-1 rounded font-medium"
+                                style={{ color: theme.colors.onSurface, backgroundColor: theme.colors.outline }}
+                            >
                                 {item.category}
                             </Text>
                         </View>
