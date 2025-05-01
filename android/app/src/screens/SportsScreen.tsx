@@ -11,10 +11,13 @@ import {
 import { useGames } from '../api/games/useGame';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from 'react-native-paper';
 
 const SportsScreen = () => {
     const { data: gamesData } = useGames();
     const navigation = useNavigation();
+    const theme = useTheme();
+
     const renderItem = (item: any) => {
         return (
             <TouchableOpacity
@@ -29,51 +32,58 @@ const SportsScreen = () => {
                         resizeMode="cover"
                     />
                     <View className="flex flex-col gap-2">
-                        <Text className="text-white text-2xl font-medium">{item.name}</Text>
+                        <Text className="text-2xl font-medium" style={{ color: theme.colors.onSurface }}>{item.name}</Text>
                         <View className="flex flex-row gap-5 items-center">
-                            <Text className="text-white text-xl font-light">
+                            <Text className="text-xl font-light" style={{ color: theme.colors.onSurface }}>
                                 {item.location.city}
                             </Text>
-                            <Text className="text-slate-400 text-base  font-normal">
+                            <Text className="text-base  font-normal" style={{ color: theme.colors.onSurface }}>
                                 ₹ {item.hourlyPrice}/Hour
                             </Text>
-                            <Text className="text-black text-base p-1 rounded font-medium bg-slate-300">
+                            <Text className="text-base p-1 rounded font-medium " style={{ color: theme.colors.onSurface, backgroundColor: theme.colors.outline }}>
                                 {item.category}
                             </Text>
                         </View>
-                        <Text className="text-white w-full text-lg font-light">
+                        <Text className="w-full text-lg font-light" style={{ color: theme.colors.onSurface }}>
                             capacity: {item.capacity}
                         </Text>
                     </View>
                 </View>
-            </TouchableOpacity>
+            </TouchableOpacity >
         );
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+            <View style={{
+                paddingVertical: 16,
+                backgroundColor: theme.colors.background,
+                zIndex: 10,
+                elevation: 4,
+            }}>
+                <Text className="text-2xl font-bold text-center" style={{ color: theme.colors.onSurface }}>
+                    Sports
+                </Text>
+            </View>
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 15 }}>
-                <View className="mt-12 w-full">
-                    <Text className="w-full text-white flex text-2xl font-bold justify-center text-center">
-                        Sports
-                    </Text>
-                    <View className="w-[90%] mx-auto flex gap-5 mt-5">
-                        <FlatList
-                            scrollEnabled={false}
-                            data={gamesData}
-                            keyExtractor={(_, index) => index.toString()}
-                            renderItem={({ item }) => renderItem(item)}
-                            ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
-                            contentContainerStyle={{ paddingBottom: 30 }}
-                        />
-                    </View>
+                contentContainerStyle={{ paddingBottom: 15 }}
+            >
+                <View className="w-[90%] mx-auto flex gap-5 mt-5">
+                    <FlatList
+                        scrollEnabled={false}
+                        data={gamesData}
+                        keyExtractor={(_, index) => index.toString()}
+                        renderItem={({ item }) => renderItem(item)}
+                        ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+                        contentContainerStyle={{ paddingBottom: 30 }}
+                    />
                 </View>
             </ScrollView>
         </SafeAreaView>
-
     );
+
 };
 
 export default SportsScreen;
+
