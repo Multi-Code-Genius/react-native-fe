@@ -9,20 +9,13 @@ import BottomSheet, {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
-// import ReelsScreen from '../screens/ReelsScreen';
-import Sports from '../screens/SportsScreen';
 import SportsScreen from '../screens/SportsScreen';
-import { ProfileScreen } from '../screens/ProfileScreen';
 import { PhotoPostUploader } from '../components/PhotoPostUploader';
 import { VideoUploaderComponent } from '../components/VideoUploaderComponent';
-import { CourtDetailsScreen } from '../screens/CourtDetailsScreen';
-import ChatScreen from '../screens/ChatScreen';
 import RoomWrapper from '../screens/RoomWrapper';
 import ChatList from '../screens/ChatList';
-// import ReelList from '../components/ReelList';
 
 const Tab = createBottomTabNavigator();
-// const NoScreen = () => null;
 
 export const PrivateRoutes: React.FC = () => {
   const theme = useTheme();
@@ -77,7 +70,6 @@ export const PrivateRoutes: React.FC = () => {
         screenOptions={({ route }) => ({
           tabBarActiveTintColor: theme.colors.primary,
           tabBarInactiveTintColor: theme.colors.secondary,
-          tabBarActiveBackgroundColor: 'rgba(29, 185, 84, 0.2)',
           tabBarInactiveBackgroundColor: 'transparent',
 
           tabBarStyle: {
@@ -91,25 +83,21 @@ export const PrivateRoutes: React.FC = () => {
 
           tabBarItemStyle: {
             marginVertical: 10,
-            borderRadius: 100,
             marginHorizontal: 6,
             overflow: 'hidden',
           },
-
           tabBarShowLabel: true,
-          tabBarLabelPosition: 'beside-icon',
-          tabBarLabel: ({ focused, color }) =>
-            focused ? (
-              <Text
-                style={{
-                  color,
-                  marginLeft: 6,
-                  fontWeight: '600',
-                  fontSize: 14,
-                }}>
-                {route.name}
-              </Text>
-            ) : null,
+          tabBarLabel: ({ focused, color }) => (
+            <Text
+              style={{
+                color,
+                marginLeft: 6,
+                fontWeight: focused ? '600' : '400',
+                fontSize: 14,
+              }}>
+              {route.name}
+            </Text>
+          ),
           animation: 'shift',
           headerShown: false,
           tabBarHideOnKeyboard: true,
