@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -9,24 +9,24 @@ import {
   View,
 } from 'react-native';
 
-import {Appbar, Avatar, Searchbar, useTheme} from 'react-native-paper';
-import {TouchableOpacity} from 'react-native';
-import {useAcceptRequest, useDeclineRequest} from '../api/request/request';
-import {useNavigation} from '@react-navigation/native';
-import {RefreshControl} from 'react-native-gesture-handler';
-import {useUserListLogic} from '../hooks/useUserListLogic';
-import {SceneMap, TabView} from 'react-native-tab-view';
+import { Appbar, Avatar, Searchbar, useTheme } from 'react-native-paper';
+import { TouchableOpacity } from 'react-native';
+import { useAcceptRequest, useDeclineRequest } from '../api/request/request';
+import { useNavigation } from '@react-navigation/native';
+import { RefreshControl } from 'react-native-gesture-handler';
+import { useUserListLogic } from '../hooks/useUserListLogic';
+import { SceneMap, TabView } from 'react-native-tab-view';
 
 export function FriendsRequestAcceptScreen() {
-  const {data, profileRefetch: refetch} = useUserListLogic();
+  const { data, profileRefetch: refetch } = useUserListLogic();
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingId, setLoadingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const [routes] = useState([
-    {key: 'receiverequest', title: 'Receive Requests'},
-    {key: 'sentrequest', title: 'Sent Requests'},
+    { key: 'receiverequest', title: 'Receive Requests' },
+    { key: 'sentrequest', title: 'Sent Requests' },
   ]);
 
   const navigation = useNavigation();
@@ -70,7 +70,7 @@ export function FriendsRequestAcceptScreen() {
               ? item?.sender?.profile_pic
               : item?.receiver?.profile_pic
           ) ? (
-            <View style={{position: 'relative'}}>
+            <View style={{ position: 'relative' }}>
               <Image
                 source={{
                   uri:
@@ -83,9 +83,9 @@ export function FriendsRequestAcceptScreen() {
               />
             </View>
           ) : (
-            <View style={{position: 'relative'}}>
+            <View style={{ position: 'relative' }}>
               <Avatar.Text
-                style={{backgroundColor: theme.colors.secondary}}
+                style={{ backgroundColor: theme.colors.secondary }}
                 size={42}
                 label={
                   type === 'receiverequest'
@@ -112,7 +112,7 @@ export function FriendsRequestAcceptScreen() {
                 });
               }}
               disabled={isPending}
-              style={{minHeight: 28, minWidth: 70}}>
+              style={{ minHeight: 28, minWidth: 70 }}>
               {loadingId === item.id ? (
                 <ActivityIndicator size="small" color="white" />
               ) : (
@@ -131,7 +131,7 @@ export function FriendsRequestAcceptScreen() {
                 });
               }}
               disabled={declinePending}
-              style={{minHeight: 28, minWidth: 70}}>
+              style={{ minHeight: 28, minWidth: 70 }}>
               <Text className="text-white text-xs font-semibold">
                 {deletingId === item.id ? (
                   <ActivityIndicator size="small" color="white" />
@@ -148,7 +148,7 @@ export function FriendsRequestAcceptScreen() {
           <View className="flex-row gap-2">
             <TouchableOpacity
               className="bg-orange-400 px-3 py-1 rounded-md justify-center items-center"
-              style={{minHeight: 28, minWidth: 70}}>
+              style={{ minHeight: 28, minWidth: 70 }}>
               <Text className="text-white text-xs font-semibold">Pending</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -160,7 +160,7 @@ export function FriendsRequestAcceptScreen() {
                 });
               }}
               disabled={declinePending}
-              style={{minHeight: 28, minWidth: 70}}>
+              style={{ minHeight: 28, minWidth: 70 }}>
               <Text className="text-white text-xs font-semibold">
                 {deletingId === item.id ? (
                   <ActivityIndicator size="small" color="white" />
@@ -184,8 +184,8 @@ export function FriendsRequestAcceptScreen() {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
-      contentContainerStyle={{paddingHorizontal: 16}}
-      renderItem={({item}) => renderItem(item, 'receiverequest')}
+      contentContainerStyle={{ paddingHorizontal: 16 }}
+      renderItem={({ item }) => renderItem(item, 'receiverequest')}
     />
   );
 
@@ -196,16 +196,16 @@ export function FriendsRequestAcceptScreen() {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
-      contentContainerStyle={{paddingHorizontal: 16}}
-      renderItem={({item}) => renderItem(item, 'sentrequest')}
+      contentContainerStyle={{ paddingHorizontal: 16 }}
+      renderItem={({ item }) => renderItem(item, 'sentrequest')}
     />
   );
 
   return (
     <SafeAreaView
       className="flex-1"
-      style={{backgroundColor: theme.colors.background}}>
-      <View className="p-4">
+      style={{ backgroundColor: theme.colors.background }}>
+      <View className="p-4 mt-5">
         <View className="flex-row items-center ">
           <Appbar.BackAction onPress={() => navigation.goBack()} />
 
@@ -221,7 +221,7 @@ export function FriendsRequestAcceptScreen() {
         placeholderTextColor="#666"
         onChangeText={setSearchQuery}
         value={searchQuery}
-        inputStyle={{color: 'white'}}
+        inputStyle={{ color: 'white' }}
         style={{
           backgroundColor: '#1a1a1a',
           marginHorizontal: 16,
@@ -245,7 +245,7 @@ export function FriendsRequestAcceptScreen() {
         ))}
       </View>
       <TabView
-        navigationState={{index: tabIndex, routes}}
+        navigationState={{ index: tabIndex, routes }}
         renderScene={SceneMap({
           receiverequest: ReceivedRequestRoute,
           sentrequest: SentRequestRoute,

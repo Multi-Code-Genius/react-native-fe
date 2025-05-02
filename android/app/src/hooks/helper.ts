@@ -41,14 +41,14 @@ export const isOverlapping = (
   const bookingStartDate = new Date(bookingStart);
   const bookingEndDate = new Date(bookingEnd);
 
-  console.log(
-    'object',
-    segmentStartDate,
-    segmentEndDate,
-    bookingStartDate,
-    bookingEndDate,
-    segmentStartDate >= bookingStartDate && segmentEndDate <= bookingEndDate,
-  );
+  // console.log(
+  //   'object',
+  //   segmentStartDate,
+  //   segmentEndDate,
+  //   bookingStartDate,
+  //   bookingEndDate,
+  //   segmentStartDate >= bookingStartDate && segmentEndDate <= bookingEndDate,
+  // );
 
   const isWithinBooking =
     segmentStartDate >= bookingStartDate && segmentEndDate <= bookingEndDate;

@@ -1,5 +1,5 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useCallback, useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
 import {
   SafeAreaView,
   Text,
@@ -17,8 +17,8 @@ import {
   Searchbar,
   useTheme,
 } from 'react-native-paper';
-import {useDeclineRequest} from '../api/request/request';
-import {useUserListLogic} from '../hooks/useUserListLogic';
+import { useDeclineRequest } from '../api/request/request';
+import { useUserListLogic } from '../hooks/useUserListLogic';
 
 export function FreindsListScreen() {
   const {
@@ -80,7 +80,7 @@ export function FreindsListScreen() {
         placeholderTextColor="#666"
         onChangeText={setSearchQuery}
         value={searchQuery}
-        inputStyle={{color: 'white'}}
+        inputStyle={{ color: 'white' }}
         style={{
           backgroundColor: '#1a1a1a',
           marginHorizontal: 16,
@@ -95,25 +95,25 @@ export function FreindsListScreen() {
         keyExtractor={item => item.id}
         refreshing={refreshing}
         onRefresh={onRefresh}
-        contentContainerStyle={{paddingHorizontal: 16}}
-        renderItem={({item}) => (
+        contentContainerStyle={{ paddingHorizontal: 16 }}
+        renderItem={({ item }) => (
           <TouchableOpacity
             activeOpacity={1}
-            onPress={() => navigation.navigate('UserProfile', {id: item.id})}>
+            onPress={() => navigation.navigate('UserProfile', { id: item.id })}>
             <View className="flex-row items-center justify-between py-3">
               <View className="flex-row items-center gap-4">
                 {item.profile_pic ? (
-                  <View style={{position: 'relative'}}>
+                  <View style={{ position: 'relative' }}>
                     <Image
-                      source={{uri: item.profile_pic}}
+                      source={{ uri: item.profile_pic }}
                       className="w-12 h-12 rounded-full "
                       resizeMode="cover"
                     />
                   </View>
                 ) : (
-                  <View style={{position: 'relative'}}>
+                  <View style={{ position: 'relative' }}>
                     <Avatar.Text
-                      style={{backgroundColor: theme.colors.secondary}}
+                      style={{ backgroundColor: theme.colors.secondary }}
                       size={42}
                       label={item?.name?.slice(0, 2).toUpperCase() ?? ''}
                     />
@@ -134,7 +134,7 @@ export function FreindsListScreen() {
                     });
                   }}
                   disabled={declinePending}
-                  style={{minHeight: 28, minWidth: 70}}>
+                  style={{ minHeight: 28, minWidth: 70 }}>
                   {deletingId === item.id ? (
                     <ActivityIndicator size="small" color="white" />
                   ) : (

@@ -5,6 +5,7 @@ import {
   Dimensions,
   FlatList,
   Image,
+  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -265,11 +266,13 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ }) => {
           </View>
         </View>
       </Surface>
+
+
     );
   }
 
   return (
-    <>
+    <SafeAreaView className='flex-1 w-full'>
       <View
         style={{
           flex: 1,
@@ -277,7 +280,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ }) => {
           backgroundColor: theme.colors.background,
         }}>
         <View className="flex w-full flex-col">
-          <View className="w-full flex-row justify-between">
+          <View className="w-full flex-row justify-between mt-5">
             <Appbar.BackAction onPress={() => navigation.goBack()} />
             <IconButton
               icon="cog"
@@ -299,7 +302,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ }) => {
                   resizeMode="cover"
                 />
               </View>
-
               <IconButton
                 icon="plus"
                 size={16}
@@ -373,7 +375,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ }) => {
           renderTabBar={() => null}
         />
       </View>
-    </>
+    </SafeAreaView >
   );
 };
 

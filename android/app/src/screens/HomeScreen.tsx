@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { Badge, IconButton, Surface, useTheme } from 'react-native-paper';
 import { useSendRequest } from '../api/request/request';
 
@@ -39,7 +39,6 @@ const UserListScreen = () => {
   );
 
   const messagesReceived: Message[] = data?.user?.messagesReceived ?? [];
-
   if (isLoading) {
     return (
       <Surface style={styles.container}>
@@ -59,24 +58,22 @@ const UserListScreen = () => {
   }
 
   return (
-    <View>
-      <ScreenWithHeader navigation={navigation}>
-        <Surface style={styles.container}>
-          <FlatList
-            data={users}
-            keyExtractor={item => item.id}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            renderItem={({ item }) => (
-              <UserCard user={item} onRequest={onSendRequest} />
-            )}
-            contentContainerStyle={{ paddingVertical: 10 }}
-            showsVerticalScrollIndicator={false}
-          />
-        </Surface>
-      </ScreenWithHeader>
-    </View>
+    <ScreenWithHeader>
+      <Surface style={styles.container}>
+        <FlatList
+          data={users}
+          keyExtractor={item => item.id}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          renderItem={({ item }) => (
+            <UserCard user={item} onRequest={onSendRequest} />
+          )}
+          contentContainerStyle={{ paddingVertical: 10 }}
+          showsVerticalScrollIndicator={false}
+        />
+      </Surface>
+    </ScreenWithHeader>
   );
 };
 
