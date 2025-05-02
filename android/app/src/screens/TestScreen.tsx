@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import moment from 'moment-timezone';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {
   Appbar,
   Button,
@@ -12,25 +12,123 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
-import { useGetGameByIdAndDate } from '../api/games/useGame';
-import { timeSlots } from '../constant/timeSlots';
-import { isOverlapping, parseTimeRange } from '../hooks/helper';
-import { useBookingGames } from '../api/booking/useBooking';
-import { useUserStore } from '../store/userStore';
+import {useGetGameByIdAndDate} from '../api/games/useGame';
+import {timeSlots} from '../constant/timeSlots';
+import {isOverlapping, parseTimeRange} from '../hooks/helper';
+import {useBookingGames} from '../api/booking/useBooking';
+import {useUserStore} from '../store/userStore';
+import {Animated} from 'react-native';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 type CarouselRefType = React.ComponentRef<typeof Carousel>;
+
+const calculateBookingDetails = ({
+  value,
+  selectedDate,
+  selectedCourt,
+  gameInfo,
+}: any) => {
+  if (!value.length || !gameInfo?.game?.hourlyPrice) {
+    return {
+      startTime: '',
+      endTime: '',
+      totalAmount: 0,
+      formattedDate: '',
+      nets: selectedCourt || 1,
+    };
+  }
+
+  const formattedDate = moment(
+    `${selectedDate} ${moment().year()}`,
+    'D MMM YYYY',
+  ).format('YYYY-MM-DD');
+
+  const startTimeRaw = value[0]?.split('-')[0].trim();
+  const endTimeRaw = value[value.length - 1]?.split('-')[1].trim();
+
+  const parseTime = (time: string) => {
+    if (time === '12 am') return '00:00';
+    if (time === '12 pm') return '12:00';
+    return time;
+  };
+
+  const startTime = parseTime(startTimeRaw);
+  const endTime = parseTime(endTimeRaw);
+
+  const nets = selectedCourt || 1;
+  const hourlyPrice = gameInfo?.game?.hourlyPrice || 0;
+
+  const start = moment.tz(
+    `${formattedDate} ${startTime}`,
+    'YYYY-MM-DD HH:mm',
+    'Asia/Kolkata',
+  );
+  const end = moment.tz(
+    `${formattedDate} ${endTime}`,
+    'YYYY-MM-DD HH:mm',
+    'Asia/Kolkata',
+  );
+
+  if (end.isBefore(start)) {
+    end.add(1, 'day');
+  }
+
+  const durationInMinutes = end.diff(start, 'minutes');
+  const durationInHours = durationInMinutes / 60;
+
+  const totalAmount = hourlyPrice * durationInHours * nets;
+
+  return {
+    startTime,
+    endTime,
+    totalAmount,
+    formattedDate,
+    nets,
+  };
+};
 
 const TestScreen = () => {
   const theme = useTheme();
   const route = useRoute();
   const navigate = useNavigation();
 
-  const { gameId } = route.params as { gameId: string };
-  const { mutate, isPending, data: gameInfo } = useGetGameByIdAndDate();
-  const { selectedDate, setSelectedDate } = useUserStore();
+  const {gameId} = route.params as {gameId: string};
+  const {mutate, isPending, data: gameInfo} = useGetGameByIdAndDate();
+  const {selectedDate, setSelectedDate} = useUserStore();
   const [selectedCourt, setSelectedCourt] = useState<number>(1);
+
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('Twilight');
+  const [value, setValue] = useState([]);
+  const carouselRef = useRef<CarouselRefType>(null);
+
+  const [carouselData, setCarouselData] = useState(timeSlots[0].carouselData);
+
+  const [calculatedAmount, setCalculatedAmount] = useState(0);
+  const [startEndTime, setStartEndTime] = useState({
+    startTime: '',
+    endTime: '',
+  });
+
+  const submitAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(submitAnim, {
+      toValue: calculatedAmount ? 1 : 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, [calculatedAmount]);
+
+  const submitTranslateY = submitAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [50, 0],
+  });
+
+  const submitOpacity = submitAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
 
   const {
     mutate: bookingMutate,
@@ -43,26 +141,49 @@ const TestScreen = () => {
       selectedDate + ' ' + moment().year(),
       'D MMM YYYY',
     ).format('YYYY-MM-DD');
-    mutate({ gameId, date: formattedDate });
+    mutate({gameId, date: formattedDate});
   }, [mutate, gameId, selectedDate, isSuccess]);
 
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('Twilight');
-  const [value, setValue] = useState([]);
-  const carouselRef = useRef<CarouselRefType>(null);
+  useEffect(() => {
+    const {totalAmount, startTime, endTime} = calculateBookingDetails({
+      value,
+      selectedDate,
+      selectedCourt,
+      gameInfo,
+    });
+
+    if (totalAmount !== calculatedAmount) {
+      setCalculatedAmount(totalAmount);
+    }
+
+    if (
+      startTime !== startEndTime.startTime ||
+      endTime !== startEndTime.endTime
+    ) {
+      setStartEndTime({startTime, endTime});
+    }
+  }, [
+    value,
+    gameInfo,
+    selectedCourt,
+    selectedDate,
+    selectedTimeSlot,
+    carouselData,
+    calculatedAmount,
+    startEndTime,
+  ]);
 
   const today = moment();
-  const next30Days = Array.from({ length: 31 }, (_, i) =>
+  const next30Days = Array.from({length: 31}, (_, i) =>
     today.clone().add(i, 'days'),
   );
-
-  const [carouselData, setCarouselData] = useState(timeSlots[0].carouselData);
 
   const handleTimeSlotSelection = (timeSlot: string, index: number) => {
     setSelectedTimeSlot(timeSlot);
     const selected = timeSlots[index];
     if (selected) {
       setCarouselData(selected.carouselData);
-      carouselRef.current?.scrollTo({ index, animated: true });
+      carouselRef.current?.scrollTo({index, animated: true});
     }
   };
 
@@ -72,53 +193,34 @@ const TestScreen = () => {
   };
 
   const handleSubmit = () => {
-    const formattedDate = moment(
-      `${selectedDate} ${moment().year()}`,
-      'D MMM YYYY',
-    ).format('YYYY-MM-DD');
+    const {startTime, endTime, totalAmount, formattedDate, nets} =
+      calculateBookingDetails({
+        value,
+        selectedDate,
+        selectedCourt,
+        gameInfo,
+      });
 
-    const startTimeRaw = value[0]?.split('-')[0].trim();
-    const endTimeRaw = value[value.length - 1]?.split('-')[1].trim();
-
-    const endPeriod = endTimeRaw.toLowerCase().includes('pm') ? 'pm' : 'am';
-
-    const startTime = `${parseInt(startTimeRaw, 10)}${endPeriod}`;
-    const endTime = endTimeRaw.replace(' ', '');
-
-    const nets = selectedCourt || 1;
-
-    const hourlyPrice = gameInfo?.game?.hourlyPrice;
-
-    const start = moment(`${formattedDate} ${startTime}`, 'YYYY-MM-DD ha');
-    const end = moment(`${formattedDate} ${endTime}`, 'YYYY-MM-DD ha');
-
-    const durationInMinutes = end.diff(start, 'minutes');
-    const durationInHours = durationInMinutes / 60;
-
-    const totalAmount = hourlyPrice * durationInHours * nets;
-
-    console.log("total amount>>>", totalAmount);
+    console.log('total amount>>>', totalAmount);
     const bookingPayload = {
       startTime,
       endTime,
       nets,
       totalAmount,
-      gameId: gameId,
+      gameId,
       date: formattedDate,
     };
-    console.log('bookinggg>>>>>>>>', bookingPayload);
-    // bookingMutate(bookingPayload);
+
+    console.log('bookinggg', bookingPayload);
 
     bookingMutate(bookingPayload);
-    // setSelectedTimeSlot('Twilight');
-    // setCarouselData(timeSlots[0].carouselData);
+
     setValue([]);
     setSelectedCourt(1);
-    carouselRef.current?.scrollTo({ index: 0, animated: false });
+    carouselRef.current?.scrollTo({index: 0, animated: false});
   };
-  const number = 0;
 
-  const renderItem = ({ item }: { item: any }) => {
+  const renderItem = ({item}: {item: any}) => {
     if (isPending) {
       return (
         <View style={styles.skeletonContainer}>
@@ -132,10 +234,47 @@ const TestScreen = () => {
       );
     }
 
+    const handleValueChange = (newValue: any) => {
+      const getHour = (timeRange: any) => {
+        const [start] = timeRange?.split('-');
+        return parseInt(start.trim(), 10);
+      };
+      // const getHour = timeRange => {
+      //   const [start] = timeRange?.split('-');
+      //   const hour = parseInt(start.trim(), 10);
+      //   return timeRange.includes('am') && hour === 12
+      //     ? 0
+      //     : timeRange.includes('pm') && hour !== 12
+      //     ? hour + 12
+      //     : hour;
+      // };
+
+      const newSlot = newValue[newValue.length - 1];
+      const newHour = getHour(newSlot);
+
+      if (value.length === 0) {
+        setValue([newSlot]);
+        return;
+      }
+
+      const selectedHours = value.map(getHour);
+      const minHour = Math.min(...selectedHours);
+      const maxHour = Math.max(...selectedHours);
+
+      if (newHour === minHour - 1 || newHour === maxHour + 1) {
+        const updated = [...value, newSlot]
+          .filter((v, i, a) => a.indexOf(v) === i)
+          .sort((a, b) => getHour(a) - getHour(b));
+        setValue(updated);
+      } else {
+        setValue([newSlot]);
+      }
+    };
+
     return (
-      <View style={{ flex: 1, padding: 10 }}>
-        <View style={{ flex: 1, gap: 20 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <View style={{flex: 1, padding: 10}}>
+        <View style={{flex: 1, gap: 20}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             {item.carouselData.map((slot: any, index: any) =>
               slot.firstHalf?.map((data: any, subIndex: any) => (
                 <Text key={`${index}-${subIndex}`}>{data}</Text>
@@ -145,7 +284,7 @@ const TestScreen = () => {
           <SegmentedButtons
             multiSelect
             value={value}
-            onValueChange={setValue}
+            onValueChange={handleValueChange}
             buttons={carouselData.flatMap(
               slot =>
                 slot.firstHalf_timeRange?.map(timeRange => {
@@ -153,50 +292,52 @@ const TestScreen = () => {
                     `${selectedDate} ${moment().year()}`,
                     'D MMM YYYY',
                   ).format('YYYY-MM-DD');
-                  const { start: segStart, end: segEnd } = parseTimeRange(
+                  const {start: segStart, end: segEnd} = parseTimeRange(
                     timeRange,
                     formattedDate,
                   );
 
-                  const isBooked = gameInfo?.game?.bookings?.some(booking => {
-                    const bookingStart = moment
-                      .utc(booking?.startTime)
-                      .tz('Asia/Kolkata')
-                      .toDate();
-                    const bookingEnd = moment
-                      .utc(booking?.endTime)
-                      .tz('Asia/Kolkata')
-                      .toDate();
+                  const isBooked = gameInfo?.game?.bookings?.some(
+                    (booking: any) => {
+                      const bookingStart = moment
+                        .utc(booking?.startTime)
+                        .tz('Asia/Kolkata')
+                        .toDate();
+                      const bookingEnd = moment
+                        .utc(booking?.endTime)
+                        .tz('Asia/Kolkata')
+                        .toDate();
 
-                    // const totalNets = gameInfo?.game?.net;
-                    // const bookedNets = booking.nets;
+                      // const totalNets = gameInfo?.game?.net;
+                      // const bookedNets = booking.nets;
 
-                    // if (totalNets === bookedNets) {
-                    //   return true;
-                    // }
+                      // if (totalNets === bookedNets) {
+                      //   return true;
+                      // }
 
-                    return isOverlapping(
-                      segStart,
-                      segEnd,
-                      bookingStart,
-                      bookingEnd,
-                    );
-                  });
+                      return isOverlapping(
+                        segStart,
+                        segEnd,
+                        bookingStart,
+                        bookingEnd,
+                      );
+                    },
+                  );
 
                   return {
                     value: timeRange,
                     label: '',
                     disabled: isBooked,
                     style: isBooked
-                      ? { backgroundColor: 'red', opacity: 0.5 }
+                      ? {backgroundColor: 'red', opacity: 0.5}
                       : undefined,
                   };
                 }) || [],
             )}
           />
         </View>
-        <View style={{ flex: 1, gap: 20 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{flex: 1, gap: 20}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             {item.carouselData.map((slot: any, index: any) =>
               slot.secondHalf?.map((data: any, subIndex: any) => (
                 <Text key={`${index}-${subIndex}`}>{data}</Text>
@@ -206,7 +347,7 @@ const TestScreen = () => {
           <SegmentedButtons
             multiSelect
             value={value}
-            onValueChange={setValue}
+            onValueChange={handleValueChange}
             buttons={carouselData.flatMap(
               slot =>
                 slot.secondHalf_timeRange?.map(timeRange => {
@@ -214,7 +355,7 @@ const TestScreen = () => {
                     `${selectedDate} ${moment().year()}`,
                     'D MMM YYYY',
                   ).format('YYYY-MM-DD');
-                  const { start: segStart, end: segEnd } = parseTimeRange(
+                  const {start: segStart, end: segEnd} = parseTimeRange(
                     timeRange,
                     formattedDate,
                   );
@@ -242,7 +383,7 @@ const TestScreen = () => {
                     label: '',
                     disabled: isBooked,
                     style: isBooked
-                      ? { backgroundColor: 'red', opacity: 0.5 }
+                      ? {backgroundColor: 'red', opacity: 0.5}
                       : undefined,
                   };
                 }) || [],
@@ -255,7 +396,7 @@ const TestScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={{ backgroundColor: theme.colors.background }}>
+      <Appbar.Header style={{backgroundColor: theme.colors.background}}>
         <Appbar.BackAction onPress={() => navigate.goBack()} />
         <Appbar.Content title={gameInfo?.game?.name} />
       </Appbar.Header>
@@ -263,8 +404,8 @@ const TestScreen = () => {
       <View style={styles.content}>
         <View className="p-4 gap-4">
           <Text>No of Courts</Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-            {Array.from({ length: gameInfo?.game?.net || 0 }, (_, index) => (
+          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+            {Array.from({length: gameInfo?.game?.net || 0}, (_, index) => (
               <Chip
                 key={index}
                 style={{
@@ -289,15 +430,15 @@ const TestScreen = () => {
                     setSelectedCourt(index + 1);
                   }
                 }}>
-                <View style={{ width: '100%', alignItems: 'center' }}>
-                  <Text style={{ color: 'white' }}>{index + 1}</Text>
+                <View style={{width: '100%', alignItems: 'center'}}>
+                  <Text style={{color: 'white'}}>{index + 1}</Text>
                 </View>
               </Chip>
             ))}
           </View>
         </View>
 
-        <Divider leftInset horizontalInset style={{ opacity: 0.2 }} bold />
+        <Divider leftInset horizontalInset style={{opacity: 0.2}} bold />
         <View style={styles.section}>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             {next30Days.map(date => {
@@ -318,7 +459,7 @@ const TestScreen = () => {
                         style={
                           isSelected
                             ? undefined
-                            : { color: theme.colors.secondary }
+                            : {color: theme.colors.secondary}
                         }>
                         {date.format('ddd')}
                       </Text>
@@ -327,7 +468,7 @@ const TestScreen = () => {
                         style={
                           isSelected
                             ? undefined
-                            : { color: theme.colors.secondary }
+                            : {color: theme.colors.secondary}
                         }>
                         {date.format('D MMM')}
                       </Text>
@@ -338,8 +479,8 @@ const TestScreen = () => {
             })}
           </ScrollView>
         </View>
-        <Divider leftInset horizontalInset style={{ opacity: 0.2 }} bold />
-        <View style={{ flex: 1, gap: 20 }}>
+        <Divider leftInset horizontalInset style={{opacity: 0.2}} bold />
+        <View style={{flex: 1, gap: 20}}>
           <View style={styles.timeSlotContainer}>
             {timeSlots.map((time, index) => {
               const isTimeSelected = selectedTimeSlot === time.slot;
@@ -347,7 +488,7 @@ const TestScreen = () => {
                 <Button
                   key={time.slot}
                   labelStyle={
-                    !isTimeSelected && { color: theme.colors.secondary }
+                    !isTimeSelected && {color: theme.colors.secondary}
                   }
                   mode={isTimeSelected ? 'contained' : 'text'}
                   icon={isTimeSelected ? time.icon : undefined}
@@ -378,13 +519,35 @@ const TestScreen = () => {
             />
           </View>
         </View>
-        <View style={{ paddingHorizontal: 20, marginBottom: 20 }}>
-          <Button
-            mode="contained"
-            disabled={bookingPending || value.length === 0}
-            onPress={handleSubmit}>
-            Submit
-          </Button>
+        <View
+          style={{
+            paddingHorizontal: 20,
+            marginBottom: 20,
+          }}>
+          <Divider style={{opacity: 0.2}} bold />
+
+          <Animated.View
+            style={{
+              transform: [{translateY: submitTranslateY}],
+              opacity: submitOpacity,
+            }}>
+            <View className="flex-row justify-between item-center content-center mt-4 ">
+              <View>
+                <Text className="text-[17px] font-bold">
+                  ₹ {calculatedAmount}
+                </Text>
+                <Text className="text-[15px]">
+                  {startEndTime.startTime} - {startEndTime.endTime}
+                </Text>
+              </View>
+              <Button
+                mode="contained"
+                onPress={handleSubmit}
+                style={{height: 35}}>
+                Submit
+              </Button>
+            </View>
+          </Animated.View>
         </View>
       </View>
     </View>

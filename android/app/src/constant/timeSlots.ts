@@ -22,8 +22,8 @@ export const timeSlots = [
         firstHalf_timeRange: ['6-7 am', '7-8 am', '8-9 am'],
       },
       {
-        secondHalf: ['9 am', '10 am', '11 am', '12 pm'],
-        secondHalf_timeRange: ['9-10 am', '10-11 am', '11-12 pm'],
+        secondHalf: ['9 am', '10 am', '11 am', '12 am'],
+        secondHalf_timeRange: ['9-10 am', '10-11 am', '11-12 am'],
       },
     ],
   },
@@ -50,8 +50,8 @@ export const timeSlots = [
         firstHalf_timeRange: ['6-7 pm', '7-8 pm', '8-9 pm'],
       },
       {
-        secondHalf: ['9 pm', '10 pm', '11 pm', '12 am'],
-        secondHalf_timeRange: ['9-10 pm', '10-11 pm', '11-12 am'],
+        secondHalf: ['9 pm', '10 pm', '11 pm', '12 pm'],
+        secondHalf_timeRange: ['9-10 pm', '10-11 pm', '11-12 pm'],
       },
     ],
   },
