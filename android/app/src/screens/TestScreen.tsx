@@ -167,6 +167,13 @@ const TestScreen = () => {
                       .tz('Asia/Kolkata')
                       .toDate();
 
+                    // const totalNets = gameInfo?.game?.net;
+                    // const bookedNets = booking.nets;
+
+                    // if (totalNets === bookedNets) {
+                    //   return true;
+                    // }
+
                     return isOverlapping(
                       segStart,
                       segEnd,
