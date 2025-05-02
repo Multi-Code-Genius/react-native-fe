@@ -74,10 +74,10 @@ const calculateBookingDetails = ({
     end.add(1, 'day');
   }
 
-  const durationInMinutes = end.diff(start, 'minutes');
-  const durationInHours = durationInMinutes / 60;
+  // const durationInMinutes = end.diff(start, 'minutes');
+  // const durationInHours = durationInMinutes / 60;
 
-  const totalAmount = hourlyPrice * durationInHours * nets;
+  const totalAmount = hourlyPrice * value.length * nets;
 
   return {
     startTime,
@@ -100,6 +100,7 @@ const TestScreen = () => {
 
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('Twilight');
   const [value, setValue] = useState([]);
+
   const carouselRef = useRef<CarouselRefType>(null);
 
   const [carouselData, setCarouselData] = useState(timeSlots[0].carouselData);
@@ -239,15 +240,6 @@ const TestScreen = () => {
         const [start] = timeRange?.split('-');
         return parseInt(start.trim(), 10);
       };
-      // const getHour = timeRange => {
-      //   const [start] = timeRange?.split('-');
-      //   const hour = parseInt(start.trim(), 10);
-      //   return timeRange.includes('am') && hour === 12
-      //     ? 0
-      //     : timeRange.includes('pm') && hour !== 12
-      //     ? hour + 12
-      //     : hour;
-      // };
 
       const newSlot = newValue[newValue.length - 1];
       const newHour = getHour(newSlot);
@@ -543,8 +535,8 @@ const TestScreen = () => {
               <Button
                 mode="contained"
                 onPress={handleSubmit}
-                style={{height: 35}}>
-                Submit
+                style={{height: 40, alignItems: 'center'}}>
+                <Text style={{fontWeight: '700'}}>Book Now</Text>
               </Button>
             </View>
           </Animated.View>
