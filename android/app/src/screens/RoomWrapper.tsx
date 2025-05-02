@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, View} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 import RoomScreen from './RoomScreen';
 import RoomTable from './RoomTable';
-import {useUserListLogic} from '../hooks/useUserListLogic';
-import {useTheme} from 'react-native-paper';
+import { useUserListLogic } from '../hooks/useUserListLogic';
+import { useTheme } from 'react-native-paper';
+import ScreenWithHeader from '../components/ScreenWithHeader';
 
 const RoomWrapper = () => {
-  const {data: userData, profileLoading, profileRefetch} = useUserListLogic();
+  const { data: userData, profileLoading, profileRefetch } = useUserListLogic();
   const [isUpdate, setIsUpdate] = useState(false);
   const theme = useTheme();
   useEffect(() => {
@@ -30,10 +31,18 @@ const RoomWrapper = () => {
   const userRoomId = userData?.user?.RoomUser?.[0]?.roomId;
 
   if (userRoomId) {
-    return <RoomTable />;
+    return (
+      <ScreenWithHeader>
+        <RoomTable />
+      </ScreenWithHeader>
+    )
   }
 
-  return <RoomScreen setIsUpdate={setIsUpdate} />;
+  return (
+
+    <RoomScreen setIsUpdate={setIsUpdate} />
+
+  );
 };
 
 export default RoomWrapper;

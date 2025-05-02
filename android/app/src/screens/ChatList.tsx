@@ -1,18 +1,19 @@
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
-import React, {useCallback} from 'react';
-import {useUserListLogic} from '../hooks/useUserListLogic';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { useUserListLogic } from '../hooks/useUserListLogic';
 import UserCard from '../components/UserCard';
 import {
   useFocusEffect,
   useIsFocused,
   useNavigation,
 } from '@react-navigation/native';
-import {Divider, useTheme} from 'react-native-paper';
+import { Divider, useTheme } from 'react-native-paper';
+import ScreenWithHeader from '../components/ScreenWithHeader';
 
 const ChatList = () => {
   const theme = useTheme();
   const navigation = useNavigation();
-  const {data, onRefresh, refreshing, profileRefetch} = useUserListLogic();
+  const { data, onRefresh, refreshing, profileRefetch } = useUserListLogic();
   const isFocused = useIsFocused();
 
   const styles = StyleSheet.create({
@@ -50,33 +51,36 @@ const ChatList = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={data?.user?.friends || []}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        keyExtractor={item => item.id}
-        renderItem={({item}) => {
-          const messageCount = messageMap[item.id]?.length || 0;
+    <ScreenWithHeader>
+      <View style={styles.container}>
+        <FlatList
+          data={data?.user?.friends || []}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => {
+            const messageCount = messageMap[item.id]?.length || 0;
 
-          return (
-            <View style={{flex: 1}}>
-              <UserCard
-                user={item}
-                onRequest={() => {}}
-                isChatting={true}
-                onPress={() =>
-                  handleNavigation(item.id, item.profile_pic, item.name)
-                }
-                messageCount={messageCount}
-              />
-            </View>
-          );
-        }}
-        showsVerticalScrollIndicator={false}
-      />
-    </View>
+            return (
+              <View style={{ flex: 1 }}>
+                <UserCard
+                  user={item}
+                  onRequest={() => { }}
+                  isChatting={true}
+                  onPress={() =>
+                    handleNavigation(item.id, item.profile_pic, item.name)
+                  }
+                  messageCount={messageCount}
+                />
+              </View>
+            );
+          }}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+    </ScreenWithHeader>
+
   );
 };
 

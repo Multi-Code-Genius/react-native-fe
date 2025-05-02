@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { useGames } from '../api/games/useGame';
 import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from 'react-native-paper';
+import ScreenWithHeader from '../components/ScreenWithHeader';
 
 const SportsScreen = () => {
     const { data: gamesData } = useGames();
@@ -59,33 +59,21 @@ const SportsScreen = () => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-            <View style={{
-                paddingVertical: 16,
-                backgroundColor: theme.colors.background,
-                zIndex: 10,
-                elevation: 4,
-            }}>
-                <Text className="text-2xl font-bold text-center" style={{ color: theme.colors.onSurface }}>
-                    Sports
-                </Text>
-            </View>
+        <ScreenWithHeader>
             <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 15 }}
-            >
-                <View className="w-[90%] mx-auto flex gap-5 mt-5">
+                showsVerticalScrollIndicator={false}>
+                <View className="w-[90%] mx-auto flex gap-5">
                     <FlatList
                         scrollEnabled={false}
                         data={gamesData}
                         keyExtractor={(_, index) => index.toString()}
                         renderItem={({ item }) => renderItem(item)}
                         ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
-                        contentContainerStyle={{ paddingBottom: 30 }}
-                    />
+                        contentContainerStyle={{ paddingBottom: 30 }} />
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </ScreenWithHeader>
+
     );
 
 };

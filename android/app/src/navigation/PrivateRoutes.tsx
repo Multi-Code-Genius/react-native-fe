@@ -1,21 +1,24 @@
-import React, {useRef, useCallback} from 'react';
-import {View, StyleSheet, Animated} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {useTheme, Card, IconButton, Portal, Text} from 'react-native-paper';
+import React, { useRef, useCallback } from 'react';
+import { View, StyleSheet, Animated } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useTheme, Card, IconButton, Portal, Text } from 'react-native-paper';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
 // import ReelsScreen from '../screens/ReelsScreen';
 import Sports from '../screens/SportsScreen';
 import SportsScreen from '../screens/SportsScreen';
-import {ProfileScreen} from '../screens/ProfileScreen';
-import {PhotoPostUploader} from '../components/PhotoPostUploader';
-import {VideoUploaderComponent} from '../components/VideoUploaderComponent';
-import {CourtDetailsScreen} from '../screens/CourtDetailsScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
+import { PhotoPostUploader } from '../components/PhotoPostUploader';
+import { VideoUploaderComponent } from '../components/VideoUploaderComponent';
+import { CourtDetailsScreen } from '../screens/CourtDetailsScreen';
+import ChatScreen from '../screens/ChatScreen';
+import RoomWrapper from '../screens/RoomWrapper';
+import ChatList from '../screens/ChatList';
 // import ReelList from '../components/ReelList';
 
 const Tab = createBottomTabNavigator();
@@ -46,13 +49,13 @@ export const PrivateRoutes: React.FC = () => {
         appearsOnIndex={0}
         opacity={0.5}
         pressBehavior="close"
-        style={{backgroundColor: theme.colors.backdrop}}
+        style={{ backgroundColor: theme.colors.backdrop }}
       />
     ),
     [theme.colors.backdrop],
   );
 
-  const AnimatedTabBarIcon = ({focused, iconName}) => {
+  const AnimatedTabBarIcon = ({ focused, iconName }) => {
     return (
       <Animatable.View
         animation={focused ? 'bounceIn' : 'fadeOut'}
@@ -69,9 +72,9 @@ export const PrivateRoutes: React.FC = () => {
 
   return (
     <GestureHandlerRootView
-      style={{flex: 1, backgroundColor: theme.colors.background}}>
+      style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <Tab.Navigator
-        screenOptions={({route}) => ({
+        screenOptions={({ route }) => ({
           tabBarActiveTintColor: theme.colors.primary,
           tabBarInactiveTintColor: theme.colors.secondary,
           tabBarActiveBackgroundColor: 'rgba(29, 185, 84, 0.2)',
@@ -95,7 +98,7 @@ export const PrivateRoutes: React.FC = () => {
 
           tabBarShowLabel: true,
           tabBarLabelPosition: 'beside-icon',
-          tabBarLabel: ({focused, color}) =>
+          tabBarLabel: ({ focused, color }) =>
             focused ? (
               <Text
                 style={{
@@ -108,7 +111,6 @@ export const PrivateRoutes: React.FC = () => {
               </Text>
             ) : null,
           animation: 'shift',
-
           headerShown: false,
           tabBarHideOnKeyboard: true,
         })}>
@@ -116,7 +118,7 @@ export const PrivateRoutes: React.FC = () => {
           name="Home"
           component={HomeScreen}
           options={{
-            tabBarIcon: ({color, size, focused}) => (
+            tabBarIcon: ({ color, size, focused }) => (
               <IconButton
                 icon={focused ? 'home' : 'home-outline'}
                 iconColor={color}
@@ -129,7 +131,7 @@ export const PrivateRoutes: React.FC = () => {
           name="Map"
           component={MapScreen}
           options={{
-            tabBarIcon: ({color, size, focused}) => (
+            tabBarIcon: ({ color, size, focused }) => (
               <IconButton
                 icon={focused ? 'map' : 'map-outline'}
                 iconColor={color}
@@ -138,41 +140,13 @@ export const PrivateRoutes: React.FC = () => {
             ),
           }}
         />
-
-        {/* <Tab.Screen
-          name="ActionButton"
-          component={NoScreen}
-          options={{
-            tabBarIcon: ({color, size}) => (
-              <IconButton
-                icon="plus-circle"
-                iconColor={theme.colors.primary}
-                size={40}
-                onPress={handleOpenSheet}
-              />
-            ),
-          }}
-        /> */}
-        {/* <Tab.Screen
-          name="Test"
-          component={TestScreen}
-          options={{
-            tabBarIcon: ({color, size, focused}) => (
-              <IconButton
-                icon={focused ? 'alien' : 'alien-outline'}
-                iconColor={color}
-                size={size}
-              />
-            ),
-          }}
-        /> */}
         <Tab.Screen
-          name="Profile"
-          component={ProfileScreen}
+          name="ChatList"
+          component={ChatList}
           options={{
-            tabBarIcon: ({color, size, focused}) => (
+            tabBarIcon: ({ color, size, focused }) => (
               <IconButton
-                icon={focused ? 'account' : 'account-outline'}
+                icon={focused ? 'chat' : 'chat-outline'}
                 iconColor={color}
                 size={size}
               />
@@ -180,10 +154,24 @@ export const PrivateRoutes: React.FC = () => {
           }}
         />
         <Tab.Screen
+          name="Rooms"
+          component={RoomWrapper}
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <IconButton
+                icon={focused ? 'account-group' : 'account-group'}
+                iconColor={color}
+                size={size}
+              />
+            ),
+          }}
+        />
+
+        <Tab.Screen
           name="Game"
           component={SportsScreen}
           options={{
-            tabBarIcon: ({color, size, focused}) => (
+            tabBarIcon: ({ color, size, focused }) => (
               <IconButton
                 icon={focused ? 'gamepad-circle-down' : 'gamepad-circle-down'}
                 iconColor={color}
@@ -200,11 +188,11 @@ export const PrivateRoutes: React.FC = () => {
           index={-1}
           snapPoints={['25%']}
           enablePanDownToClose
-          backgroundStyle={{backgroundColor: theme.colors.surface}}
+          backgroundStyle={{ backgroundColor: theme.colors.surface }}
           enableDynamicSizing
           enableOverDrag
           backdropComponent={renderBackdrop}
-          handleIndicatorStyle={{backgroundColor: theme.colors.onSecondary}}
+          handleIndicatorStyle={{ backgroundColor: theme.colors.onSecondary }}
           onChange={handleSheetChanges}>
           <BottomSheetScrollView>
             <View style={styles.sheetContainer}>

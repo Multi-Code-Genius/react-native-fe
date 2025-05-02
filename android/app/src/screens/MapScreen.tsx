@@ -1,5 +1,5 @@
-import React, {useEffect, useState, useRef} from 'react';
-import {StyleSheet, View, TouchableOpacity, Alert} from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
 import {
   MapView,
   PointAnnotation,
@@ -16,8 +16,9 @@ import {
   Badge,
 } from 'react-native-paper';
 
-import {requestLocation} from '../hooks/requestLocation';
-import {useGetAllLocations, useUpdateLocation} from '../api/user/user';
+import { requestLocation } from '../hooks/requestLocation';
+import { useGetAllLocations, useUpdateLocation } from '../api/user/user';
+import ScreenWithHeader from '../components/ScreenWithHeader';
 
 const LOCATION_TIMEOUT = 10000;
 
@@ -30,8 +31,8 @@ const MapScreen: React.FC = () => {
   const [locationError, setLocationError] = useState<string | null>(null);
   const mapRef = useRef<MapView>(null);
   const theme = useTheme();
-  const {mutate} = useUpdateLocation();
-  const {data} = useGetAllLocations();
+  const { mutate } = useUpdateLocation();
+  const { data } = useGetAllLocations();
   console.log('data================>>>>>>>', data);
 
   const getLocationWithTimeout = async () => {
@@ -69,7 +70,7 @@ const MapScreen: React.FC = () => {
       Alert.alert(
         'Location Error',
         error.message || 'Could not determine your location',
-        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
       );
     } finally {
       setLoading(false);
@@ -104,7 +105,7 @@ const MapScreen: React.FC = () => {
       Alert.alert(
         'Location Error',
         error.message || 'Could not determine your location',
-        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
       );
     } finally {
       setLoading(false);
@@ -136,7 +137,7 @@ const MapScreen: React.FC = () => {
       <View
         style={[
           styles.loadingContainer,
-          {backgroundColor: theme.colors.background},
+          { backgroundColor: theme.colors.background },
         ]}>
         <ActivityIndicator size="large" />
         <Text style={styles.loadingText}>Getting your location...</Text>
@@ -149,7 +150,7 @@ const MapScreen: React.FC = () => {
       <View
         style={[
           styles.errorContainer,
-          {backgroundColor: theme.colors.background},
+          { backgroundColor: theme.colors.background },
         ]}>
         <Text style={styles.errorText}>{locationError}</Text>
         <TouchableOpacity
@@ -162,111 +163,114 @@ const MapScreen: React.FC = () => {
   }
 
   return (
-    <View style={StyleSheet.absoluteFillObject}>
-      <MapView
-        ref={mapRef}
-        style={StyleSheet.absoluteFillObject}
-        mapStyle="https://api.maptiler.com/maps/openstreetmap/style.json?key=6R1qeXkgDjyItDGLuc5M"
-        scrollEnabled
-        zoomEnabled>
-        {userLocation && (
-          <Camera
-            centerCoordinate={[userLocation.lng, userLocation.lat]}
-            zoomLevel={12}
-            animationMode="linearTo"
-            animationDuration={2000}
-          />
-        )}
+    <ScreenWithHeader>
+      <View style={StyleSheet.absoluteFillObject}>
+        <MapView
+          ref={mapRef}
+          style={StyleSheet.absoluteFillObject}
+          mapStyle="https://api.maptiler.com/maps/openstreetmap/style.json?key=6R1qeXkgDjyItDGLuc5M"
+          scrollEnabled
+          zoomEnabled>
+          {userLocation && (
+            <Camera
+              centerCoordinate={[userLocation.lng, userLocation.lat]}
+              zoomLevel={12}
+              animationMode="linearTo"
+              animationDuration={2000}
+            />
+          )}
 
-        {userLocation && (
-          <PointAnnotation
-            id="user-location"
-            coordinate={[userLocation.lng, userLocation.lat]}>
-            <View style={styles.markerContainer}>
-              <Text className="text-4xl">🧍🏻‍♂️</Text>
-            </View>
-            <Callout style={styles.callout}>
-              <Card style={styles.card}>
-                <Card.Content>
-                  <Text variant="titleMedium" style={styles.cardTitle}>
-                    Your Location
-                  </Text>
-                  <Text
-                    variant="bodyMedium"
-                    style={{color: theme.colors.primary}}>
-                    {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
-                  </Text>
-                </Card.Content>
-              </Card>
-            </Callout>
-          </PointAnnotation>
-        )}
-        {data?.usersWithLocations &&
-          Object.entries(groupLocations(data.usersWithLocations)).map(
-            ([key, users]) => {
-              const [latStr, lngStr] = key.split(',');
-              const lat = parseFloat(latStr);
-              const lng = parseFloat(lngStr);
+          {userLocation && (
+            <PointAnnotation
+              id="user-location"
+              coordinate={[userLocation.lng, userLocation.lat]}>
+              <View style={styles.markerContainer}>
+                <Text className="text-4xl">🧍🏻‍♂️</Text>
+              </View>
+              <Callout style={styles.callout}>
+                <Card style={styles.card}>
+                  <Card.Content>
+                    <Text variant="titleMedium" style={styles.cardTitle}>
+                      Your Location
+                    </Text>
+                    <Text
+                      variant="bodyMedium"
+                      style={{ color: theme.colors.primary }}>
+                      {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
+                    </Text>
+                  </Card.Content>
+                </Card>
+              </Callout>
+            </PointAnnotation>
+          )}
+          {data?.usersWithLocations &&
+            Object.entries(groupLocations(data.usersWithLocations)).map(
+              ([key, users]) => {
+                const [latStr, lngStr] = key.split(',');
+                const lat = parseFloat(latStr);
+                const lng = parseFloat(lngStr);
 
-              return (
-                <PointAnnotation
-                  key={key}
-                  id={`group-${key}`}
-                  coordinate={[lng, lat]}>
-                  <View style={styles.markerContainer}>
-                    {users.length > 1 ? (
-                      <Badge size={20}>{users.length}</Badge>
-                    ) : (
-                      <Text style={{fontSize: 30}}>📍</Text>
-                    )}
-                  </View>
+                return (
+                  <PointAnnotation
+                    key={key}
+                    id={`group-${key}`}
+                    coordinate={[lng, lat]}>
+                    <View style={styles.markerContainer}>
+                      {users.length > 1 ? (
+                        <Badge size={20}>{users.length}</Badge>
+                      ) : (
+                        <Text style={{ fontSize: 30 }}>📍</Text>
+                      )}
+                    </View>
 
-                  <Callout style={styles.callout}>
-                    <Card style={styles.card}>
-                      <Card.Content>
-                        {users.map(user => (
-                          <View key={user.id} style={{marginBottom: 8}}>
-                            <Text variant="titleSmall" style={styles.cardTitle}>
-                              {user.name}
-                            </Text>
-                            <Text
-                              variant="bodySmall"
-                              style={styles.cardDescription}>
-                              {user.isOnline
-                                ? '🟢 Online'
-                                : `Last seen: ${new Date(
+                    <Callout style={styles.callout}>
+                      <Card style={styles.card}>
+                        <Card.Content>
+                          {users.map(user => (
+                            <View key={user.id} style={{ marginBottom: 8 }}>
+                              <Text variant="titleSmall" style={styles.cardTitle}>
+                                {user.name}
+                              </Text>
+                              <Text
+                                variant="bodySmall"
+                                style={styles.cardDescription}>
+                                {user.isOnline
+                                  ? '🟢 Online'
+                                  : `Last seen: ${new Date(
                                     user.lastSeen,
                                   ).toLocaleString()}`}
-                            </Text>
-                          </View>
-                        ))}
-                      </Card.Content>
-                    </Card>
-                  </Callout>
-                </PointAnnotation>
-              );
-            },
-          )}
-      </MapView>
+                              </Text>
+                            </View>
+                          ))}
+                        </Card.Content>
+                      </Card>
+                    </Callout>
+                  </PointAnnotation>
+                );
+              },
+            )}
+        </MapView>
 
-      <IconButton
-        icon="crosshairs-gps"
-        iconColor={theme.colors.primary}
-        size={24}
-        style={[styles.locationButton, {backgroundColor: theme.colors.surface}]}
-        onPress={flyToUserLocation}
-      />
+        <IconButton
+          icon="crosshairs-gps"
+          iconColor={theme.colors.primary}
+          size={24}
+          style={[styles.locationButton, { backgroundColor: theme.colors.surface }]}
+          onPress={flyToUserLocation}
+        />
 
-      {loading && (
-        <View
-          style={[
-            styles.loadingOverlay,
-            {backgroundColor: theme.colors.backdrop},
-          ]}>
-          <ActivityIndicator size="large" />
-        </View>
-      )}
-    </View>
+        {loading && (
+          <View
+            style={[
+              styles.loadingOverlay,
+              { backgroundColor: theme.colors.backdrop },
+            ]}>
+            <ActivityIndicator size="large" />
+          </View>
+        )}
+      </View>
+    </ScreenWithHeader>
+
   );
 };
 
@@ -335,7 +339,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 4,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },

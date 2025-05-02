@@ -1,7 +1,7 @@
 import React from 'react';
-import {View} from 'react-native';
-import {Card, Text, Avatar, Badge, useTheme} from 'react-native-paper';
-import Animated, {FadeInUp} from 'react-native-reanimated';
+import { View } from 'react-native';
+import { Card, Text, Avatar, Badge, useTheme } from 'react-native-paper';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 import RequestButton from './RequestButton';
 import moment from 'moment';
 
@@ -30,7 +30,7 @@ const UserCard: React.FC<Props> = ({
   messageCount,
 }) => {
   const theme = useTheme();
-  const avatarSource = user.profile_pic ? {uri: user.profile_pic} : undefined;
+  const avatarSource = user.profile_pic ? { uri: user.profile_pic } : undefined;
 
   return (
     <Animated.View entering={FadeInUp.duration(300)}>
@@ -48,7 +48,7 @@ const UserCard: React.FC<Props> = ({
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
-          <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
             <View
               style={{
                 flexDirection: 'column',
@@ -66,9 +66,9 @@ const UserCard: React.FC<Props> = ({
                   <Avatar.Image size={48} source={avatarSource} />
                 ) : (
                   <Avatar.Text
-                    style={{backgroundColor: theme.colors.secondary}}
+                    style={{ backgroundColor: theme.colors.secondary }}
                     size={48}
-                    label={user.name.slice(0, 2).toUpperCase()}
+                    label={user.name ? user.name.slice(0, 2).toUpperCase() : '??'}
                   />
                 )}
                 <View
@@ -89,23 +89,23 @@ const UserCard: React.FC<Props> = ({
               </View>
             </View>
 
-            <View style={{flex: 1}}>
+            <View style={{ flex: 1 }}>
               <Text
                 variant="titleMedium"
-                style={{color: theme.colors.onPrimary}}>
+                style={{ color: theme.colors.onPrimary }}>
                 {user.name}
               </Text>
               {!isChatting && (
                 <Text
                   variant="bodyMedium"
-                  style={{color: theme.colors.secondary}}>
+                  style={{ color: theme.colors.secondary }}>
                   {user.email}
                 </Text>
               )}
               {!user.isOnline && user.lastSeen && (
                 <Text
                   variant="bodySmall"
-                  style={{color: theme.colors.secondary}}>
+                  style={{ color: theme.colors.secondary }}>
                   Last seen: {moment(user.lastSeen).fromNow()}
                 </Text>
               )}
@@ -115,7 +115,7 @@ const UserCard: React.FC<Props> = ({
           {isChatting ? (
             <View>
               {messageCount && messageCount > 0 && (
-                <Badge style={{backgroundColor: theme.colors.primary}}>
+                <Badge style={{ backgroundColor: theme.colors.primary }}>
                   {messageCount}
                 </Badge>
               )}

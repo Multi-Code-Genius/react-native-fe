@@ -1,27 +1,28 @@
-import React, {useEffect} from 'react';
-import {NavigationContainer, LinkingOptions} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
-import {useAuthStore} from '../store/authStore';
+import React, { useEffect } from 'react';
+import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { useAuthStore } from '../store/authStore';
 import WelcomeScreen from '../screens/WelcomeScreen';
-import {SignUpFormScreen} from '../screens/SignUpFormScreen';
+import { SignUpFormScreen } from '../screens/SignUpFormScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import ResetPassword1 from '../screens/ResetPassword1';
-import {ProfileReelList} from '../components/ProfileReelList';
-import {FreindsListScreen} from '../screens/FreindsListScreen';
-import {FriendsRequestAcceptScreen} from '../screens/FriendsRequestAcceptScreen';
-import {SettingScreen} from '../screens/SettingScreen';
-import {useTheme} from 'react-native-paper';
+import { ProfileReelList } from '../components/ProfileReelList';
+import { FreindsListScreen } from '../screens/FreindsListScreen';
+import { FriendsRequestAcceptScreen } from '../screens/FriendsRequestAcceptScreen';
+import { SettingScreen } from '../screens/SettingScreen';
+import { useTheme } from 'react-native-paper';
 import ChatList from '../screens/ChatList';
 import ChatScreen from '../screens/ChatScreen';
 import UserProfile from '../components/UserProfile';
-import {FullPostViewer} from '../components/ProfilePosts/FullPostViewer';
+import { FullPostViewer } from '../components/ProfilePosts/FullPostViewer';
 import RoomWrapper from '../screens/RoomWrapper';
-import {ProfileSinglePost} from '../components/ProfilePosts/ProfileSinglePost';
-import {PrivateRoutes} from './PrivateRoutes';
-import {Text} from 'react-native';
-import {CourtDetailsScreen} from '../screens/CourtDetailsScreen';
+import { ProfileSinglePost } from '../components/ProfilePosts/ProfileSinglePost';
+import { PrivateRoutes } from './PrivateRoutes';
+import { Text } from 'react-native';
+import { CourtDetailsScreen } from '../screens/CourtDetailsScreen';
 import TestScreen from '../screens/TestScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -30,27 +31,27 @@ const PublicRoutes = () => (
     <Stack.Screen
       name="Welcome"
       component={WelcomeScreen}
-      options={{headerShown: false}}
+      options={{ headerShown: false }}
     />
     <Stack.Screen
       name="Login"
       component={LoginScreen}
-      options={{headerShown: false}}
+      options={{ headerShown: false }}
     />
     <Stack.Screen
       name="SignUp"
       component={SignUpFormScreen}
-      options={{headerShown: false}}
+      options={{ headerShown: false }}
     />
     <Stack.Screen
       name="ResetPassword"
       component={ResetPasswordScreen}
-      options={{headerShown: false}}
+      options={{ headerShown: false }}
     />
     <Stack.Screen
       name="ResetPassword1"
       component={ResetPassword1}
-      options={{headerShown: false}}
+      options={{ headerShown: false }}
     />
   </Stack.Navigator>
 );
@@ -60,8 +61,8 @@ type AppNavigatorProps = {
   fallback?: React.ReactNode;
 };
 
-const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
-  const {isAuthenticated, initializeAuth} = useAuthStore();
+const AppNavigator: React.FC<AppNavigatorProps> = ({ linking, fallback }) => {
+  const { isAuthenticated, initializeAuth } = useAuthStore();
 
   useEffect(() => {
     const initialize = async () => {
@@ -83,12 +84,12 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
     <NavigationContainer
       linking={linking}
       fallback={fallback}
-      theme={{colors: {background: theme.colors.background}}}>
+      theme={{ colors: { background: theme.colors.background } }}>
       <Stack.Navigator
         screenOptions={{
           animationTypeForReplace: 'push',
           headerShown: false,
-          cardStyle: {backgroundColor: '#121212'},
+          cardStyle: { backgroundColor: '#121212' },
           animation: 'slide_from_right',
         }}>
         {isAuthenticated ? (
@@ -164,9 +165,12 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({linking, fallback}) => {
               component={UserProfile}
               options={{
                 title: 'User Profile',
-
-                headerShown: true,
+                // headerShown: true,
               }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
             />
 
             <Stack.Screen name="ProfileList" component={ProfileReelList} />

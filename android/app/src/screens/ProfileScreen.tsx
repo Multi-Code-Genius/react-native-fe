@@ -1,5 +1,5 @@
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import React, {useCallback, useState} from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
 import {
   Alert,
   Dimensions,
@@ -13,21 +13,22 @@ import {
 import ImagePicker from 'react-native-image-crop-picker';
 import {
   ActivityIndicator,
+  Appbar,
   Divider,
   IconButton,
   Surface,
   useTheme,
 } from 'react-native-paper';
-import {SceneMap, TabView} from 'react-native-tab-view';
-import {useUploadImage} from '../api/image/image';
-import {useUserListLogic} from '../hooks/useUserListLogic';
+import { SceneMap, TabView } from 'react-native-tab-view';
+import { useUploadImage } from '../api/image/image';
+import { useUserListLogic } from '../hooks/useUserListLogic';
 
 type ProfileScreenProps = {
   setIndex: (index: number) => void;
   setShowSettings: (show: boolean) => void;
 };
 
-export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
+export const ProfileScreen: React.FC<ProfileScreenProps> = ({ }) => {
   const navigation = useNavigation();
   const theme = useTheme();
   const {
@@ -42,8 +43,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
 
   const [tabIndex, setTabIndex] = useState(0);
   const [routes] = useState([
-    {key: 'posts', title: 'Posts'},
-    {key: 'reels', title: 'Reels'},
+    { key: 'posts', title: 'Posts' },
+    { key: 'reels', title: 'Reels' },
   ]);
 
   useFocusEffect(
@@ -124,7 +125,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
         }}
         onPress={() => {
           if (type === 'reel') {
-            (navigation as any).navigate('ProfileList', {videoId: item.id});
+            (navigation as any).navigate('ProfileList', { videoId: item.id });
           } else {
             const index = data?.user?.posts.findIndex(p => p.id === item.id);
             (navigation as any).navigate('Posts', {
@@ -135,8 +136,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
         }}>
         {imageUrl ? (
           <Image
-            source={{uri: imageUrl}}
-            style={{width: '100%', height: '100%', borderRadius: 8}}
+            source={{ uri: imageUrl }}
+            style={{ width: '100%', height: '100%', borderRadius: 8 }}
             resizeMode="cover"
           />
         ) : (
@@ -161,14 +162,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
       numColumns={3}
       refreshing={refreshing}
       onRefresh={onRefresh}
-      contentContainerStyle={{paddingBottom: 60}}
+      contentContainerStyle={{ paddingBottom: 60 }}
       showsVerticalScrollIndicator={false}
       columnWrapperStyle={{
         justifyContent: 'flex-start',
         gap: 8,
         marginBottom: 10,
       }}
-      renderItem={({item}) => renderItem(item, 'post')}
+      renderItem={({ item }) => renderItem(item, 'post')}
     />
   );
 
@@ -179,14 +180,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
       numColumns={3}
       refreshing={refreshing}
       onRefresh={onRefresh}
-      contentContainerStyle={{paddingBottom: 60}}
+      contentContainerStyle={{ paddingBottom: 60 }}
       showsVerticalScrollIndicator={false}
       columnWrapperStyle={{
         justifyContent: 'flex-start',
         gap: 8,
         marginBottom: 10,
       }}
-      renderItem={({item}) => renderItem(item, 'reel')}
+      renderItem={({ item }) => renderItem(item, 'reel')}
     />
   );
 
@@ -201,7 +202,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
   if (error) {
     return (
       <View style={styles.loaderContainer}>
-        <Text style={{color: 'white'}}>Failed to load videos</Text>
+        <Text style={{ color: 'white' }}>Failed to load videos</Text>
       </View>
     );
   }
@@ -231,16 +232,16 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
             </View>
 
             <View className="justify-center w-full gap-3">
-              <Text style={[styles.skeletonTextLine, {width: '20%'}]} />
-              <Text style={[styles.skeletonTextLine, {width: '40%'}]} />
-              <Text style={[styles.skeletonTextLine, {width: '60%'}]} />
+              <Text style={[styles.skeletonTextLine, { width: '20%' }]} />
+              <Text style={[styles.skeletonTextLine, { width: '40%' }]} />
+              <Text style={[styles.skeletonTextLine, { width: '60%' }]} />
             </View>
           </View>
 
-          <Divider style={{marginVertical: 20, backgroundColor: '#374151'}} />
+          <Divider style={{ marginVertical: 20, backgroundColor: '#374151' }} />
           <View className="flex-row justify-around">
-            <Text style={[styles.skeletonTextLine, {width: '20%'}]} />
-            <Text style={[styles.skeletonTextLine, {width: '20%'}]} />
+            <Text style={[styles.skeletonTextLine, { width: '20%' }]} />
+            <Text style={[styles.skeletonTextLine, { width: '20%' }]} />
           </View>
           <View
             style={{
@@ -276,7 +277,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
           backgroundColor: theme.colors.background,
         }}>
         <View className="flex w-full flex-col">
-          <View className="w-full flex-row justify-end">
+          <View className="w-full flex-row justify-between">
+            <Appbar.BackAction onPress={() => navigation.goBack()} />
             <IconButton
               icon="cog"
               size={24}
@@ -292,7 +294,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
             <View className="relative w-32 h-32">
               <View className="w-full h-full rounded-full border-4 border-gray-800 overflow-hidden">
                 <Image
-                  source={{uri: data?.user?.profile_pic}}
+                  source={{ uri: data?.user?.profile_pic }}
                   className="w-full h-full"
                   resizeMode="cover"
                 />
@@ -341,7 +343,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
           </View>
         </View>
 
-        <Divider style={{marginVertical: 20, backgroundColor: '#374151'}} />
+        <Divider style={{ marginVertical: 20, backgroundColor: '#374151' }} />
 
         <View className="flex-row justify-around">
           {routes.map((route, i) => (
@@ -350,9 +352,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
               onPress={() => setTabIndex(i)}
               className="flex-1 items-center pb-2">
               <Text
-                className={`text-base font-semibold ${
-                  tabIndex === i ? 'text-white' : 'text-gray-400'
-                }`}>
+                className={`text-base font-semibold ${tabIndex === i ? 'text-white' : 'text-gray-400'
+                  }`}>
                 {route.title}
               </Text>
               {tabIndex === i && (
@@ -363,7 +364,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
         </View>
 
         <TabView
-          navigationState={{index: tabIndex, routes}}
+          navigationState={{ index: tabIndex, routes }}
           renderScene={SceneMap({
             posts: PostsRoute,
             reels: ReelsRoute,
