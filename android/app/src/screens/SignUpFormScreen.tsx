@@ -1,49 +1,30 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {
-  Alert,
-  ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
-import {Text, TextInput, View} from 'react-native';
-import {Animated} from 'react-native';
-import {useUserSignup} from '../api/auth/auth';
-import {useNavigation} from '@react-navigation/native';
-import {useAuthStore} from '../store/authStore';
-import {ActivityIndicator} from 'react-native-paper';
+import React, { useState } from 'react';
+import { TextInput, View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import Onboarding from 'react-native-onboarding-swiper';
+import { useNavigation } from '@react-navigation/native';
+import { useUserSignup } from '../api/auth/auth';
+import { useAuthStore } from '../store/authStore';
+import { ActivityIndicator } from 'react-native-paper';
 
 export function SignUpFormScreen() {
   const navigation = useNavigation();
-  const [data, setData] = useState({name: '', email: '', password: ''});
-  const {mutate: signup, isSuccess, isPending} = useUserSignup();
+  const [data, setData] = useState({ name: '', email: '', password: '' });
+  const { mutate: signup, isPending } = useUserSignup();
   const saveToken = useAuthStore(state => state.saveToken);
-  const slideAnim = useRef(new Animated.Value(500)).current;
 
-  useEffect(() => {
-    Animated.timing(slideAnim, {
-      toValue: 0,
-      duration: 800,
-      delay: 100,
-      useNativeDriver: true,
-    }).start();
-  }, []);
-
-  const handleChange = (field: keyof typeof data, value: string) => {
-    setData(prev => ({...prev, [field]: value}));
+  const handleChange = (key: keyof typeof data, value: string) => {
+    setData(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleSignup = async () => {
-    const {name, email, password} = data;
-
+  const handleSignup = () => {
+    const { name, email, password } = data;
     if (!name || !email || !password) {
-      Alert.alert('Validation', 'All fields are required.');
+      Alert.alert('Error', 'All fields are required');
       return;
     }
+
     signup(data, {
-      onSuccess: async ({token}) => {
+      onSuccess: async ({ token }) => {
         if (!token) {
           Alert.alert('Error', 'No token received.');
           return;
@@ -51,139 +32,143 @@ export function SignUpFormScreen() {
         await saveToken(token);
       },
       onError: () => {
-        Alert.alert('Error', 'Signup failed. Please try again.');
+        Alert.alert('Error', 'Signup failed.');
       },
     });
   };
 
   return (
-    <ImageBackground
-      source={require('../assets/image/backgroundimage1.png')}
-      style={{flex: 1, backgroundColor: '#4754ccef'}}
-      resizeMode="cover">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        className="flex-1  justify-center">
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled">
-          <Animated.View
-            style={[styles.content, {transform: [{translateY: slideAnim}]}]}>
-            <View className="flex justify-center items-center h-fit w-full">
-              <View className="flex-row gap-5 items-center">
-                <Text style={styles.loginTitle}>👤 Signup</Text>
+    <Onboarding
+      showDone={true}
+      showSkip={false}
+      onDone={handleSignup}
+      pages={[
+        {
+          backgroundColor: '#000',
+          image: <View />,
+          title: '',
+          subtitle: (
+            <View style={[styles.container, { position: 'relative' }]}>
+              <View className="flex gap-[80px]">
+                <Text style={styles.question}>What’s your Full Name?</Text>
+                <TextInput
+                  placeholder="Enter your name"
+                  placeholderTextColor="#666"
+                  value={data.name}
+                  style={styles.input}
+                  onChangeText={text => setData({ ...data, name: text })}
+                />
               </View>
-              <View className=" w-full gap-6">
-                <View className=" gap-3">
-                  <Text className="text-white font-semibold text-[14px]">
-                    User Name
-                  </Text>
-                  <TextInput
-                    className="w-full h-12 px-4 rounded-lg bg-black text-white"
-                    placeholder="Enter your user name"
-                    placeholderTextColor="#999"
-                    value={data.name}
-                    onChangeText={text => handleChange('name', text)}
-                  />
-                </View>
-                <View className=" gap-3">
-                  <Text className="text-white font-semibold text-[14px]">
-                    Your email address
-                  </Text>
-                  <TextInput
-                    className="w-full h-12 px-4 rounded-lg bg-black text-white"
-                    placeholder="Enter your email"
-                    placeholderTextColor="#999"
-                    value={data.email}
-                    onChangeText={text => handleChange('email', text)}
-                  />
-                </View>
-                <View className="w-full gap-2 mb-4">
-                  <Text className="text-white font-semibold text-[14px]">
-                    Choose a password
-                  </Text>
-                  <TextInput
-                    className="w-full h-12 px-4 rounded-lg bg-black text-white"
-                    placeholder="min, 8 characters"
-                    placeholderTextColor="#999"
-                    secureTextEntry={true}
-                    value={data.password}
-                    onChangeText={text => handleChange('password', text)}
-                  />
-                </View>
 
-                <TouchableOpacity
-                  style={styles.loginButton}
-                  disabled={isPending}
-                  onPress={handleSignup}>
-                  <Text style={styles.loginButtonText}>
-                    {isPending ? (
-                      <ActivityIndicator size="small" color="#000" />
-                    ) : (
-                      'SignUp'
-                    )}
-                  </Text>
-                </TouchableOpacity>
-
-                <Text style={styles.signupText}>
-                  Already have an account?
-                  <TouchableOpacity>
-                    <Text
-                      style={styles.signupLink}
-                      onPress={() => (navigation as any).navigate('Login')}>
-                      {' '}
-                      Log In
-                    </Text>
-                  </TouchableOpacity>
+              <Text style={styles.signupText}>
+                Already Have an Account?{' '}
+                <Text
+                  style={styles.signupLink}
+                  onPress={() => (navigation as any).navigate('Login')}>
+                  Log In
                 </Text>
+              </Text>
+            </View>
+          ),
+        },
+        {
+          backgroundColor: '#000',
+          image: <View />,
+          title: '',
+          subtitle: (
+            <View style={[styles.container, { position: 'relative' }]}>
+              <View className="flex gap-[80px]">
+                <Text style={styles.question}>What’s your Email address?</Text>
+                <TextInput
+                  placeholder="Enter your Email Address"
+                  placeholderTextColor="#666"
+                  style={styles.input}
+                  value={data.email}
+                  maxLength={30}
+                  onChangeText={text => setData({ ...data, email: text })}
+                />
               </View>
             </View>
-          </Animated.View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </ImageBackground>
+          ),
+        },
+        {
+          backgroundColor: '#000',
+          image: <View />,
+          title: '',
+          subtitle: (
+            <View style={styles.container}>
+              <Text style={styles.question}>What is Your Password?</Text>
+              <TextInput
+                placeholder="Enter your password"
+                placeholderTextColor="#666"
+                style={styles.input}
+                secureTextEntry
+                value={data.password}
+                onChangeText={text => setData({ ...data, password: text })}
+              />
+
+              {isPending ? (
+                <View style={{ marginTop: 20 }}>
+                  <Text style={{ color: '#aaa', textAlign: 'center' }}>Sign in...</Text>
+                  <ActivityIndicator size="small" color="#fff" style={{ marginTop: 10 }} />
+                </View>
+              ) : (
+                <></>
+              )}
+            </View>
+          ),
+        },
+      ]}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  flex: {
+  container: {
     flex: 1,
-  },
-  background: {
-    flex: 1,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
     paddingHorizontal: 24,
+    paddingTop: 80,
+    gap: 80,
+    justifyContent: 'flex-start',
+    backgroundColor: '#000',
+    width: '100%'
   },
-  content: {
-    backgroundColor: 'rgba(29, 28, 28, 0.692)',
-    padding: 30,
-    borderRadius: 16,
-  },
-  loginButton: {
-    backgroundColor: '#fff',
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  loginTitle: {
-    fontSize: 28,
+  question: {
+    fontSize: 45,
     fontWeight: 'bold',
+    marginTop: 30,
     color: '#fff',
-    textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: 24,
   },
-  loginButtonText: {
-    color: '#000',
+  input: {
+    backgroundColor: '#1f1f1f',
+    color: '#fff',
+    padding: 16,
+    borderRadius: 12,
     fontSize: 16,
-    fontWeight: 'bold',
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  charCount: {
+    color: '#888',
+    fontSize: 12,
+  },
+  arrowButton: {
+    backgroundColor: '#1f1f1f',
+    padding: 12,
+    borderRadius: 999,
   },
   signupText: {
-    color: '#918e8e',
+    position: 'absolute',
+    bottom: 150,
+    left: 0,
+    right: 0,
     textAlign: 'center',
+    color: '#fff8f8',
   },
   signupLink: {
     color: '#e3e7e9',
