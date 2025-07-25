@@ -1,9 +1,9 @@
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+sdfgit clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
 cd YOUR_REPOSITORY
 
 npm install
 yarn install
 
-API_URL=https://your-api.com
+API_URL=https://your-api.in
 
 npx react-native run-android
